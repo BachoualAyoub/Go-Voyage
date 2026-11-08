@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Palette Vichy et nuances de contraste. -->
+    <color name="palette_turquoise">#05AD98</color>
+    <color name="palette_argent">#BBBFBF</color>
+    <color name="palette_gris">#878787</color>
+    <color name="palette_blanc">#FFFFFF</color>
+    <color name="palette_encre">#242B2B</color>
+    <color name="palette_texte_secondaire">#555B5B</color>
+    <color name="palette_turquoise_fonce">#0A6558</color>
+    <color name="palette_fond">#F8F9F9</color>
+    <color name="palette_gris_clair">#ECEDED</color>
+</resources>

@@ -1,0 +1,27 @@
+# GO Voyage API : configuration commune
+
+spring:
+  application:
+    name: govoyage
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+server:
+  port: ${SERVER_PORT:8081}
+  address: ${SERVER_ADDRESS:127.0.0.1}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Configuration propre a l'application (cle de injection @Value)
+go-voyage:
+  jeton:
+    secret: ${JWT_SECRET}
+    duree-secondes: 86400
+  cors:
+    origines: ${CORS_ORIGINS:http://localhost:5173,http://127.0.0.1:5173}

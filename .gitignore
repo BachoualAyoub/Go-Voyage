@@ -1,0 +1,30 @@
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Java / Maven
+backend/target/
+
+# Node / web
+web/node_modules/
+web/dist/
+.env
+.env.*
+!.env.example
+
+# Android / Gradle
+mobile/.gradle/
+mobile/.kotlin/
+mobile/build/
+mobile/app/build/
+mobile/local.properties
+*.jks
+*.keystore
+internal/
+
+# Divers
+.local/
+*.log
+.DS_Store
+backend/data/

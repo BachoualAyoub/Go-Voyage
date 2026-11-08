@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO Voyage – Composez votre voyage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ===== Design system : couleurs, polices, ombres ===== */
+:root{--bg:#f6f4ef;--surface:#fcfbf8;--ink:#1b2430;--ink2:#4a5666;--mute:#7b8794;--line:#e2ded5;
+--accent:#1f5fae;--accentd:#174a8a;--accentl:#e6eef8;--sun:#e9a93a;--deep:#12263f;
+--ok:#237a50;--okl:#e4f2ea;--err:#b3382c;--errl:#f9e8e5;
+--sh:0 1px 2px rgba(27,36,48,.06),0 4px 12px rgba(27,36,48,.06),0 18px 36px -10px rgba(27,36,48,.12);
+--ft:"Bricolage Grotesque","Trebuchet MS",sans-serif;--fb:"Instrument Sans","Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;padding-top:92px;background:var(--bg);color:var(--ink);font:400 16px/1.6 var(--fb)}
+h1,h2,h3{font-family:var(--ft);line-height:1.1;margin:0;letter-spacing:-.02em;font-weight:700}
+h1{font-size:clamp(2.4rem,6vw,4.3rem)}h2{font-size:clamp(1.7rem,3.4vw,2.5rem)}h3{font-size:1.2rem}
+p{margin:0}[hidden]{display:none!important}a{color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.muted{color:var(--mute);font-size:14px}.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--sh)}
+.gb{border:1px solid transparent;background:linear-gradient(var(--surface),var(--surface)) padding-box,linear-gradient(135deg,var(--accent),var(--sun)) border-box}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+/* Boutons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:10px;padding:10px 18px;font:600 15px var(--fb);cursor:pointer;text-decoration:none;transition:transform .15s,background .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.primary{background:var(--accent);color:var(--surface);box-shadow:0 1px 2px rgba(23,74,138,.4),0 6px 14px -4px rgba(31,95,174,.5)}.primary:hover{background:var(--accentd)}
+.secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}.secondary:hover{background:var(--accentl)}
+.secondary.on{background:var(--accentl);border-color:var(--accent);color:var(--accentd)}
+.ghost{background:transparent;color:var(--ink2)}.ghost:hover{background:var(--accentl)}
+.danger{background:var(--err);color:var(--surface)}.big{padding:14px 26px;font-size:16px}.sm{padding:6px 12px;font-size:14px}
+.iconbtn{background:none;border:0;padding:7px;border-radius:8px;cursor:pointer;color:var(--mute);display:inline-flex}
+.iconbtn:hover{background:var(--accentl);color:var(--accent)}
+/* Navigation flottante avec flou */
+.nav{position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(1120px,94vw);z-index:20;display:flex;align-items:center;gap:16px;padding:8px 12px 8px 18px;background:rgba(252,251,248,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh)}
+.logo{font:700 20px var(--ft);display:flex;align-items:center;gap:8px;text-decoration:none}.dot{width:12px;height:12px;border-radius:50%;background:var(--sun)}
+.links{display:flex;gap:4px;margin-left:12px;flex:1}.links a{padding:6px 12px;border-radius:8px;color:var(--ink2);text-decoration:none;font-weight:500;font-size:15px;transition:background .15s}
+.links a:hover{background:var(--accentl)}.links a[aria-current="page"]{background:var(--accentl);color:var(--accentd)}
+.acts{display:flex;gap:8px;align-items:center}.who{font-weight:600;font-size:15px}
+/* Accueil */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding-top:48px;padding-bottom:72px}
+.badge{display:inline-block;background:var(--accentl);color:var(--accentd);border-radius:99px;padding:4px 14px;font-size:14px;font-weight:600;margin-bottom:20px}
+.lead{font-size:1.15rem;color:var(--ink2);max-width:520px;margin:20px 0 28px}.row{display:flex;gap:12px;flex-wrap:wrap}
+.mock{padding:20px;position:relative}.mock h3{margin-bottom:4px}
+.offer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.offer strong{display:block}.price{font:700 1.25rem var(--ft)}
+.tag{font-size:12px;font-weight:600;background:var(--okl);color:var(--ok);padding:2px 8px;border-radius:99px;margin-left:6px}
+.chip{position:absolute;right:-14px;bottom:-22px;padding:12px 16px;background:rgba(252,251,248,.75);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh);font-size:14px}
+.stats{background:var(--deep);color:#e9edf2}.stats .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding-top:36px;padding-bottom:36px}
+.stats b{display:block;font:700 2rem var(--ft)}.stats span{color:#a9b6c6;font-size:14px}
+.sec{padding:84px 0}.sec h2{max-width:640px;margin-bottom:12px}.sec>.wrap>p.sub{color:var(--ink2);max-width:560px;margin-bottom:40px}
+.feat{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}.feat .card{padding:24px;grid-column:span 2;transition:transform .2s}.feat .card:hover{transform:translateY(-3px)}
+.feat .card:nth-child(1),.feat .card:nth-child(2){grid-column:span 3}.feat h3{margin:14px 0 6px}.feat p{color:var(--ink2);font-size:15px}
+.tile{width:42px;height:42px;border-radius:10px;background:var(--accentl);color:var(--accent);display:grid;place-items:center}
+.demo{display:grid;grid-template-columns:.8fr 1.2fr;gap:32px;align-items:start}
+.tabs{display:flex;flex-direction:column;gap:8px}.tabs button{text-align:left;background:none;border:1px solid transparent;border-radius:12px;padding:16px 18px;cursor:pointer;font:inherit;color:var(--ink2);transition:background .15s}
+.tabs button:hover{background:var(--surface)}.tabs button[aria-selected="true"]{background:var(--surface);border-color:var(--line);box-shadow:var(--sh);color:var(--ink)}
+.tabs strong{display:block;font:700 1.1rem var(--ft)}.pane{padding:24px;min-height:280px}
+.rev{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.rev .card{padding:24px}.star{display:inline-flex;gap:2px;vertical-align:middle}.star-ic{width:16px;height:16px;fill:var(--sun);stroke:var(--sun)}.star-ic.off{fill:none;stroke:#cfc9bb}.rev p{margin:12px 0 16px}
+.cta{background:var(--deep);color:#e9edf2;border-radius:24px;padding:64px 32px;text-align:center}.cta h2{margin:0 auto 12px;color:#f3f0e8}.cta p{color:#a9b6c6;margin-bottom:28px}
+.foot{border-top:1px solid var(--line);margin-top:84px;padding:48px 0 32px}.foot .cols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+.foot h3{font-size:1rem;margin-bottom:10px}.foot a{display:block;color:var(--ink2);text-decoration:none;padding:3px 0;font-size:15px}.foot a:hover{color:var(--accent)}
+.foot .bottom{margin-top:32px;padding-top:20px;border-top:1px solid var(--line)}
+/* Pages de l'application */
+.page{max-width:1120px;margin:0 auto;padding:24px 20px 0}.ph{margin-bottom:28px}.ph p{color:var(--ink2);margin-top:8px}
+.bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+.field{margin-bottom:14px}.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+input,select,textarea{width:100%;padding:10px 12px;font:16px var(--fb);color:var(--ink);background:var(--surface);border:1px solid #c9c4b8;border-radius:10px}
+input:focus,select:focus,textarea:focus{outline:3px solid #bcd3ee;border-color:var(--accent)}
+[aria-invalid="true"]{border-color:var(--err);background:var(--errl)}.err{color:var(--err);font-size:13px;margin-top:4px}
+.bar input{flex:1;min-width:200px;width:auto}.bar select{width:auto}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.msg{padding:10px 14px;border-radius:10px;font-size:14px;margin-bottom:16px}.msg.ok{background:var(--okl);color:var(--ok)}.msg.error{background:var(--errl);color:var(--err)}.msg.info{background:var(--accentl);color:var(--accentd)}
+.authbox{max-width:440px;margin:24px auto 0;padding:28px}.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:20px}
+.seg button{border:0;background:none;padding:8px;border-radius:8px;font:600 15px var(--fb);cursor:pointer;color:var(--ink2)}.seg button[aria-selected="true"]{background:var(--surface);box-shadow:var(--sh);color:var(--ink)}
+.authbox form .btn{width:100%;margin-top:6px}
+.layout{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.dest{overflow:hidden;transition:transform .2s,box-shadow .2s}.dest:hover{transform:translateY(-3px)}
+.cover{height:110px;display:flex;align-items:flex-end;padding:12px 16px;color:rgba(252,251,248,.92);font:700 1.7rem var(--ft)}
+.body{padding:16px}.body .btn{width:100%;margin-top:12px}
+.side{padding:20px;position:sticky;top:96px}.side li{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);list-style:none}
+.side ul{padding:0;margin:12px 0}.total{display:flex;justify-content:space-between;font-weight:700;margin-bottom:12px}
+.empty{padding:40px 16px;text-align:center;color:var(--ink2);grid-column:1/-1}.empty strong{display:block;color:var(--ink);font-size:1.1rem}
+.list{display:flex;flex-direction:column;gap:12px}.item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;flex-wrap:wrap}
+.post{display:grid;grid-template-columns:180px 1fr;overflow:hidden}.post .cover{height:auto;min-height:160px;font-size:1.4rem}.post .body{padding:18px 20px}
+.phead{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:6px}.rate{display:inline-flex}.rate button{background:none;border:0;cursor:pointer;color:#cfc9bb;padding:2px;display:inline-flex}.rate button.f{color:var(--sun)}.rate button.f .ic{fill:currentColor}
+.pact{display:flex;gap:8px;margin:12px 0}.cmts{padding:0;margin:0 0 8px;list-style:none;font-size:14px;color:var(--ink2)}.cmts b{color:var(--ink)}
+.cmt{display:flex;gap:8px}.cmt input{padding:7px 10px;font-size:14px}.share{padding:20px;margin-bottom:20px}
+.tbl{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:620px}th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);font-size:15px}
+th{font-size:13px;color:var(--mute);font-weight:600;background:var(--bg)}td.a{text-align:right;white-space:nowrap}
+.role{padding:2px 10px;border-radius:99px;font-size:13px;font-weight:600;background:var(--accentl);color:var(--accentd)}.role.admin{background:var(--deep);color:#f3f0e8}
+h2.sh2{font-size:1.5rem;margin:32px 0 14px}
+dialog{border:0;border-radius:16px;padding:0;width:min(500px,92vw);box-shadow:0 24px 60px rgba(18,38,63,.35);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(18,38,63,.55);backdrop-filter:blur(3px)}dialog form{padding:24px}dialog h2{font-size:1.5rem;margin-bottom:16px}
+.dlgbtns{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
+.toast{position:fixed;bottom:24px;right:24px;z-index:60;padding:12px 18px;border-radius:10px;box-shadow:var(--sh);font-weight:500;color:var(--surface);background:var(--ok)}.toast.error{background:var(--err)}
+@media(max-width:900px){.hero,.demo,.layout{grid-template-columns:1fr}.stats .wrap{grid-template-columns:1fr 1fr}.feat .card,.feat .card:nth-child(1),.feat .card:nth-child(2){grid-column:span 3}
+.rev{grid-template-columns:1fr}.foot .cols{grid-template-columns:1fr 1fr}.side{position:static}.chip{right:8px}
+.nav{flex-wrap:wrap}.links{order:3;width:100%;margin:0;overflow-x:auto}}
+@media(max-width:600px){.feat .card,.feat .card:nth-child(1),.feat .card:nth-child(2){grid-column:1/-1}.post{grid-template-columns:1fr}.post .cover{min-height:70px}.two,.foot .cols{grid-template-columns:1fr}.who{display:none}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <a href="#" class="logo" data-go="home"><span class="dot"></span>GO Voyage</a>
+  <nav id="navLinks" class="links" aria-label="Navigation principale"></nav>
+  <div id="navActions" class="acts"></div>
+</header>
+
+<main>
+<!-- ============ ACCUEIL ============ -->
+<section class="view" id="v-home">
+  <div class="hero wrap">
+    <div>
+      <span class="badge">Nouveau : comparateur multi-destinations</span>
+      <h1>Composez le voyage qui vous ressemble, au meilleur prix.</h1>
+      <p class="lead">GO Voyage réunit circuits à la carte, vols comparés et hôtels réservables dans un seul espace. Au retour, partagez vos plus beaux souvenirs dans le livre d'or.</p>
+      <div class="row"><button class="btn primary big" data-go="auth" data-mode="register">Créer mon compte</button><a class="btn secondary big" href="#demo">Voir la démo</a></div>
+    </div>
+    <div class="mock card gb">
+      <h3>Tunis vers Istanbul</h3><p class="muted">Aller-retour, 4 offres comparées</p>
+      <div class="offer" style="margin-top:14px"><div><strong>Transavia<span class="tag">Meilleur prix</span></strong><span class="muted">Low-cost, 2h 50</span></div><span class="price">298 TND</span></div>
+      <div class="offer"><div><strong>Nouvelair</strong><span class="muted">Régulière, 2h 35</span></div><span class="price">412 TND</span></div>
+      <div class="offer"><div><strong>Tunisair</strong><span class="muted">Régulière, 2h 40</span></div><span class="price">446 TND</span></div>
+      <div class="chip"><b>Circuit Istanbul</b><br>6 jours, hôtel inclus</div>
+    </div>
+  </div>
+  <div class="stats"><div class="wrap">
+    <div><b>120+</b><span>destinations au catalogue</span></div><div><b>35</b><span>compagnies comparées</span></div>
+    <div><b>8 400</b><span>voyageurs inscrits</span></div><div><b>4,8 sur 5</b><span>note moyenne des séjours</span></div>
+  </div></div>
+  <div class="sec"><div class="wrap">
+    <h2>Tout ce qu'il faut pour partir l'esprit tranquille</h2>
+    <p class="sub">Chaque étape du voyage, de l'idée au souvenir partagé, tient dans la même interface.</p>
+    <div class="feat">
+      <div class="card"><div class="tile" data-ic="route"></div><h3>Circuits à la carte</h3><p>Ajoutez les étapes qui vous plaisent, voyez le budget total se mettre à jour et réservez en un clic.</p></div>
+      <div class="card"><div class="tile" data-ic="plane"></div><h3>Comparateur de vols</h3><p>Aller simple, aller-retour ou multi-destinations : compagnies régulières, charters et low-cost côte à côte.</p></div>
+      <div class="card"><div class="tile" data-ic="bed"></div><h3>Hôtels et clubs</h3><p>Filtrez par ville ou par type d'hébergement et réservez avec le prix total affiché avant de confirmer.</p></div>
+      <div class="card"><div class="tile" data-ic="camera"></div><h3>Livre d'or</h3><p>Racontez votre séjour, notez, commentez et aimez les publications des autres voyageurs.</p></div>
+      <div class="card"><div class="tile" data-ic="shield"></div><h3>Communauté modérée</h3><p>Un contenu gênant ? Signalez-le, l'équipe l'examine rapidement.</p></div>
+    </div>
+  </div></div>
+  <div class="sec" id="demo" style="padding-top:0"><div class="wrap">
+    <h2>De l'envie à la réservation en trois gestes</h2><p class="sub">Choisissez une étape, comparez, puis confirmez. Rien de plus.</p>
+    <div class="demo">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="0"><strong>Choisir</strong>Parcourez le catalogue et composez votre circuit.</button>
+        <button role="tab" aria-selected="false" data-tab="1"><strong>Comparer</strong>Voyez les vols classés du moins cher au plus cher.</button>
+        <button role="tab" aria-selected="false" data-tab="2"><strong>Réserver</strong>Confirmez le séjour avec le prix total.</button>
+      </div>
+      <div class="card pane" id="pane0"><h3>Mon circuit</h3><div class="offer" style="margin-top:12px"><span>Istanbul, 6 jours</span><b>890 TND</b></div><div class="offer"><span>Rome, 5 jours</span><b>1 180 TND</b></div><div class="offer"><strong>Total</strong><span class="price">2 070 TND</span></div></div>
+      <div class="card pane" id="pane1" hidden><h3>Vols vers Rome</h3><div class="offer" style="margin-top:12px"><span>Ryanair, low-cost</span><b>162 TND</b></div><div class="offer"><span>Air Charter Tunisie, charter</span><b>183 TND</b></div><div class="offer"><span>Tunisair, régulière</span><b>295 TND</b></div></div>
+      <div class="card pane" id="pane2" hidden><h3>Réservation confirmée</h3><p class="muted" style="margin:6px 0 14px">Hotel Trastevere, Rome</p><div class="offer"><span>3 nuits à 340 TND</span><b>1 020 TND</b></div><div class="msg ok" style="margin:14px 0 0">Votre séjour est enregistré.</div></div>
+    </div>
+  </div></div>
+  <div class="sec" style="padding-top:0"><div class="wrap">
+    <h2>Ils sont partis avec GO Voyage</h2><p class="sub">Des voyageurs réguliers racontent comment ils préparent leurs séjours.</p>
+    <div class="rev">
+      <div class="card"><span class="star" data-stars="5"></span><p>J'ai comparé trois compagnies en une minute et gagné de quoi payer deux nuits d'hôtel de plus.</p><b>Sarra B.</b><div class="muted">Voyage à Istanbul</div></div>
+      <div class="card"><span class="star" data-stars="5"></span><p>Le circuit à la carte m'a permis de caler Rome et Lisbonne sans me perdre dans dix onglets.</p><b>Karim T.</b><div class="muted">Circuit en Europe</div></div>
+      <div class="card"><span class="star" data-stars="4"></span><p>Le livre d'or m'a donné envie de Marrakech avant même d'ouvrir le catalogue.</p><b>Ines M.</b><div class="muted">Week-end à Marrakech</div></div>
+    </div>
+  </div></div>
+  <div class="wrap"><div class="cta"><h2>Votre prochaine destination vous attend</h2><p>Créez votre compte gratuitement et préparez votre voyage dès aujourd'hui.</p><button class="btn big" style="background:var(--sun);color:var(--deep)" data-go="auth" data-mode="register">Créer mon compte</button></div></div>
+</section>
+
+<!-- ============ AUTHENTIFICATION ============ -->
+<section class="view page" id="v-auth" hidden>
+  <div class="card authbox">
+    <div class="seg" role="tablist"><button role="tab" id="tabLogin" data-mode="login">Connexion</button><button role="tab" id="tabReg" data-mode="register">Inscription</button></div>
+    <div id="authMsg" class="msg" hidden></div>
+    <form id="fLogin" novalidate>
+      <div class="field"><label for="lEmail">Adresse e-mail</label><input id="lEmail" type="email" autocomplete="email" value="admin@gmail.com" placeholder="admin@gmail.com / radhouen@gmail.com"></div>
+      <div class="field"><label for="lPwd">Mot de passe</label><input id="lPwd" type="password" autocomplete="current-password" value="admin1234" placeholder="admin1234 / radhouen123"></div>
+      <button class="btn primary big">Se connecter</button>
+    </form>
+    <form id="fReg" novalidate></form>
+  </div>
+</section>
+
+<!-- ============ DESTINATIONS + CIRCUIT ============ -->
+<section class="view page" id="v-destinations" hidden>
+  <div class="ph"><h2>Destinations et circuits</h2><p>Ajoutez des étapes pour composer votre circuit à la carte.</p></div>
+  <div class="bar"><input id="dSearch" type="search" placeholder="Rechercher une ville ou un pays" aria-label="Rechercher une destination"></div>
+  <div class="layout"><div class="grid" id="dGrid"></div>
+    <aside class="card side"><h3>Mon circuit</h3><ul id="cList"></ul><div class="total"><span>Total</span><span id="cTotal">0 TND</span></div><button class="btn primary" style="width:100%" id="cBook" data-act="bookCircuit">Réserver ce circuit</button></aside></div>
+</section>
+
+<!-- ============ VOLS ============ -->
+<section class="view page" id="v-vols" hidden>
+  <div class="ph"><h2>Comparateur de vols</h2><p>Comparez les compagnies régulières, charters et low-cost.</p></div>
+  <form class="card share" id="fFlight" novalidate>
+    <div class="two"><div class="field"><label for="vFrom">Départ</label><input id="vFrom" value="Tunis" readonly></div>
+    <div class="field"><label for="vTo">Destination</label><select id="vTo"></select></div></div>
+    <div class="two"><div class="field"><label for="vTrip">Type de voyage</label><select id="vTrip"><option>Aller simple</option><option selected>Aller-retour</option><option>Multi-destinations</option></select></div>
+    <div class="field"><label for="vDate">Date de départ</label><input id="vDate" type="date"><p class="err" id="vDateErr"></p></div></div>
+    <button class="btn primary">Comparer les vols</button>
+  </form>
+  <div class="bar" id="flightFilters"></div><div class="list" id="flightList"></div>
+</section>
+
+<!-- ============ HÔTELS ============ -->
+<section class="view page" id="v-hotels" hidden>
+  <div class="ph"><h2>Hôtels et clubs</h2><p id="hCount">Aucune réservation pour le moment.</p></div>
+  <div class="bar"><input id="hSearch" type="search" placeholder="Rechercher par ville ou par nom" aria-label="Rechercher un hébergement">
+    <select id="hType" aria-label="Type d'hébergement"><option value="">Hôtels et clubs</option><option>Hôtel</option><option>Club</option></select></div>
+  <div class="list" id="hList"></div>
+</section>
+
+<!-- ============ LIVRE D'OR ============ -->
+<section class="view page" id="v-livre" hidden>
+  <div class="ph"><h2>Livre d'or</h2><p>Les expériences des voyageurs, classées par pays et par ville.</p></div>
+  <form class="card share" id="fPost" novalidate><h3 style="margin-bottom:14px">Partager mon voyage</h3>
+    <div class="two"><div class="field"><label for="pVille">Ville</label><input id="pVille"><p class="err" id="pVilleErr"></p></div><div class="field"><label for="pPays">Pays</label><input id="pPays"><p class="err" id="pPaysErr"></p></div></div>
+    <div class="field"><label for="pNote">Ma note</label><select id="pNote"><option value="5">5 sur 5</option><option value="4">4 sur 5</option><option value="3">3 sur 5</option><option value="2">2 sur 5</option><option value="1">1 sur 5</option></select></div>
+    <div class="field"><label for="pTexte">Mon expérience</label><textarea id="pTexte" rows="3"></textarea><p class="err" id="pTexteErr"></p></div>
+    <button class="btn primary">Publier mon expérience</button></form>
+  <div class="bar"><input id="lSearch" type="search" placeholder="Rechercher par pays ou par ville" aria-label="Rechercher dans le livre d'or"></div>
+  <div class="list" id="posts"></div>
+</section>
+
+<!-- ============ ADMINISTRATION ============ -->
+<section class="view page" id="v-admin" hidden>
+  <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap"><div><h2>Administration</h2><p id="aCount"></p></div><button class="btn primary" data-act="addUser">Ajouter un compte</button></div>
+  <div class="card tbl"><table><thead><tr><th>Nom</th><th>Prénom</th><th>E-mail</th><th>Téléphone</th><th>Rôle</th><th></th></tr></thead><tbody id="aBody"></tbody></table></div>
+  <h2 class="sh2">Contenus signalés</h2><div class="list" id="aReports"></div>
+</section>
+</main>
+
+<footer class="foot"><div class="wrap">
+  <div class="cols">
+    <div><div class="logo"><span class="dot"></span>GO Voyage</div><p class="muted" style="margin-top:10px;max-width:280px">Circuits, vols et hôtels réunis dans un seul espace de voyage.</p></div>
+    <div><h3>Plateforme</h3><a href="#" data-go="destinations">Destinations</a><a href="#" data-go="vols">Vols</a><a href="#" data-go="hotels">Hôtels</a></div>
+    <div><h3>Communauté</h3><a href="#" data-go="livre">Livre d'or</a><a href="#demo" data-go="home">Comment ça marche</a></div>
+    <div><h3>Contact</h3><a href="#">contact@govoyage.tn</a><a href="#">Tunis, Tunisie</a></div>
+  </div>
+  <p class="muted bottom">© 2026 GO Voyage, projet d'intégration.</p>
+</div></footer>
+
+<dialog id="dlg"><form id="dlgForm" novalidate></form></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+// ===== Outils simples =====
+const $ = s => document.querySelector(s);
+const esc = t => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const PATHS = {
+  plane: "M3 13l18-9-7 17-3-7-8-1z", bed: "M3 18V7M3 14h18v4M21 14v-2a3 3 0 00-3-3h-7v5",
+  camera: "M4 8h3l2-3h6l2 3h3v11H4zM12 17a3.5 3.5 0 100-7 3.5 3.5 0 000 7z",
+  route: "M5 19a2 2 0 100-4 2 2 0 000 4zM19 9a2 2 0 100-4 2 2 0 000 4zM7 17c6 0 2-8 8-8h2",
+  shield: "M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z", heart: "M12 20s-8-5-8-11a4.5 4.5 0 018-2.5A4.5 4.5 0 0120 9c0 6-8 11-8 11z",
+  flag: "M5 21V4M5 4h12l-2 4 2 4H5", pencil: "M4 20h4L19 9l-4-4L4 16v4z", trash: "M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13", x: "M6 6l12 12M18 6L6 18", star: "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"
+};
+function starRow(filled, total) {
+  let html = "";
+  for (let i = 1; i <= total; i++) {
+    html += '<svg class="ic star-ic' + (i <= filled ? "" : " off") + '" viewBox="0 0 24 24" aria-hidden="true"><path d="' + PATHS.star + '"/></svg>';
+  }
+  return html;
+}
+const icon = n => '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="' + PATHS[n] + '"/></svg>';
+let toastTimer;
+function toast(msg, type) {
+  const t = $("#toast");
+  t.textContent = msg; t.className = "toast " + (type || ""); t.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.hidden = true, 3200);
+}
+
+// ===== Données de démonstration =====
+let user = null, nextId = 5, nextPost = 4;
+let comptes = [
+  { id: 1, nom: "Saidi", prenom: "Mohamed Rayen", email: "admin@gmail.com", tel: "20 123 456", role: "admin", password: "admin1234" },
+  { id: 2, nom: "Ksouri", prenom: "Mohamed Radhouen", email: "radhouen@gmail.com", tel: "22 345 678", role: "user", password: "radhouen123" },
+  { id: 3, nom: "Bachoual", prenom: "Ayoub", email: "ayoub@mail.tn", tel: "25 456 789", role: "user", password: "user12345" },
+  { id: 4, nom: "Ben Ali", prenom: "Sarra", email: "sarra@mail.tn", tel: "50 987 654", role: "user", password: "user12345" }
+];
+const destinations = [
+  { id: 1, ville: "Djerba", pays: "Tunisie", jours: 5, prix: 620, c: "#2f7fb5" },
+  { id: 2, ville: "Istanbul", pays: "Turquie", jours: 6, prix: 890, c: "#7a5a86" },
+  { id: 3, ville: "Lisbonne", pays: "Portugal", jours: 5, prix: 1050, c: "#3f7f78" },
+  { id: 4, ville: "Marrakech", pays: "Maroc", jours: 4, prix: 780, c: "#a85d48" },
+  { id: 5, ville: "Rome", pays: "Italie", jours: 5, prix: 1180, c: "#6b7f4e" },
+  { id: 6, ville: "Dubaï", pays: "Émirats arabes unis", jours: 7, prix: 2350, c: "#34507a" }
+];
+const airlines = [
+  { cie: "Tunisair", type: "Régulière", duree: "2h 40", k: 1 }, { cie: "Nouvelair", type: "Régulière", duree: "2h 35", k: 0.92 },
+  { cie: "Transavia", type: "Low-cost", duree: "2h 50", k: 0.7 }, { cie: "Air Charter Tunisie", type: "Charter", duree: "3h 05", k: 0.62 },
+  { cie: "Ryanair", type: "Low-cost", duree: "2h 55", k: 0.55 }
+];
+const hotels = [
+  { id: 1, nom: "Club Medina Sol", ville: "Djerba", type: "Club", etoiles: 4, prix: 240 },
+  { id: 2, nom: "Sultan Boutique Hotel", ville: "Istanbul", type: "Hôtel", etoiles: 4, prix: 320 },
+  { id: 3, nom: "Casa Alfama", ville: "Lisbonne", type: "Hôtel", etoiles: 3, prix: 280 },
+  { id: 4, nom: "Riad Jnane", ville: "Marrakech", type: "Hôtel", etoiles: 4, prix: 260 },
+  { id: 5, nom: "Hotel Trastevere", ville: "Rome", type: "Hôtel", etoiles: 3, prix: 340 },
+  { id: 6, nom: "Marina Club Resort", ville: "Dubaï", type: "Club", etoiles: 5, prix: 620 }
+];
+let posts = [
+  { id: 1, auteur: "Sarra B.", ville: "Istanbul", pays: "Turquie", texte: "Le Bosphore au coucher du soleil, un vrai coup de cœur. Les ferrys sont le meilleur moyen de visiter la ville.", notes: [5, 5, 4], likes: 12, liked: false, reported: false, c: "#7a5a86", comments: [{ a: "Ayoub", t: "Merci pour le conseil des ferrys !" }] },
+  { id: 2, auteur: "Karim T.", ville: "Rome", pays: "Italie", texte: "Réservez le Colisée très tôt le matin, on évite toute la foule. Les quartiers autour de Trastevere sont superbes.", notes: [4, 5], likes: 8, liked: false, reported: false, c: "#6b7f4e", comments: [] },
+  { id: 3, auteur: "Ines M.", ville: "Marrakech", pays: "Maroc", texte: "Trois jours dans la médina, des couleurs partout. Pensez à négocier avec le sourire.", notes: [5], likes: 5, liked: false, reported: false, c: "#a85d48", comments: [] }
+];
+let circuit = [], offers = [], flightType = "Toutes", nbReservations = 0, authMode = "login";
+
+// ===== Navigation =====
+const privateViews = ["destinations", "vols", "hotels", "livre", "admin"];
+function go(name) {
+  if (privateViews.includes(name) && !user) { setAuthMode("login"); authMsg("Connectez-vous pour accéder à la plateforme.", "info"); name = "auth"; }
+  else if (name === "admin" && user.role !== "admin") { name = "destinations"; }
+  document.querySelectorAll(".view").forEach(v => v.hidden = (v.id !== "v-" + name));
+  renderNav(name);
+  window.scrollTo(0, 0);
+  if (name === "destinations") renderDestinations();
+  if (name === "vols") renderFlights();
+  if (name === "hotels") renderHotels();
+  if (name === "livre") renderPosts();
+  if (name === "admin") renderAdmin();
+}
+function renderNav(active) {
+  let liens = user ? [["destinations", "Destinations"], ["vols", "Vols"], ["hotels", "Hôtels"], ["livre", "Livre d'or"]] : [["home", "Accueil"]];
+  if (user && user.role === "admin") liens.push(["admin", "Administration"]);
+  $("#navLinks").innerHTML = liens.map(l => '<a href="#" data-go="' + l[0] + '"' + (l[0] === active ? ' aria-current="page"' : "") + ">" + l[1] + "</a>").join("");
+  $("#navActions").innerHTML = user
+    ? '<span class="who">' + esc(user.prenom) + '</span><button class="btn ghost" data-act="logout">Se déconnecter</button>'
+    : '<button class="btn ghost" data-go="auth" data-mode="login">Se connecter</button><button class="btn primary" data-go="auth" data-mode="register">Créer un compte</button>';
+}
+
+// ===== Fenêtre de dialogue réutilisable =====
+function openDialog(html, onSubmit) {
+  $("#dlgForm").innerHTML = html;
+  $("#dlgForm").onsubmit = e => { e.preventDefault(); if (onSubmit() !== false) $("#dlg").close(); };
+  $("#dlg").showModal();
+}
+const dlgButtons = label => '<div class="dlgbtns"><button type="button" class="btn secondary" data-close>Annuler</button><button class="btn primary">' + label + "</button></div>";
+
+// ===== Formulaires et validation =====
+function field(id, label, type, value) {
+  return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="' + type + '" value="' + esc(value || "") + '"><p class="err" id="' + id + 'Err"></p></div>';
+}
+function userFields(p, avecMotDePasse, u) {
+  u = u || {};
+  return '<div class="two">' + field(p + "Nom", "Nom", "text", u.nom) + field(p + "Prenom", "Prénom", "text", u.prenom) + "</div>"
+    + field(p + "Email", "Adresse e-mail", "email", u.email) + field(p + "Tel", "Téléphone", "tel", u.tel)
+    + (avecMotDePasse ? field(p + "Pwd", "Mot de passe (8 caractères minimum)", "password", "") : "");
+}
+function check(id, ok, msg) {
+  $("#" + id + "Err").textContent = ok ? "" : msg;
+  $("#" + id).setAttribute("aria-invalid", !ok);
+  return ok;
+}
+function validateUser(p, avecMotDePasse, ignoreId) {
+  const v = id => $("#" + p + id).value.trim();
+  const mail = v("Email");
+  const mailOk = /^\S+@\S+\.\S+$/.test(mail);
+  const pris = comptes.some(c => c.email.toLowerCase() === mail.toLowerCase() && c.id !== ignoreId);
+  const r = [
+    check(p + "Nom", v("Nom") !== "", "Le nom est obligatoire."),
+    check(p + "Prenom", v("Prenom") !== "", "Le prénom est obligatoire."),
+    check(p + "Email", mailOk && !pris, mailOk ? "Cette adresse e-mail est déjà utilisée." : "Saisissez une adresse e-mail valide."),
+    check(p + "Tel", /^[0-9 +]{8,15}$/.test(v("Tel")), "Saisissez un numéro valide (8 chiffres minimum).")
+  ];
+  if (avecMotDePasse) r.push(check(p + "Pwd", $("#" + p + "Pwd").value.length >= 8, "8 caractères minimum."));
+  return !r.includes(false);
+}
+
+// ===== Authentification =====
+function authMsg(texte, type) { const m = $("#authMsg"); m.textContent = texte; m.className = "msg " + type; m.hidden = false; }
+function setAuthMode(m) {
+  authMode = m;
+  $("#fLogin").hidden = (m !== "login"); $("#fReg").hidden = (m !== "register");
+  $("#tabLogin").setAttribute("aria-selected", m === "login"); $("#tabReg").setAttribute("aria-selected", m === "register");
+  $("#authMsg").hidden = true;
+}
+$("#fReg").innerHTML = userFields("r", true) + '<button class="btn primary big">Créer mon compte</button>';
+$("#fReg").onsubmit = e => {
+  e.preventDefault();
+  if (!validateUser("r", true, null)) return;
+  comptes.push({ id: nextId++, nom: $("#rNom").value.trim(), prenom: $("#rPrenom").value.trim(), email: $("#rEmail").value.trim(), tel: $("#rTel").value.trim(), role: "user", password: $("#rPwd").value });
+  $("#fReg").reset(); setAuthMode("login");
+  authMsg("Compte créé avec succès. Vous pouvez maintenant vous connecter.", "ok");
+};
+$("#fLogin").onsubmit = e => {
+  e.preventDefault();
+  const email = $("#lEmail").value.trim().toLowerCase(), pwd = $("#lPwd").value;
+  const compte = comptes.find(c => c.email.toLowerCase() === email && c.password === pwd);
+  if (!compte) { authMsg("E-mail ou mot de passe incorrect. Vérifiez vos informations.", "error"); return; }
+  user = compte; $("#fLogin").reset();
+  go(user.role === "admin" ? "admin" : "destinations");
+};
+
+// ===== Destinations et circuit à la carte =====
+function renderDestinations() {
+  const q = $("#dSearch").value.trim().toLowerCase();
+  const liste = destinations.filter(d => (d.ville + " " + d.pays).toLowerCase().includes(q));
+  $("#dGrid").innerHTML = liste.length ? liste.map(d => {
+    const dedans = circuit.includes(d.id);
+    return '<article class="card dest"><div class="cover" style="background:' + d.c + '">' + d.ville + '</div><div class="body"><h3>' + d.ville + '</h3><p class="muted">' + d.pays + ", " + d.jours + " jours</p>"
+      + '<p style="margin-top:8px">À partir de <b>' + d.prix + ' TND</b></p><button class="btn ' + (dedans ? "secondary on" : "secondary") + '" data-act="circuit" data-id="' + d.id + '">' + (dedans ? "Retirer du circuit" : "Ajouter au circuit") + "</button></div></article>";
+  }).join("") : '<div class="empty"><strong>Aucune destination trouvée</strong>Essayez un autre nom de ville ou de pays.</div>';
+  let total = 0, html = "";
+  circuit.forEach(id => {
+    const d = destinations.find(x => x.id === id); total += d.prix;
+    html += "<li><span>" + d.ville + '</span><button class="iconbtn" data-act="circuit" data-id="' + id + '" aria-label="Retirer ' + d.ville + '">' + icon("x") + "</button></li>";
+  });
+  $("#cList").innerHTML = html || '<li class="muted">Ajoutez une destination pour commencer.</li>';
+  $("#cTotal").textContent = total + " TND";
+  $("#cBook").disabled = (circuit.length === 0);
+}
+$("#dSearch").oninput = renderDestinations;
+
+// ===== Comparateur de vols =====
+$("#vTo").innerHTML = destinations.map(d => "<option>" + d.ville + "</option>").join("");
+const demain = new Date(); demain.setDate(demain.getDate() + 30);
+$("#vDate").value = demain.toISOString().slice(0, 10);
+$("#fFlight").onsubmit = e => {
+  e.preventDefault();
+  if (!check("vDate", $("#vDate").value !== "", "Choisissez une date de départ.")) return;
+  const d = destinations.find(x => x.ville === $("#vTo").value);
+  const coef = { "Aller simple": 1, "Aller-retour": 1.8, "Multi-destinations": 2.4 }[$("#vTrip").value];
+  offers = airlines.map(a => ({ cie: a.cie, type: a.type, duree: a.duree, prix: Math.round(d.prix * 0.25 * a.k * coef) })).sort((a, b) => a.prix - b.prix);
+  flightType = "Toutes"; renderFlights();
+};
+function renderFlights() {
+  if (offers.length === 0) { $("#flightFilters").innerHTML = ""; $("#flightList").innerHTML = '<div class="empty"><strong>Aucune comparaison pour le moment</strong>Choisissez une destination et lancez la comparaison.</div>'; return; }
+  $("#flightFilters").innerHTML = ["Toutes", "Régulière", "Charter", "Low-cost"].map(t => '<button class="btn sm secondary ' + (t === flightType ? "on" : "") + '" data-act="flightType" data-type="' + t + '">' + t + "</button>").join("");
+  let html = "";
+  offers.forEach((o, i) => {
+    if (flightType !== "Toutes" && o.type !== flightType) return;
+    html += '<div class="card item"><div><b>' + o.cie + (i === 0 ? '<span class="tag">Meilleur prix</span>' : "") + '</b><div class="muted">' + o.type + ", " + o.duree + '</div></div><span class="price">' + o.prix + ' TND</span><button class="btn secondary" data-act="pickFlight" data-id="' + i + '">Choisir ce vol</button></div>';
+  });
+  $("#flightList").innerHTML = html;
+}
+
+// ===== Hôtels et réservation =====
+function renderHotels() {
+  const q = $("#hSearch").value.trim().toLowerCase(), t = $("#hType").value;
+  const liste = hotels.filter(h => (h.nom + " " + h.ville).toLowerCase().includes(q) && (t === "" || h.type === t));
+  $("#hList").innerHTML = liste.length ? liste.map(h =>
+    '<div class="card item"><div><b>' + h.nom + '</b><div class="muted">' + h.ville + ", " + h.type + ', <span class="star">' + starRow(h.etoiles, h.etoiles) + '</span></div></div><span class="price">' + h.prix + ' TND<span class="muted"> / nuit</span></span><button class="btn primary" data-act="book" data-id="' + h.id + '">Réserver</button></div>'
+  ).join("") : '<div class="empty"><strong>Aucun hébergement trouvé</strong>Modifiez la ville ou le type recherché.</div>';
+  $("#hCount").textContent = nbReservations === 0 ? "Aucune réservation pour le moment." : nbReservations + (nbReservations > 1 ? " réservations confirmées." : " réservation confirmée.");
+}
+$("#hSearch").oninput = renderHotels; $("#hType").onchange = renderHotels;
+function openBooking(id) {
+  const h = hotels.find(x => x.id === id);
+  openDialog("<h2>Réserver " + esc(h.nom) + "</h2>" + field("bNuits", "Nombre de nuits", "number", "3") + '<p class="muted">' + h.prix + " TND par nuit, " + h.ville + "</p>" + dlgButtons("Confirmer la réservation"), () => {
+    const n = Number($("#bNuits").value);
+    if (!check("bNuits", n >= 1 && n <= 30, "Choisissez entre 1 et 30 nuits.")) return false;
+    nbReservations++; renderHotels();
+    toast("Réservation confirmée : " + n + " nuits, " + (n * h.prix) + " TND.");
+  });
+}
+
+// ===== Livre d'or =====
+function renderPosts() {
+  const q = $("#lSearch").value.trim().toLowerCase();
+  const liste = posts.filter(p => (p.ville + " " + p.pays).toLowerCase().includes(q));
+  $("#posts").innerHTML = liste.length ? liste.map(p => {
+    const moyenne = Math.round(p.notes.reduce((a, b) => a + b, 0) / p.notes.length);
+    let etoiles = "";
+    for (let n = 1; n <= 5; n++) etoiles += '<button class="' + (n <= moyenne ? "f" : "") + '" data-act="rate" data-id="' + p.id + '" data-n="' + n + '" aria-label="Noter ' + n + ' sur 5">' + icon("star") + '</button>';
+    return '<article class="card post"><div class="cover" style="background:' + p.c + '">' + esc(p.ville) + '</div><div class="body"><div class="phead"><b>' + esc(p.auteur) + '</b><span class="muted">' + esc(p.ville) + ", " + esc(p.pays)
+      + '</span><span class="rate" title="' + p.notes.length + ' avis">' + etoiles + "</span></div><p>" + esc(p.texte) + "</p>"
+      + '<div class="pact"><button class="btn sm secondary ' + (p.liked ? "on" : "") + '" data-act="like" data-id="' + p.id + '">' + icon("heart") + "J'aime (" + p.likes + ")</button>"
+      + '<button class="btn sm ghost" data-act="report" data-id="' + p.id + '"' + (p.reported ? " disabled" : "") + ">" + icon("flag") + (p.reported ? "Signalée" : "Signaler") + "</button></div>"
+      + '<ul class="cmts">' + p.comments.map(c => "<li><b>" + esc(c.a) + "</b> " + esc(c.t) + "</li>").join("") + '</ul><form class="cmt" data-id="' + p.id + '"><input aria-label="Votre commentaire" placeholder="Ajouter un commentaire"><button class="btn sm primary">Publier</button></form></div></article>';
+  }).join("") : '<div class="empty"><strong>Aucune expérience trouvée</strong>Essayez un autre pays ou une autre ville, ou partagez la vôtre.</div>';
+}
+$("#lSearch").oninput = renderPosts;
+$("#posts").addEventListener("submit", e => {
+  e.preventDefault();
+  const texte = e.target.querySelector("input").value.trim();
+  if (texte === "") return;
+  posts.find(p => p.id === Number(e.target.dataset.id)).comments.push({ a: user.prenom, t: texte });
+  renderPosts();
+});
+$("#fPost").onsubmit = e => {
+  e.preventDefault();
+  const r = [check("pVille", $("#pVille").value.trim() !== "", "La ville est obligatoire."), check("pPays", $("#pPays").value.trim() !== "", "Le pays est obligatoire."), check("pTexte", $("#pTexte").value.trim().length >= 10, "Décrivez votre expérience en 10 caractères minimum.")];
+  if (r.includes(false)) return;
+  const couleurs = ["#2f7fb5", "#3f7f78", "#34507a"];
+  posts.unshift({ id: nextPost++, auteur: user.prenom + " " + user.nom.charAt(0) + ".", ville: $("#pVille").value.trim(), pays: $("#pPays").value.trim(), texte: $("#pTexte").value.trim(), notes: [Number($("#pNote").value)], likes: 0, liked: false, reported: false, c: couleurs[posts.length % 3], comments: [] });
+  $("#fPost").reset(); renderPosts(); toast("Votre expérience est publiée.");
+};
+
+// ===== Administration =====
+function renderAdmin() {
+  $("#aCount").textContent = comptes.length + " comptes utilisateurs";
+  $("#aBody").innerHTML = comptes.map(c => "<tr><td>" + esc(c.nom) + "</td><td>" + esc(c.prenom) + "</td><td>" + esc(c.email) + "</td><td>" + esc(c.tel) + '</td><td><span class="role ' + c.role + '">' + (c.role === "admin" ? "Administrateur" : "Utilisateur") + '</span></td><td class="a">'
+    + '<button class="iconbtn" data-act="editUser" data-id="' + c.id + '" aria-label="Modifier ' + esc(c.prenom) + '">' + icon("pencil") + '</button><button class="iconbtn" data-act="delUser" data-id="' + c.id + '" aria-label="Supprimer ' + esc(c.prenom) + '">' + icon("trash") + "</button></td></tr>").join("");
+  const signales = posts.filter(p => p.reported);
+  $("#aReports").innerHTML = signales.length ? signales.map(p => '<div class="card item"><div><b>' + esc(p.auteur) + '</b><div class="muted">' + esc(p.ville) + ", " + esc(p.pays) + "</div><p>" + esc(p.texte) + '</p></div><div><button class="btn sm secondary" data-act="ignore" data-id="' + p.id + '">Ignorer</button> <button class="btn sm danger" data-act="delPost" data-id="' + p.id + '">Supprimer la publication</button></div></div>').join("")
+    : '<div class="card empty"><strong>Aucun contenu signalé</strong>Les signalements des voyageurs apparaîtront ici.</div>';
+}
+function openUserDialog(id) {
+  const u = id ? comptes.find(c => c.id === id) : null;
+  openDialog("<h2>" + (u ? "Modifier le compte" : "Ajouter un compte") + "</h2>" + userFields("a", !u, u)
+    + '<div class="field"><label for="aRole">Rôle</label><select id="aRole"><option value="user">Utilisateur</option><option value="admin">Administrateur</option></select></div>' + dlgButtons("Enregistrer"), () => {
+    if (!validateUser("a", !u, id)) return false;
+    const data = { nom: $("#aNom").value.trim(), prenom: $("#aPrenom").value.trim(), email: $("#aEmail").value.trim(), tel: $("#aTel").value.trim(), role: $("#aRole").value };
+    if (u) { Object.assign(u, data); toast("Compte modifié avec succès."); }
+    else { data.id = nextId++; data.password = $("#aPwd").value; comptes.push(data); toast("Compte ajouté avec succès."); }
+    renderAdmin();
+  });
+  if (u) $("#aRole").value = u.role;
+}
+function openDelete(id) {
+  const c = comptes.find(x => x.id === id);
+  if (c === user) { toast("Vous ne pouvez pas supprimer votre propre compte.", "error"); return; }
+  openDialog("<h2>Supprimer ce compte ?</h2><p>Le compte de " + esc(c.prenom) + " " + esc(c.nom) + " sera supprimé définitivement.</p>" + '<div class="dlgbtns"><button type="button" class="btn secondary" data-close>Annuler</button><button class="btn danger">Supprimer</button></div>', () => {
+    comptes = comptes.filter(x => x.id !== id); renderAdmin(); toast("Compte supprimé avec succès.");
+  });
+}
+
+// ===== Gestion de tous les clics =====
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-go],[data-act],[data-close],[data-tab],[data-mode]");
+  if (!el) return;
+  const d = el.dataset, id = Number(d.id);
+  if (d.close !== undefined) { $("#dlg").close(); return; }
+  if (d.tab !== undefined) {
+    document.querySelectorAll("[data-tab]").forEach(b => { b.setAttribute("aria-selected", b.dataset.tab === d.tab); $("#pane" + b.dataset.tab).hidden = (b.dataset.tab !== d.tab); });
+    return;
+  }
+  if (d.mode && !d.go) { setAuthMode(d.mode); return; }
+  if (d.go) { e.preventDefault(); if (d.mode) setAuthMode(d.mode); go(d.go); if (d.mode) setAuthMode(d.mode); return; }
+  if (d.act === "logout") { user = null; circuit = []; go("home"); }
+  if (d.act === "circuit") { circuit = circuit.includes(id) ? circuit.filter(x => x !== id) : circuit.concat(id); renderDestinations(); }
+  if (d.act === "bookCircuit") { toast("Circuit réservé : " + circuit.length + (circuit.length > 1 ? " étapes." : " étape.")); circuit = []; renderDestinations(); }
+  if (d.act === "flightType") { flightType = d.type; renderFlights(); }
+  if (d.act === "pickFlight") toast(offers[id].cie + " sélectionné pour " + offers[id].prix + " TND.");
+  if (d.act === "book") openBooking(id);
+  if (d.act === "like") { const p = posts.find(x => x.id === id); p.liked = !p.liked; p.likes += p.liked ? 1 : -1; renderPosts(); }
+  if (d.act === "rate") { posts.find(x => x.id === id).notes.push(Number(d.n)); renderPosts(); toast("Merci pour votre note."); }
+  if (d.act === "report") { posts.find(x => x.id === id).reported = true; renderPosts(); toast("Publication signalée à l'équipe de modération."); }
+  if (d.act === "addUser") openUserDialog(null);
+  if (d.act === "editUser") openUserDialog(id);
+  if (d.act === "delUser") openDelete(id);
+  if (d.act === "ignore") { posts.find(x => x.id === id).reported = false; renderAdmin(); toast("Signalement ignoré."); }
+  if (d.act === "delPost") { posts = posts.filter(x => x.id !== id); renderAdmin(); toast("Publication supprimée."); }
+});
+
+// ===== Démarrage =====
+document.querySelectorAll("[data-ic]").forEach(el => el.innerHTML = icon(el.dataset.ic));
+document.querySelectorAll("[data-stars]").forEach(el => el.innerHTML = starRow(Number(el.dataset.stars), 5));
+setAuthMode("login");
+go("home");
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+# Profil dev : base PostgreSQL locale + SQL visible et jetons plus courts a l'affichage
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:govoyage}
+    username: ${DB_USER:govoyage}
+    password: ${DB_PASSWORD:govoyage}
+  jpa:
+    show-sql: false
+
+go-voyage:
+  jeton:
+    secret: ${JWT_SECRET:${random.uuid}${random.uuid}}

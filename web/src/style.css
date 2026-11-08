@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: "Instrument Sans", "Segoe UI", sans-serif;
+  color: var(--encre);
+  background: var(--fond);
+  font-synthesis: none;
+  --titre: "Bricolage Grotesque", "Segoe UI", sans-serif;
+  /* Palette Vichy et nuances de contraste. */
+  --turquoise: #05AD98;
+  --argent: #BBBFBF;
+  --gris: #878787;
+  --blanc: #FFFFFF;
+  --encre: #242B2B;
+  --secondaire: #555B5B;
+  --turquoise-fonce: #0A6558;
+  --fond: color-mix(in srgb, var(--argent) 10%, var(--blanc));
+  --trait: color-mix(in srgb, var(--argent) 52%, var(--blanc));
+  --gris-clair: color-mix(in srgb, var(--argent) 28%, var(--blanc));
+  --turquoise-clair: color-mix(in srgb, var(--turquoise) 13%, var(--blanc));
+  --rouge: #9c3529;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .62; cursor: wait; }
+:focus-visible { outline: 3px solid var(--turquoise-fonce); outline-offset: 3px; }
+a { color: inherit; }
+p, h1, h2 { margin: 0; }
+h1, h2 { font-family: var(--titre); letter-spacing: -.04em; }
+.app { min-height: 100svh; display: flex; flex-direction: column; }
+.barre, .pied { padding: 16px max(24px, calc((100vw - 1216px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.barre { background: var(--blanc); border-bottom: 1px solid var(--trait); min-height: 76px; padding-block: 10px; }
+.marque { flex: none; width: 216px; }
+.marque img { display: block; width: 100%; height: auto; }
+.barre-note, .pied { font-size: .7rem; font-weight: 700; letter-spacing: .13em; }
+.barre-note { color: var(--secondaire); text-align: right; }
+.barre-droite { display: flex; align-items: center; gap: 16px; font-size: .9rem; }
+.pied { border-top: 1px solid var(--trait); color: var(--secondaire); margin-top: auto; min-height: 56px; }
+.accueil { width: min(calc(100% - 48px), 1216px); margin: 48px auto; display: grid; grid-template-columns: 1.12fr 1fr; gap: 20px; align-items: stretch; }
+.voyage { display: flex; flex-direction: column; justify-content: space-between; min-height: 548px; position: relative; overflow: hidden; padding: clamp(28px, 5vw, 64px); border-radius: 26px; background: var(--encre); color: var(--blanc); }
+.voyage-texte { position: relative; z-index: 1; }
+.surtitre { font-size: .72rem; font-weight: 800; letter-spacing: .17em; display: flex; align-items: center; gap: 9px; }
+.surtitre i { display: block; border-radius: 50%; width: 8px; height: 8px; background: var(--turquoise); }
+.voyage h1 { font-size: clamp(3.35rem, 7vw, 6.4rem); line-height: .96; font-weight: 800; margin: 26px 0 24px; }
+.voyage em { font-style: normal; color: var(--turquoise); }
+.voyage-texte > p:last-child { color: var(--gris-clair); max-width: 33ch; line-height: 1.55; }
+.carte-vol { max-width: 390px; margin-top: 12px; width: 100%; }
+.carte-vol svg { display: block; width: 100%; }
+.orbite { stroke: var(--gris); stroke-opacity: .52; stroke-width: 1; }
+.trace { stroke: var(--argent); stroke-width: 1.5; stroke-dasharray: 4 6; }
+.repere-vol { fill: var(--turquoise); }
+.anneau-vol { stroke: var(--turquoise); }
+.avion-vol { fill: var(--blanc); }
+.carte-vol span, .voyage-index { font-size: .67rem; letter-spacing: .17em; color: var(--argent); font-weight: 700; }
+.voyage-index { position: absolute; bottom: 21px; right: 24px; opacity: .65; }
+.bloc-auth { background: var(--blanc); border: 1px solid var(--trait); border-radius: 26px; padding: clamp(26px, 4.5vw, 62px); display: flex; flex-direction: column; justify-content: center; }
+.bascule { display: flex; gap: 4px; background: var(--gris-clair); padding: 4px; border-radius: 12px; margin-bottom: 28px; }
+.bascule button { flex: 1; border: 0; border-radius: 9px; background: transparent; color: var(--encre); padding: 10px; font-weight: 700; font-size: .9rem; }
+.bascule button[aria-pressed="true"] { background: var(--blanc); box-shadow: 0 1px 5px #242b2b16; }
+.bloc-auth h2 { font-size: clamp(1.9rem, 3.2vw, 2.8rem); line-height: 1.05; }
+.secondaire { color: var(--secondaire); line-height: 1.5; }
+.bloc-auth > .secondaire { margin: 12px 0 22px; }
+form { display: flex; flex-direction: column; gap: 14px; }
+.champ { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: .9rem; font-weight: 700; }
+input, select { min-width: 0; border: 1px solid var(--gris); color: var(--encre); background: var(--blanc); padding: 11px 13px; border-radius: 9px; min-height: 44px; }
+.champ input[aria-invalid="true"] { border-color: var(--rouge); }
+.erreur-champ { color: var(--rouge); font-weight: 600; }
+.duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.bouton { border: 1px solid transparent; border-radius: 10px; padding: 11px 15px; min-height: 44px; font-weight: 700; transition: background .16s; }
+.bouton.principal { background: var(--turquoise); color: var(--encre); }
+.bouton.principal:hover:not(:disabled) { background: color-mix(in srgb, var(--turquoise) 86%, var(--blanc)); }
+.bloc-auth .principal { margin-top: 7px; display: flex; align-items: center; justify-content: space-between; }
+.bouton.secondaire-bouton { background: var(--blanc); border-color: var(--gris); color: var(--encre); }
+.bouton.secondaire-bouton:hover:not(:disabled) { background: var(--gris-clair); }
+.bouton.danger { background: var(--rouge); color: var(--blanc); }
+.message { padding: 12px 15px; border-radius: 9px; margin-bottom: 14px; line-height: 1.45; }
+.message small { display: block; margin-top: 5px; }
+.message.erreur { background: #faebe5; color: #7c2b22; }
+.message.succes { background: var(--turquoise-clair); color: var(--turquoise-fonce); }
+.espace { width: min(calc(100% - 48px), 1120px); margin: 52px auto; }
+.en-tete-espace { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+.en-tete-espace h1 { font-size: clamp(2.1rem, 5vw, 4.1rem); line-height: 1.02; margin: 12px 0 9px; }
+.panneau { background: var(--blanc); border: 1px solid var(--trait); border-radius: 19px; overflow: hidden; }
+.outils { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 16px 22px; }
+.outils input { width: min(260px, 65%); }
+.compteur { font-weight: 700; }
+.table-scroll { overflow: auto; }
+table { border-collapse: collapse; width: 100%; text-align: left; }
+th { background: var(--gris-clair); font-size: .8rem; }
+th, td { padding: 14px 22px; border-bottom: 1px solid var(--trait); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td small { display: block; margin-top: 3px; color: var(--secondaire); }
+.actions { display: flex; gap: 12px; }
+.actions button { border: 0; background: transparent; font-size: .85rem; font-weight: 700; padding: 4px 0; color: var(--turquoise-fonce); }
+.actions button:hover { text-decoration: underline; }
+.actions button.danger-texte { color: var(--rouge); }
+.badge { display: inline-block; border-radius: 999px; background: var(--gris-clair); color: var(--encre); padding: 4px 10px; font-size: .77rem; font-weight: 700; }
+.badge-admin { background: var(--turquoise-clair); color: var(--turquoise-fonce); }
+.vide { padding: 26px 22px; }
+dialog { width: min(496px, calc(100% - 32px)); max-height: 90vh; padding: 25px; border: 1px solid var(--trait); border-radius: 17px; background: var(--blanc); color: var(--encre); box-shadow: 0 20px 80px #242b2b40; }
+dialog::backdrop { background: #242b2ba0; }
+dialog h2, .profil h2 { font-size: 1.75rem; }
+.actions-dialogue { display: flex; justify-content: end; flex-wrap: wrap; gap: 10px; }
+.profil { padding: 24px; max-width: 640px; }
+.profil dl { margin: 16px 0 0; }
+.profil dl > div { padding: 12px 0; border-top: 1px solid var(--trait); display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
+dt { color: var(--secondaire); font-size: .9rem; }
+dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 780px) {
+  .accueil { grid-template-columns: 1fr; margin: 24px auto; }
+  .voyage { min-height: auto; }
+  .voyage h1 { font-size: clamp(3rem, 12vw, 5.2rem); margin: 20px 0 14px; }
+  .carte-vol { width: 67%; }
+  .bloc-auth { padding: 30px; }
+}
+@media (max-width: 470px) {
+  .barre, .pied { padding-inline: 14px; }
+  .marque { width: clamp(144px, 43vw, 184px); }
+  .barre-droite > span { display: none; }
+  .accueil, .espace { width: calc(100% - 28px); }
+  .voyage, .bloc-auth { padding: 22px; border-radius: 18px; }
+  .carte-vol { display: none; }
+  .voyage-index { display: none; }
+  .en-tete-espace { align-items: start; flex-direction: column; }
+  th, td { padding: 12px 15px; }
+}

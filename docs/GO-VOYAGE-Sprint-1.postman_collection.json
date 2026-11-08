@@ -1,0 +1,708 @@
+{
+  "info": {
+    "name": "GO VOYAGE — Sprint 1",
+    "description": "Exécuter dans l’ordre avec le profil Spring dev. Le scénario crée puis supprime ses comptes temporaires.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8081"
+    },
+    {
+      "key": "adminEmail",
+      "value": "admin@gmail.com"
+    },
+    {
+      "key": "adminMotDePasse",
+      "value": "admin1234"
+    },
+    {
+      "key": "motDePasseTest",
+      "value": "VoyageTest21"
+    }
+  ],
+  "item": [
+    {
+      "name": "Inscription du voyageur",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/inscription",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "inscription"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom\": \"Scenario\",\n  \"prenom\": \"Voyage\",\n  \"email\": \"{{userEmail}}\",\n  \"tel\": \"21 123 456\",\n  \"motDePasse\": \"{{motDePasseTest}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const suffixe = pm.variables.replaceIn('{{$randomUUID}}');",
+              "pm.collectionVariables.set('userEmail', 'voyageur-' + suffixe + '@govoyage.test');",
+              "pm.collectionVariables.set('tempEmail', 'temp-' + suffixe + '@govoyage.test');"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "const compte = pm.response.json();",
+              "pm.test('Rôle USER et mot de passe masqué', () => { pm.expect(compte.role).to.eql('USER'); pm.expect(compte).not.to.have.property('password'); });",
+              "pm.collectionVariables.set('idUser', compte.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refuser un e-mail en double",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/inscription",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "inscription"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom\": \"Scenario\",\n  \"prenom\": \"Voyage\",\n  \"email\": \"{{userEmail}}\",\n  \"tel\": \"21 123 456\",\n  \"motDePasse\": \"{{motDePasseTest}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refuser les identifiants incorrects",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/connexion",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "connexion"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"motDePasse\": \"incorrect\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Connexion du voyageur",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/connexion",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "connexion"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"motDePasse\": \"{{motDePasseTest}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('jetonUser', pm.response.json().jeton);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Compte courant sans jeton",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/moi",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "moi"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consulter mon compte",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonUser}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/moi",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "moi"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('E-mail du voyageur', () => pm.expect(pm.response.json().email).to.eql(pm.collectionVariables.get('userEmail')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administration refusée au voyageur",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonUser}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', () => pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Connexion de l’administrateur",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/connexion",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "connexion"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"motDePasse\": \"{{adminMotDePasse}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const session = pm.response.json();",
+              "pm.test('Rôle ADMIN', () => pm.expect(session.utilisateur.role).to.eql('ADMIN'));",
+              "pm.collectionVariables.set('idAdmin', session.utilisateur.id);",
+              "pm.collectionVariables.set('jetonAdmin', session.jeton);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lister les comptes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonAdmin}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Le voyageur figure dans la liste', () => pm.expect(pm.response.json().some(c => c.email === pm.collectionVariables.get('userEmail'))).to.be.true);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Ajouter un administrateur temporaire",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonAdmin}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"compte\": {\n    \"nom\": \"Scenario\",\n    \"prenom\": \"Voyage\",\n    \"email\": \"{{tempEmail}}\",\n    \"tel\": \"21 123 456\",\n    \"motDePasse\": \"{{motDePasseTest}}\"\n  },\n  \"role\": \"ADMIN\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('idTemp', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Connexion de l’administrateur temporaire",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/connexion",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "connexion"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{tempEmail}}\",\n  \"motDePasse\": \"{{motDePasseTest}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.collectionVariables.set('jetonTemp', pm.response.json().jeton);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Modifier le compte et retirer le rôle ADMIN",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonAdmin}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs/{{idTemp}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs",
+            "{{idTemp}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom\": \"Modifié\",\n  \"prenom\": \"Voyage\",\n  \"email\": \"{{tempEmail}}\",\n  \"tel\": \"22 333 444\",\n  \"role\": \"USER\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Nom et rôle mis à jour', () => { const compte = pm.response.json(); pm.expect(compte.nom).to.eql('Modifié'); pm.expect(compte.role).to.eql('USER'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contrôler les droits avec l’ancien jeton ADMIN",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonTemp}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 403', () => pm.response.to.have.status(403));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refuser la suppression de son propre compte",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonAdmin}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs/{{idAdmin}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs",
+            "{{idAdmin}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supprimer le compte temporaire",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonAdmin}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs/{{idTemp}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs",
+            "{{idTemp}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Refuser le jeton du compte supprimé",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonTemp}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/moi",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "moi"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 401', () => pm.response.to.have.status(401));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nettoyer le compte voyageur du scénario",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jetonAdmin}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/admin/utilisateurs/{{idUser}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "admin",
+            "utilisateurs",
+            "{{idUser}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 204', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

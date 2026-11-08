@@ -13,13 +13,40 @@ Le Sprint 1 couvre l’inscription, la connexion JWT et le profil sur le web et 
 
 ## Démarrage sur Windows
 
-Ouvrez un terminal dans le dossier `GoVoyage`. Il vous faut un **JDK 21**, **Node.js 22**, Git et Docker Desktop ou une installation locale de PostgreSQL. Pour Android, ouvrez Android Studio et installez le SDK 36. Le premier démarrage télécharge les dépendances.
+Ouvrez un terminal dans le dossier `GoVoyage`. Le démarrage d’équipe utilise Git et Docker Desktop pour l’API et la base. Android Studio et le SDK Android 36 restent installés sur chaque poste Android.
+
+### Environnement Docker de l’équipe
+
+Démarrez Docker Desktop. Depuis la racine du dépôt, créez la configuration de développement et lancez la base et l’API.
+
+```bat
+if not exist .env copy .env.example .env
+docker compose up -d --build --wait
+docker compose ps
+```
+
+Dans PowerShell, la première ligne devient `if (!(Test-Path .env)) { Copy-Item .env.example .env }`. Ouvrez [Swagger](http://127.0.0.1:8081/swagger-ui.html) pour vérifier l’API. Flyway applique les migrations au démarrage et le profil `dev` initialise une base vide. Chaque poste a sa base et son volume Docker.
+
+| Client ou service | Adresse par défaut avec le fichier d’exemple |
+| --- | --- |
+| Backend vers PostgreSQL dans Docker | `db:5432` |
+| pgAdmin sur le PC | `127.0.0.1:55433` |
+| Navigateur et Postman | `http://127.0.0.1:8081` |
+| Application Android sur l’émulateur | `http://10.0.2.2:8081/` |
+
+Pour démarrer aussi le web, lancez `docker compose --profile web up -d --build --wait`, puis ouvrez [localhost:5173](http://localhost:5173). Si le port de l’API change dans `.env`, adaptez également `GO_VOYAGE_API_URL` dans Gradle. Après une modification de code, relancez la commande avec `--build`. `docker compose --profile web down` arrête les conteneurs et conserve la base dans son volume.
+
+Le [plan du projet mobile](docs/Plan-Mobile-Equipe.md) décrit le périmètre, les responsabilités et le scénario de démonstration.
+
+### Démarrage des composants séparés
+
+Pour lancer les composants séparément, installez un **JDK 21**, **Node.js 22**, Git et Docker Desktop ou PostgreSQL local. Le premier démarrage télécharge les dépendances.
 
 Si le terminal affiche `C:\...>`, utilisez les commandes **Invite de commandes (CMD)**. Si le prompt commence par `PS`, utilisez les commandes **PowerShell**.
 
-### 1. PostgreSQL
+#### 1. PostgreSQL
 
-**Avec Docker Desktop**, ouvrez Docker, attendez que son moteur soit prêt et lancez la commande suivante. PostgreSQL 16 écoute alors sur le port **5432**. Le volume Docker conserve les comptes.
+**Avec Docker Desktop**, ouvrez Docker, attendez que son moteur soit prêt et lancez la commande suivante. PostgreSQL 16 écoute sur le port publié par `DB_PORT`, ou sur **5432** en l’absence de configuration. Le volume Docker conserve les comptes.
 
 ```powershell
 docker compose up -d --wait db
@@ -33,9 +60,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\postgres-local.ps1
 
 Si PostgreSQL est installé en dehors de `C:\Program Files\PostgreSQL`, ajoutez `-PgBin "C:\chemin\vers\PostgreSQL\bin"`. Pour arrêter l’instance locale, relancez le script avec `-Arreter`. Pour arrêter Docker, utilisez `docker compose stop db`.
 
-### 2. Backend
+#### 2. Backend
 
-Dans un deuxième terminal, depuis la racine `GoVoyage`, sélectionnez votre JDK 21 et le profil `dev`. Remplacez le chemin d’exemple par le chemin du JDK. Gardez ce terminal ouvert. Avec Docker, remplacez le port `55432` par `5432`.
+Dans un deuxième terminal, depuis la racine `GoVoyage`, sélectionnez votre JDK 21 et le profil `dev`. Remplacez le chemin d’exemple par le chemin du JDK. Gardez ce terminal ouvert. Si PostgreSQL seul tourne dans Docker, définissez `DB_PORT` sur le port publié, `55433` avec le fichier d’équipe ou `5432` par défaut.
 
 **PowerShell**
 
@@ -66,7 +93,7 @@ L’API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Fly
 
 Ces comptes servent à la démo locale. Le profil `dev` génère une clé JWT au démarrage si `JWT_SECRET` est absent. Reconnectez-vous après un redémarrage ou un changement d’adresse e-mail. Les variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASSWORD` permettent de choisir une autre instance.
 
-### 3. Interface web
+#### 3. Interface web
 
 Dans un troisième terminal, revenez d’abord à la racine `GoVoyage`. Le dossier `web` se trouve à côté de `backend`. Ces commandes fonctionnent dans CMD et PowerShell. Attendez la fin de `npm.cmd ci` avant de lancer Vite.
 
@@ -80,7 +107,7 @@ Ouvrez [localhost:5173](http://localhost:5173). Essayez l’inscription, puis co
 
 Pour modifier l’adresse de l’API, copiez `web/.env.example` vers `web/.env`, modifiez `VITE_API_URL` et relancez Vite.
 
-### 4. Application Android
+### Application Android
 
 1. Dans Android Studio, ouvrez le dossier `mobile`. Sélectionnez le JDK 21 dans les réglages Gradle et installez le SDK Android 36.
 2. Lancez un émulateur depuis **Device Manager**. Gardez le backend ouvert sur votre PC.

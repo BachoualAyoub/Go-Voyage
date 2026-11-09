@@ -1,11 +1,15 @@
 package tn.govoyage.mobile
 
 import retrofit2.Retrofit
+import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 data class InscriptionRequest(
     val nom: String,
@@ -39,6 +43,26 @@ interface ApiVoyage {
 
     @GET("api/auth/moi")
     suspend fun moi(@Header("Authorization") autorisation: String): UtilisateurResponse
+
+    @GET("api/destinations")
+    suspend fun destinations(@Header("Authorization") autorisation: String): List<Destination>
+
+    @GET("api/circuits/modeles")
+    suspend fun modeles(@Header("Authorization") autorisation: String): List<Circuit>
+
+    @GET("api/circuits")
+    suspend fun circuits(@Header("Authorization") autorisation: String): List<Circuit>
+
+    @POST("api/circuits")
+    suspend fun creer(@Header("Authorization") autorisation: String, @Body demande: CircuitRequest): Circuit
+
+    @PUT("api/circuits/{id}")
+    suspend fun modifier(
+        @Header("Authorization") autorisation: String, @Path("id") id: Long, @Body demande: CircuitRequest
+    ): Circuit
+
+    @DELETE("api/circuits/{id}")
+    suspend fun supprimer(@Header("Authorization") autorisation: String, @Path("id") id: Long): Response<Unit>
 }
 
 /** Construit le client Retrofit pour l'adresse definie par Gradle. */

@@ -25,10 +25,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /** Propose les formulaires d'acces au compte mobile. */
 @Composable
-fun ConnexionScreen(etat: CompteViewModel) {
+fun ConnexionScreen(vm: CompteViewModel) {
+    val etat by vm.etat.collectAsStateWithLifecycle()
     Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
         Column(Modifier.fillMaxWidth().padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text("VOTRE ESPACE VOYAGE", style = MaterialTheme.typography.labelLarge)
@@ -36,21 +38,21 @@ fun ConnexionScreen(etat: CompteViewModel) {
         }
     }
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        TextButton(onClick = { etat.changerMode(false) }, enabled = !etat.chargement, modifier = Modifier.weight(1f)) {
+        TextButton(onClick = { vm.changerMode(false) }, enabled = !etat.chargement, modifier = Modifier.weight(1f)) {
             Text("Connexion", fontWeight = if (!etat.inscription) FontWeight.Bold else FontWeight.Normal)
         }
-        TextButton(onClick = { etat.changerMode(true) }, enabled = !etat.chargement, modifier = Modifier.weight(1f)) {
+        TextButton(onClick = { vm.changerMode(true) }, enabled = !etat.chargement, modifier = Modifier.weight(1f)) {
             Text("Inscription", fontWeight = if (etat.inscription) FontWeight.Bold else FontWeight.Normal)
         }
     }
     key(etat.inscription) {
-        FormulaireCompte(etat)
+        FormulaireCompte(etat, vm)
     }
 }
 
 /** Saisit les coordonnees et transmet la requete au ViewModel. */
 @Composable
-private fun FormulaireCompte(etat: CompteViewModel) {
+private fun FormulaireCompte(etat: EtatCompte, vm: CompteViewModel) {
     var prenom by remember { mutableStateOf("") }
     var nom by remember { mutableStateOf("") }
     var email by remember { mutableStateOf(etat.emailPrefere) }
@@ -82,9 +84,9 @@ private fun FormulaireCompte(etat: CompteViewModel) {
         Button(
             onClick = {
                 if (inscription) {
-                    etat.inscrire(InscriptionRequest(nom.trim(), prenom.trim(), email.trim(), tel.trim(), motDePasse))
+                    vm.inscrire(InscriptionRequest(nom.trim(), prenom.trim(), email.trim(), tel.trim(), motDePasse))
                 } else {
-                    etat.connecter(ConnexionRequest(email.trim(), motDePasse))
+                    vm.connecter(ConnexionRequest(email.trim(), motDePasse))
                 }
             },
             enabled = formulaireComplet && !etat.chargement,

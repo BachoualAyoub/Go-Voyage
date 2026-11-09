@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 
 /** Intercepte toutes les erreurs de l'API et renvoie le format { statut, message, erreurs }. */
 @RestControllerAdvice
@@ -65,6 +67,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErreurReponse> gererRequeteIllisible() {
         ErreurReponse reponse = new ErreurReponse(400, "Le format de la requete est invalide.", Map.of());
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /** Erreur metier avec statut HTTP explicite. */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErreurReponse> gererStatut(ResponseStatusException exception) {
+        ErreurReponse reponse = new ErreurReponse(exception.getStatusCode().value(), exception.getReason(), Map.of());
+        return ResponseEntity.status(exception.getStatusCode()).body(reponse);
+    }
+
+    /** Deux modifications concurrentes exigent un rechargement du circuit. */
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErreurReponse> gererConflit() {
+        ErreurReponse reponse = new ErreurReponse(409, "Ce circuit a change. Rechargez la liste.", Map.of());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(reponse);
     }
 
     /** Toute autre erreur non prevue (erreur 500). */

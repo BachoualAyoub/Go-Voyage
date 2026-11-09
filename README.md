@@ -4,11 +4,13 @@
 
 Le Sprint 1 couvre l’inscription, la connexion JWT et le profil sur le web et sur Android, ainsi que la gestion des comptes dans l’espace web administrateur.
 
+Le **Sprint 2** ajoute le catalogue des destinations et des circuits proposés, ainsi qu’un atelier pour composer ses propres itinéraires sur le web et sur Android. Le [guide du Sprint 2](docs/Sprint-2.md) détaille le parcours, les données et la démonstration.
+
 | Dossier | Contenu |
 | --- | --- |
 | `backend/` | Java 21, Spring Boot, Spring Security, Flyway, PostgreSQL |
 | `web/` | React 18, TypeScript, Vite |
-| `mobile/` | Android, Kotlin, Jetpack Compose, Retrofit |
+| `mobile/` | Android, Kotlin, Jetpack Compose, Retrofit, Room |
 | `docs/` | Documents d’origine, maquette et collection Postman |
 
 ## Démarrage sur Windows
@@ -84,7 +86,7 @@ cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-L’API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Flyway crée la table `utilisateur` à partir de la migration SQL livrée. Hibernate vérifie qu’elle correspond à l’entité Java. Le profil `dev` initialise les comptes de démonstration sur une base vide.
+L’API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Flyway crée les tables `utilisateur`, `destination`, `circuit` et `etape_circuit`, puis ajoute le catalogue de démonstration. Hibernate vérifie le schéma. Le profil `dev` initialise les comptes de démonstration sur une base vide.
 
 | Compte de démonstration | E-mail | Mot de passe |
 | --- | --- | --- |
@@ -113,7 +115,7 @@ Pour modifier l’adresse de l’API, copiez `web/.env.example` vers `web/.env`,
 2. Lancez un émulateur depuis **Device Manager**. Gardez le backend ouvert sur votre PC.
 3. Cliquez sur **Run ▶**. L’application appelle `http://10.0.2.2:8081/`, l’adresse de la boucle locale du PC vue depuis l’émulateur. [Réseau de l’émulateur Android](https://developer.android.com/studio/run/emulator-networking-address)
 
-Android permet de s’inscrire, de se connecter et de consulter son profil. L’administration est disponible dans l’interface web. Pour générer un APK de développement depuis la racine :
+Android permet de s’inscrire, de se connecter, de consulter son profil, d’explorer le catalogue et de gérer ses circuits. L’administration est disponible dans l’interface web. Pour générer un APK de développement depuis la racine, exécutez ces commandes.
 
 ```powershell
 cd mobile
@@ -139,18 +141,16 @@ cd backend
 
 ## Partager avec votre équipe sur GitHub
 
-Créez un dépôt **privé et vide** nommé `GoVoyage`. Dans le dossier du projet extrait, remplacez `VOTRE-COMPTE` par votre identifiant GitHub :
+Depuis le clone qui contient le commit du Sprint 2, publiez la branche sur le dépôt de l’équipe.
 
 ```powershell
-git init -b main
-git add .
-git status --short
-git commit -m "feat(sprint1): comptes et authentification GO VOYAGE"
-git remote add origin https://github.com/VOTRE-COMPTE/GoVoyage.git
-git push -u origin main
+git switch feat/sprint2-destinations-circuits
+git push -u origin feat/sprint2-destinations-circuits
 ```
 
-`.gitignore` exclut les dépendances installées, les fichiers compilés, les données PostgreSQL, les fichiers `.env` et les clés Android. Sur GitHub, ouvrez **Settings → Collaborators → Add people** pour inviter vos deux coéquipiers. Après acceptation, ils peuvent cloner le dépôt. [Importer le code local](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github) · [Inviter des collaborateurs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository)
+Radwen et Rayen peuvent récupérer cette branche avec `git fetch origin` puis `git switch --track origin/feat/sprint2-destinations-circuits`. Chaque poste démarre ensuite la même configuration Docker et dispose de son propre volume PostgreSQL.
+
+`.gitignore` exclut les dépendances installées, les fichiers compilés, les données PostgreSQL, les fichiers `.env` et les clés Android. Sur GitHub, ouvrez **Settings → Collaborators → Add people** pour inviter vos coéquipiers si nécessaire. [Inviter des collaborateurs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository)
 
 ## Palette Vichy
 

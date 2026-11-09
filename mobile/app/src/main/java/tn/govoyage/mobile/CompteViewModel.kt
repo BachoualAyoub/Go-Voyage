@@ -1,103 +1,87 @@
 package tn.govoyage.mobile
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import java.io.IOException
-import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-/** Etat de l'inscription et de la session mobile. */
-class CompteViewModel : ViewModel() {
-    private val api = creerApiVoyage()
-    var compte by mutableStateOf<UtilisateurResponse?>(null)
-        private set
-    var inscription by mutableStateOf(false)
-        private set
-    var emailPrefere by mutableStateOf("")
-        private set
-    var chargement by mutableStateOf(false)
-        private set
-    var message by mutableStateOf("")
-        private set
-    var erreur by mutableStateOf(false)
-        private set
+/** Etat des formulaires et de la session mobile. */
+data class EtatCompte(
+    val session: SessionLocale? = null,
+    val initialisation: Boolean = true,
+    val inscription: Boolean = false,
+    val emailPrefere: String = "",
+    val chargement: Boolean = false,
+    val message: String = "",
+    val erreur: Boolean = false
+)
 
-    /** Bascule entre les deux formulaires. */
-    fun changerMode(nouveauMode: Boolean) {
-        inscription = nouveauMode
-        message = ""
-        erreur = false
+/** Orchestre les actions du compte et observe la session locale. */
+class CompteViewModel(private val auth: AuthRepository) : ViewModel() {
+    private val _etat = MutableStateFlow(EtatCompte())
+    val etat = _etat.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            auth.session.collect { session ->
+                _etat.update { it.copy(session = session, initialisation = false) }
+            }
+        }
+        viewModelScope.launch { auth.restaurer() }
     }
 
-    /** Cree le compte, puis ramene au formulaire de connexion. */
-    fun inscrire(demande: InscriptionRequest) {
-        effectuer {
-            api.inscrire(demande)
-            emailPrefere = demande.email
-            inscription = false
+    /** Bascule entre inscription et connexion. */
+    fun changerMode(inscription: Boolean) {
+        _etat.update { it.copy(inscription = inscription, message = "", erreur = false) }
+    }
+
+    /** Cree le compte puis revient au formulaire de connexion. */
+    fun inscrire(demande: InscriptionRequest) = effectuer {
+        auth.inscrire(demande)
+        _etat.update { it.copy(
+            emailPrefere = demande.email, inscription = false,
             message = "Votre compte est créé. Vous pouvez vous connecter."
-        }
+        ) }
     }
 
-    /** Ouvre la session et verifie le compte via le jeton. */
-    fun connecter(demande: ConnexionRequest) {
-        effectuer {
-            val session = api.connecter(demande)
-            compte = api.moi("Bearer " + session.jeton)
-        }
+    /** Ouvre une session persistante. */
+    fun connecter(demande: ConnexionRequest) = effectuer {
+        auth.connecter(demande)
     }
 
-    /** Ferme la session mobile. */
-    fun deconnecter() {
-        compte = null
-        emailPrefere = ""
-        changerMode(false)
+    /** Ferme la session et efface le cache personnel. */
+    fun deconnecter() = effectuer {
+        val session = _etat.value.session ?: return@effectuer
+        auth.deconnecter(session.jeton)
+        _etat.update { EtatCompte(initialisation = false) }
     }
 
-    /** Lance une requete a la fois et affiche le resultat. */
-    private fun effectuer(requete: suspend () -> Unit) {
-        if (chargement) return
-        chargement = true
-        erreur = false
-        message = ""
+    /** Lance une action de compte a la fois. */
+    private fun effectuer(action: suspend () -> Unit) {
+        if (_etat.value.chargement) return
+        _etat.update { it.copy(chargement = true, erreur = false, message = "") }
         viewModelScope.launch {
             try {
-                requete()
-            } catch (cause: CancellationException) {
-                throw cause
+                action()
             } catch (cause: HttpException) {
-                erreur = true
-                message = lireErreur(cause)
-            } catch (cause: IOException) {
-                erreur = true
-                message = "API injoignable. Vérifiez que le backend GO VOYAGE est démarré."
-            } catch (cause: JsonParseException) {
-                erreur = true
-                message = "La réponse de l’API est illisible."
+                signaler(lireErreur(cause))
+            } catch (_: IOException) {
+                signaler("API injoignable. Vérifiez que le backend GO VOYAGE est démarré.")
+            } catch (_: JsonParseException) {
+                signaler("La réponse de l’API est illisible.")
             } finally {
-                chargement = false
+                _etat.update { it.copy(chargement = false) }
             }
         }
     }
 
-    /** Lit les messages d'erreur du backend. */
-    private fun lireErreur(cause: HttpException): String {
-        val defaut = "La requête a échoué (${cause.code()})."
-        return try {
-            val json = cause.response()?.errorBody()?.string()
-            val retour = Gson().fromJson(json, ErreurResponse::class.java)
-            val details = retour?.erreurs?.values?.joinToString("\n").orEmpty()
-            listOf(retour?.message ?: defaut, details).filter { it.isNotEmpty() }.joinToString("\n")
-        } catch (_: JsonParseException) {
-            defaut
-        } catch (_: IOException) {
-            defaut
-        }
+    /** Publie l'erreur du formulaire. */
+    private fun signaler(message: String) {
+        _etat.update { it.copy(erreur = true, message = message) }
     }
 }

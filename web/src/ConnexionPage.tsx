@@ -9,12 +9,14 @@ export function ConnexionPage({ connecter, motif, annuler }: { connecter: (sessi
   const [succes, definirSucces] = useState('');
   const [email, definirEmail] = useState('');
   const [attente, definirAttente] = useState(false);
+  const [astuce, definirAstuce] = useState(motif);
 
   /** Change de formulaire et reinitialise ses messages. */
   function choisirMode(nouveau: boolean) {
     definirInscription(nouveau);
     definirErreur(undefined);
     definirSucces('');
+    definirAstuce(undefined);
   }
 
   /** Cree un compte ou ouvre une session via l'API. */
@@ -70,7 +72,7 @@ export function ConnexionPage({ connecter, motif, annuler }: { connecter: (sessi
       </div>
       <h2 id="titre-auth">{inscription ? 'Créez votre compte' : 'Content de vous revoir.'}</h2>
       <p className="secondaire">{inscription ? 'Renseignez vos coordonnées pour rejoindre GO VOYAGE.' : 'Connectez-vous pour retrouver votre espace.'}</p>
-      {motif && <div className="message info" role="note">{motif}</div>}
+      {astuce && <div className="message info" role="note">{astuce}</div>}
       <Message erreur={erreur} enfants={succes} />
       <form key={String(inscription)} onSubmit={soumettre}>
         {inscription && <div className="duo">

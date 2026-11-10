@@ -101,11 +101,11 @@ export function App() {
       </div>
     </header>
     {profil && jeton && <nav className="nav-voyage" aria-label="Espace GO VOYAGE">
+      {profil.role === 'ADMIN' && <button aria-current={onglet === 'admin' ? 'page' : undefined}
+        onClick={() => definirSection('admin')}>Administration</button>}
       <button aria-current={onglet === 'explorer' ? 'page' : undefined} onClick={() => definirSection('explorer')}>Explorer</button>
       <button aria-current={onglet === 'circuits' ? 'page' : undefined} onClick={() => definirSection('circuits')}>Mes circuits</button>
       <button aria-current={onglet === 'profil' ? 'page' : undefined} onClick={() => definirSection('profil')}>Mon compte</button>
-      {profil.role === 'ADMIN' && <button aria-current={onglet === 'admin' ? 'page' : undefined}
-        onClick={() => definirSection('admin')}>Administration</button>}
     </nav>}
     {!jeton ? (motifConnexion === undefined ?
       <EspaceVoyage jeton={jeton} onglet="explorer" afficherCircuits={() => definirSection('circuits')}

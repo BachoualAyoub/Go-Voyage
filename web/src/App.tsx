@@ -66,16 +66,39 @@ export function App() {
     definirMotifConnexion(undefined);
   }
 
+  /** Affiche le catalogue puis amene la section demandee a l'ecran. */
+  function montrerSection(ancre: string) {
+    definirMotifConnexion(undefined);
+    definirSection('explorer');
+    amenerSection(ancre, 10);
+  }
+
+  /** Fait defiler jusqu'a la section, en attendant qu'elle soit affichee. */
+  function amenerSection(ancre: string, tentatives: number) {
+    window.setTimeout(() => {
+      const cible = document.getElementById(ancre);
+      if (cible) cible.scrollIntoView({ behavior: 'smooth' });
+      else if (tentatives > 0) amenerSection(ancre, tentatives - 1);
+    }, 120);
+  }
+
   return <div className="app">
     <header className="barre">
       <a href="#contenu" className="marque"><img src="/logo-go-voyage.png" alt="GO VOYAGE" /></a>
-      {jeton ? <div className="barre-droite">
-        {profil && <span>{profil.prenom} {profil.nom}</span>}
-        <button type="button" className="bouton secondaire-bouton" onClick={deconnecter}>Déconnexion</button>
-      </div> : <div className="barre-droite">
-        <span className="barre-note">CATALOGUE OUVERT À TOUS</span>
-        <button type="button" className="bouton secondaire-bouton" onClick={() => demanderConnexion('')}>Connexion</button>
-      </div>}
+      <div className="barre-droite">
+        <nav className="nav-catalogue" aria-label="Sections du catalogue">
+          <button type="button" onClick={() => montrerSection('destinations')}>Destinations</button>
+          <button type="button" onClick={() => montrerSection('modeles')}>Circuits proposés</button>
+        </nav>
+        {jeton ? <>
+          {profil && <button type="button" className="compte-pilule" onClick={() => definirSection('profil')}
+            title="Voir mon compte">
+            <span className="avatar-compte" aria-hidden="true">{profil.prenom.charAt(0)}</span>
+            {profil.prenom}
+          </button>}
+          <button type="button" className="bouton secondaire-bouton" onClick={deconnecter}>Déconnexion</button>
+        </> : <button type="button" className="bouton principal" onClick={() => demanderConnexion('')}>Connectez-vous</button>}
+      </div>
     </header>
     {profil && jeton && <nav className="nav-voyage" aria-label="Espace GO VOYAGE">
       <button aria-current={onglet === 'explorer' ? 'page' : undefined} onClick={() => definirSection('explorer')}>Explorer</button>

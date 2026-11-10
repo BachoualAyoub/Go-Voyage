@@ -5,8 +5,7 @@ import { EditeurCircuit } from './EditeurCircuit';
 import { Ambiance, ambiances, Circuit, CircuitDemande, Destination, dinars, normaliserRecherche } from './voyage';
 import './voyage.css';
 
-type Dialogue = { type: 'destination'; destination: Destination } |
-  { type: 'edition'; circuit?: Circuit; destination?: Destination } |
+type Dialogue = { type: 'edition'; circuit?: Circuit; destination?: Destination } |
   { type: 'suppression'; circuit: Circuit };
 type Props = { jeton: string; onglet: 'explorer' | 'circuits'; afficherCircuits: () => void; actualiser: () => void; demanderConnexion: (motif: string) => void };
 
@@ -20,7 +19,7 @@ function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir
     <ol className="trace-circuit">{circuit.etapes.map((etape, index) =>
       <li key={index}><span>{etape.nom}</span><small>{etape.jours} j</small></li>)}</ol>
     <div className="circuit-bas"><div><strong>{dinars(circuit.estimationTnd)}</strong><small> estimés</small></div>
-      <button className="bouton secondaire-bouton" type="button" onClick={ouvrir}>{circuit.modele ? 'Personnaliser ↗' : 'Modifier'}</button>
+      <button className="bouton secondaire-bouton" type="button" onClick={ouvrir}>{circuit.modele ? 'Personnaliser' : 'Modifier'}</button>
       {supprimer && <button className="texte-supprimer" type="button" onClick={supprimer}>Supprimer</button>}
     </div>
   </article>;
@@ -73,7 +72,7 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, dema
   /** Ouvre l'atelier d'itineraire, ou oriente vers la connexion le visiteur sans compte. */
   function composer(circuit?: Circuit, destination?: Destination) {
     if (!jeton) {
-      demanderConnexion('Composer un circuit demande un compte GO VOYAGE. Connectez-vous ou créez votre compte pour personnaliser cet itinéraire.');
+      demanderConnexion('Connectez-vous ou créez votre compte pour personnaliser cet itinéraire.');
       return;
     }
     ouvrir({ type: 'edition', circuit, destination });
@@ -134,7 +133,7 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, dema
           <button className="bouton secondaire-bouton" type="button" disabled={chargement || attente}
             onClick={() => definirRecharge(n => n + 1)}>Actualiser</button>
           <button className="bouton principal" type="button" disabled={chargement || !destinations.length}
-            onClick={() => composer()}>＋ Nouveau circuit</button>
+            onClick={() => composer()}>Nouveau circuit</button>
         </div>
       </header>}
     <Message erreur={erreur} enfants={succes} />
@@ -152,15 +151,17 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, dema
             <button type="button" key={ambiance} aria-pressed={filtre === ambiance} onClick={() => definirFiltre(ambiance)}>{ambiances[ambiance]}</button>)}
           <span aria-live="polite">{visibles.length} destination{visibles.length === 1 ? '' : 's'}</span>
         </div>
-        {visibles.length ? <div className="grille-destinations">{visibles.map((lieu, index) =>
+        {visibles.length ? <div className="grille-destinations">{visibles.map(lieu =>
           <article className="carte-destination" key={lieu.id}>
             <div className={'scene-destination scene-' + lieu.ambiance.toLowerCase()}>
-              <span>{ambiances[lieu.ambiance]}</span><b aria-hidden="true">{String(index + 1).padStart(2, '0')}</b></div>
+              <img src={'/destinations/' + lieu.code + '.jpg'} alt={'Photo de ' + lieu.nom} loading="lazy" />
+              <span>{ambiances[lieu.ambiance]}</span>
+            </div>
             <div className="carte-corps"><span className="voyage-etiquette">{lieu.region} · {lieu.pays}</span>
               <h3>{lieu.nom}</h3><p>{lieu.accroche}</p>
               <div><strong>{dinars(lieu.tarifJourTnd)}<small> / jour</small></strong>
-                <button type="button" className="bouton secondaire-bouton" aria-label={'Découvrir ' + lieu.nom}
-                  onClick={() => ouvrir({ type: 'destination', destination: lieu })}>Découvrir ↗</button></div>
+                <button type="button" className="bouton principal"
+                  onClick={() => composer(undefined, lieu)}>Commencer un circuit</button></div>
             </div>
           </article>)}</div> : <p className="etat-voyage">Aucune destination ne correspond. Essayez une autre recherche.</p>}
       </section>
@@ -177,16 +178,6 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, dema
     <dialog ref={modale} className={dialogue?.type === 'edition' ? 'dialogue-circuit' : 'dialogue-voyage'}
       aria-labelledby="titre-dialogue-voyage" onClose={() => definirDialogue(undefined)}
       onCancel={e => { if (attente) e.preventDefault(); }}>
-      {dialogue?.type === 'destination' && <>
-        <p className="voyage-etiquette">{dialogue.destination.region} · {dialogue.destination.pays}</p>
-        <h2 id="titre-dialogue-voyage">{dialogue.destination.nom}</h2>
-        <p>{dialogue.destination.description}</p>
-        <p><strong>{dinars(dialogue.destination.tarifJourTnd)}</strong> estimés par jour</p>
-        <div className="actions-dialogue">
-          <button className="bouton secondaire-bouton" onClick={() => modale.current?.close()}>Fermer</button>
-          <button className="bouton principal" onClick={() => composer(undefined, dialogue.destination)}>Commencer un circuit</button>
-        </div>
-      </>}
       {dialogue?.type === 'edition' && <>
         <p className="voyage-etiquette">ATELIER D’ITINÉRAIRE</p>
         <h2 id="titre-dialogue-voyage">{dialogue.circuit && !dialogue.circuit.modele ? 'Modifier le circuit' : 'Composer un circuit'}</h2>

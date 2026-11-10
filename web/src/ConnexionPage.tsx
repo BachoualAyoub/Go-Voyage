@@ -83,7 +83,7 @@ export function ConnexionPage({ connecter, motif, annuler }: { connecter: (sessi
           max={72} autocomplete={inscription ? 'new-password' : 'current-password'} erreur={erreur?.erreurs?.motDePasse} />
         {inscription && <small className="secondaire">8 caractères minimum.</small>}
         <button className="bouton principal" type="submit" disabled={attente}>
-          {attente ? 'Veuillez patienter…' : inscription ? 'Créer mon compte' : 'Me connecter'} <span aria-hidden="true">↗</span>
+          {attente ? 'Veuillez patienter…' : inscription ? 'Créer mon compte' : 'Me connecter'}
         </button>
       </form>
       {annuler && <button type="button" className="bouton secondaire-bouton lien-retour" onClick={annuler}>← Retour au catalogue</button>}

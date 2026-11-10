@@ -11,7 +11,7 @@
 .hero-explorer .voyage-etiquette { color: #c4ffef; }
 .hero-legende { position: absolute; bottom: 15px; right: 18px; font-size: .67rem; letter-spacing: .14em; background: #173337cf; border-radius: 99px; padding: 7px 10px; }
 .voyage-etiquette { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: var(--turquoise-fonce); }
-.section-voyage { margin-top: 42px; scroll-margin-top: 16px; }
+.section-voyage { margin-top: 46px; scroll-margin-top: 16px; }
 .titre-section, .titre-circuits { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
 .titre-section h2, .titre-circuits h1 { font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1; margin: 8px 0; }
 .titre-circuits { margin-block: 30px; }
@@ -23,18 +23,18 @@
 .grille-destinations, .grille-circuits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .carte-destination, .carte-circuit, .etat-voyage { border: 1px solid var(--trait); background: white; border-radius: 18px; overflow: hidden; }
 .carte-destination { display: flex; flex-direction: column; }
-.scene-destination { --scene: #19575c; position: relative; display: flex; justify-content: space-between; align-items: end; min-height: 115px; padding: 14px; color: white; overflow: hidden; background: radial-gradient(ellipse at 95% 120%, #a7e5d0 0 25%, transparent 26%), radial-gradient(ellipse at 73% 132%, #ffffff52 0 45%, transparent 46%), var(--scene); }
+.scene-destination { --scene: #19575c; position: relative; min-height: 172px; overflow: hidden; background: var(--scene); }
+.scene-destination img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.scene-destination span { position: absolute; top: 12px; left: 12px; z-index: 1; background: #163532e6; padding: 6px 10px; border-radius: 99px; font-size: .75rem; font-weight: 700; color: white; }
 .scene-culture { --scene: #446067; }
 .scene-nature { --scene: #405445; }
 .scene-mer { --scene: #0b6b68; }
-.scene-destination span { background: #163532e6; padding: 6px 10px; border-radius: 99px; font-size: .75rem; font-weight: 700; }
-.scene-destination b { font-family: var(--titre); font-size: 3.5rem; line-height: .8; color: #f0fff5aa; letter-spacing: -.06em; }
-.carte-corps { display: flex; flex: 1; flex-direction: column; padding: 16px; gap: 7px; }
+.carte-corps { display: flex; flex: 1; flex-direction: column; padding: 18px; gap: 8px; }
 .carte-corps h3, .carte-circuit h3 { font-family: var(--titre); font-size: 1.5rem; line-height: 1.05; margin: 2px 0; }
 .carte-corps p { color: var(--secondaire); flex: 1; }
 .carte-corps > div, .circuit-bas { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
 .carte-corps small, .circuit-bas small { color: var(--secondaire); font-weight: 400; }
-.carte-circuit { display: flex; flex-direction: column; gap: 8px; padding: 17px; }
+.carte-circuit { display: flex; flex-direction: column; gap: 8px; padding: 18px; }
 .circuit-entete { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
 .circuit-entete > span:last-child { font-size: .76rem; white-space: nowrap; color: var(--secondaire); }
 .trace-circuit { list-style: none; margin: 5px 0; padding: 0 0 0 13px; border-left: 1px solid var(--turquoise); flex: 1; }
@@ -45,14 +45,13 @@
 .etat-voyage { padding: 22px; color: var(--secondaire); margin-block: 14px; }
 .dialogue-voyage h2, .dialogue-circuit h2 { margin: 6px 0 15px; }
 .dialogue-voyage p { margin-bottom: 12px; }
-.dialogue-circuit { width: min(930px, calc(100% - 24px)); }
-.plan-grille { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 16px; }
-.plan-champs { min-width: 0; display: grid; gap: 11px; align-content: start; }
+.dialogue-circuit { width: min(760px, calc(100% - 24px)); }
+.plan-champs { min-width: 0; display: grid; gap: 12px; align-content: start; }
 .plan-titre { display: flex; justify-content: space-between; align-items: center; }
 .plan-titre h3 { margin: 0; }
 .plan-titre span { color: var(--secondaire); }
-.liste-etapes { list-style: none; display: grid; gap: 7px; padding: 0; margin: 0; }
-.plan-etape { display: grid; grid-template-columns: auto minmax(0, 1fr) 66px auto; align-items: center; gap: 8px; border: 1px solid var(--trait); border-radius: 12px; padding: 8px; }
+.liste-etapes { list-style: none; display: grid; gap: 8px; padding: 0; margin: 0; }
+.plan-etape { display: grid; grid-template-columns: auto minmax(0, 1fr) 66px auto; align-items: center; gap: 9px; border: 1px solid var(--trait); border-radius: 12px; padding: 9px; }
 .numero-etape { align-self: center; background: var(--turquoise-clair); color: var(--turquoise-fonce); font-weight: 800; padding: 7px; border-radius: 8px; }
 .plan-etape small { display: block; color: var(--secondaire); }
 .mini-champ { font-size: .72rem; }
@@ -61,20 +60,13 @@
 .plan-actions button { border: 1px solid var(--trait); background: var(--fond); color: var(--encre); min-width: 31px; min-height: 36px; border-radius: 7px; font-weight: 700; }
 .ajout-etape { display: flex; gap: 8px; }
 .ajout-etape select { flex: 1; min-width: 0; }
-.plan-estimation { background: var(--turquoise-clair); border-radius: 14px; padding: 16px; display: grid; gap: 9px; align-content: start; }
-.plan-montant { font-family: var(--titre); font-size: 2rem; letter-spacing: -.05em; }
-.plan-estimation small { color: var(--secondaire); }
-.plan-estimation progress { display: block; width: 100%; accent-color: var(--turquoise-fonce); margin: 4px 0; }
-.budget-hors { color: var(--rouge); font-weight: 700; }
-.budget-hors progress { accent-color: var(--rouge); }
-.budget-ok { color: var(--turquoise-fonce); font-weight: 700; }
 @media (max-width: 900px) { .grille-destinations, .grille-circuits { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 680px) {
   .voyage-main, .nav-voyage { width: calc(100% - 28px); }
   .hero-explorer { min-height: 350px; background-position: 60% center; }
   .titre-section, .titre-circuits { align-items: start; flex-direction: column; gap: 8px; }
   .recherche-voyage, .recherche-voyage input { width: 100%; }
-  .grille-destinations, .grille-circuits, .plan-grille { grid-template-columns: 1fr; }
+  .grille-destinations, .grille-circuits { grid-template-columns: 1fr; }
   .plan-etape { grid-template-columns: auto minmax(0, 1fr) 60px; }
   .plan-actions { grid-column: 2 / -1; }
 }

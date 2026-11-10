@@ -1,0 +1,5 @@
+# Garder les scripts Linux executables dans les conteneurs depuis un clone Windows.
+backend/mvnw text eol=lf
+mobile/gradlew text eol=lf
+**/Dockerfile text eol=lf
+docker-compose.yml text eol=lf

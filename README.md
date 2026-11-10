@@ -4,22 +4,51 @@
 
 Le Sprint 1 couvre l’inscription, la connexion JWT et le profil sur le web et sur Android, ainsi que la gestion des comptes dans l’espace web administrateur.
 
+Le **Sprint 2** ajoute le catalogue des destinations et des circuits proposés, ainsi qu’un atelier pour composer ses propres itinéraires sur le web et sur Android. Le [guide du Sprint 2](docs/Sprint-2.md) détaille le parcours, les données et la démonstration.
+
 | Dossier | Contenu |
 | --- | --- |
 | `backend/` | Java 21, Spring Boot, Spring Security, Flyway, PostgreSQL |
 | `web/` | React 18, TypeScript, Vite |
-| `mobile/` | Android, Kotlin, Jetpack Compose, Retrofit |
+| `mobile/` | Android, Kotlin, Jetpack Compose, Retrofit, Room |
 | `docs/` | Documents d’origine, maquette et collection Postman |
 
 ## Démarrage sur Windows
 
-Ouvrez un terminal dans le dossier `GoVoyage`. Il vous faut un **JDK 21**, **Node.js 22**, Git et Docker Desktop ou une installation locale de PostgreSQL. Pour Android, ouvrez Android Studio et installez le SDK 36. Le premier démarrage télécharge les dépendances.
+Ouvrez un terminal dans le dossier `GoVoyage`. Le démarrage d’équipe utilise Git et Docker Desktop pour l’API et la base. Android Studio et le SDK Android 36 restent installés sur chaque poste Android.
+
+### Environnement Docker de l’équipe
+
+Démarrez Docker Desktop. Depuis la racine du dépôt, créez la configuration de développement et lancez la base et l’API.
+
+```bat
+if not exist .env copy .env.example .env
+docker compose up -d --build --wait
+docker compose ps
+```
+
+Dans PowerShell, la première ligne devient `if (!(Test-Path .env)) { Copy-Item .env.example .env }`. Ouvrez [Swagger](http://127.0.0.1:8081/swagger-ui.html) pour vérifier l’API. Flyway applique les migrations au démarrage et le profil `dev` initialise une base vide. Chaque poste a sa base et son volume Docker.
+
+| Client ou service | Adresse par défaut avec le fichier d’exemple |
+| --- | --- |
+| Backend vers PostgreSQL dans Docker | `db:5432` |
+| pgAdmin sur le PC | `127.0.0.1:55433` |
+| Navigateur et Postman | `http://127.0.0.1:8081` |
+| Application Android sur l’émulateur | `http://10.0.2.2:8081/` |
+
+Pour démarrer aussi le web, lancez `docker compose --profile web up -d --build --wait`, puis ouvrez [localhost:5173](http://localhost:5173). Si le port de l’API change dans `.env`, adaptez également `GO_VOYAGE_API_URL` dans Gradle. Après une modification de code, relancez la commande avec `--build`. `docker compose --profile web down` arrête les conteneurs et conserve la base dans son volume.
+
+Le [plan du projet mobile](docs/Plan-Mobile-Equipe.md) décrit le périmètre, les responsabilités et le scénario de démonstration.
+
+### Démarrage des composants séparés
+
+Pour lancer les composants séparément, installez un **JDK 21**, **Node.js 22**, Git et Docker Desktop ou PostgreSQL local. Le premier démarrage télécharge les dépendances.
 
 Si le terminal affiche `C:\...>`, utilisez les commandes **Invite de commandes (CMD)**. Si le prompt commence par `PS`, utilisez les commandes **PowerShell**.
 
-### 1. PostgreSQL
+#### 1. PostgreSQL
 
-**Avec Docker Desktop**, ouvrez Docker, attendez que son moteur soit prêt et lancez la commande suivante. PostgreSQL 16 écoute alors sur le port **5432**. Le volume Docker conserve les comptes.
+**Avec Docker Desktop**, ouvrez Docker, attendez que son moteur soit prêt et lancez la commande suivante. PostgreSQL 16 écoute sur le port publié par `DB_PORT`, ou sur **5432** en l’absence de configuration. Le volume Docker conserve les comptes.
 
 ```powershell
 docker compose up -d --wait db
@@ -33,9 +62,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\postgres-local.ps1
 
 Si PostgreSQL est installé en dehors de `C:\Program Files\PostgreSQL`, ajoutez `-PgBin "C:\chemin\vers\PostgreSQL\bin"`. Pour arrêter l’instance locale, relancez le script avec `-Arreter`. Pour arrêter Docker, utilisez `docker compose stop db`.
 
-### 2. Backend
+#### 2. Backend
 
-Dans un deuxième terminal, depuis la racine `GoVoyage`, sélectionnez votre JDK 21 et le profil `dev`. Remplacez le chemin d’exemple par le chemin du JDK. Gardez ce terminal ouvert. Avec Docker, remplacez le port `55432` par `5432`.
+Dans un deuxième terminal, depuis la racine `GoVoyage`, sélectionnez votre JDK 21 et le profil `dev`. Remplacez le chemin d’exemple par le chemin du JDK. Gardez ce terminal ouvert. Si PostgreSQL seul tourne dans Docker, définissez `DB_PORT` sur le port publié, `55433` avec le fichier d’équipe ou `5432` par défaut.
 
 **PowerShell**
 
@@ -57,7 +86,7 @@ cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
-L’API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Flyway crée la table `utilisateur` à partir de la migration SQL livrée. Hibernate vérifie qu’elle correspond à l’entité Java. Le profil `dev` initialise les comptes de démonstration sur une base vide.
+L’API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Flyway crée les tables `utilisateur`, `destination`, `circuit` et `etape_circuit`, puis ajoute le catalogue de démonstration. Hibernate vérifie le schéma. Le profil `dev` initialise les comptes de démonstration sur une base vide.
 
 | Compte de démonstration | E-mail | Mot de passe |
 | --- | --- | --- |
@@ -66,7 +95,7 @@ L’API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Fly
 
 Ces comptes servent à la démo locale. Le profil `dev` génère une clé JWT au démarrage si `JWT_SECRET` est absent. Reconnectez-vous après un redémarrage ou un changement d’adresse e-mail. Les variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER` et `DB_PASSWORD` permettent de choisir une autre instance.
 
-### 3. Interface web
+#### 3. Interface web
 
 Dans un troisième terminal, revenez d’abord à la racine `GoVoyage`. Le dossier `web` se trouve à côté de `backend`. Ces commandes fonctionnent dans CMD et PowerShell. Attendez la fin de `npm.cmd ci` avant de lancer Vite.
 
@@ -80,13 +109,13 @@ Ouvrez [localhost:5173](http://localhost:5173). Essayez l’inscription, puis co
 
 Pour modifier l’adresse de l’API, copiez `web/.env.example` vers `web/.env`, modifiez `VITE_API_URL` et relancez Vite.
 
-### 4. Application Android
+### Application Android
 
 1. Dans Android Studio, ouvrez le dossier `mobile`. Sélectionnez le JDK 21 dans les réglages Gradle et installez le SDK Android 36.
 2. Lancez un émulateur depuis **Device Manager**. Gardez le backend ouvert sur votre PC.
 3. Cliquez sur **Run ▶**. L’application appelle `http://10.0.2.2:8081/`, l’adresse de la boucle locale du PC vue depuis l’émulateur. [Réseau de l’émulateur Android](https://developer.android.com/studio/run/emulator-networking-address)
 
-Android permet de s’inscrire, de se connecter et de consulter son profil. L’administration est disponible dans l’interface web. Pour générer un APK de développement depuis la racine :
+Android permet de s’inscrire, de se connecter, de consulter son profil, d’explorer le catalogue et de gérer ses circuits. L’administration est disponible dans l’interface web. Pour générer un APK de développement depuis la racine, exécutez ces commandes.
 
 ```powershell
 cd mobile
@@ -112,18 +141,16 @@ cd backend
 
 ## Partager avec votre équipe sur GitHub
 
-Créez un dépôt **privé et vide** nommé `GoVoyage`. Dans le dossier du projet extrait, remplacez `VOTRE-COMPTE` par votre identifiant GitHub :
+Depuis le clone qui contient le commit du Sprint 2, publiez la branche sur le dépôt de l’équipe.
 
 ```powershell
-git init -b main
-git add .
-git status --short
-git commit -m "feat(sprint1): comptes et authentification GO VOYAGE"
-git remote add origin https://github.com/VOTRE-COMPTE/GoVoyage.git
-git push -u origin main
+git switch feat/sprint2-destinations-circuits
+git push -u origin feat/sprint2-destinations-circuits
 ```
 
-`.gitignore` exclut les dépendances installées, les fichiers compilés, les données PostgreSQL, les fichiers `.env` et les clés Android. Sur GitHub, ouvrez **Settings → Collaborators → Add people** pour inviter vos deux coéquipiers. Après acceptation, ils peuvent cloner le dépôt. [Importer le code local](https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github) · [Inviter des collaborateurs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository)
+Radwen et Rayen peuvent récupérer cette branche avec `git fetch origin` puis `git switch --track origin/feat/sprint2-destinations-circuits`. Chaque poste démarre ensuite la même configuration Docker et dispose de son propre volume PostgreSQL.
+
+`.gitignore` exclut les dépendances installées, les fichiers compilés, les données PostgreSQL, les fichiers `.env` et les clés Android. Sur GitHub, ouvrez **Settings → Collaborators → Add people** pour inviter vos coéquipiers si nécessaire. [Inviter des collaborateurs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/repository-access-and-collaboration/inviting-collaborators-to-a-personal-repository)
 
 ## Palette Vichy
 

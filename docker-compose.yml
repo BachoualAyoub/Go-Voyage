@@ -1,21 +1,61 @@
-# Base de donnees PostgreSQL 16 de la plateforme GO Voyage
+# Environnement de developpement partage de GO Voyage
 services:
   db:
     image: postgres:16
-    container_name: govoyage-db
     environment:
-      POSTGRES_DB: govoyage
-      POSTGRES_USER: govoyage
-      POSTGRES_PASSWORD: govoyage
+      POSTGRES_DB: ${DB_NAME:-govoyage}
+      POSTGRES_USER: ${DB_USER:-govoyage}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-govoyage}
     ports:
       - "127.0.0.1:${DB_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U govoyage -d govoyage"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 3s
       timeout: 3s
       retries: 15
     volumes:
       - govoyage_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_ADDRESS: "0.0.0.0"
+      SERVER_PORT: "8081"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-govoyage}
+      DB_USER: ${DB_USER:-govoyage}
+      DB_PASSWORD: ${DB_PASSWORD:-govoyage}
+      CORS_ORIGINS: "http://localhost:${WEB_PORT:-5173},http://127.0.0.1:${WEB_PORT:-5173}"
+    ports:
+      - "127.0.0.1:${API_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "-o", "/dev/null", "http://127.0.0.1:8081/v3/api-docs"]
+      interval: 5s
+      timeout: 5s
+      start_period: 25s
+      retries: 15
+
+  web:
+    profiles: [web]
+    build: ./web
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      VITE_API_URL: "http://127.0.0.1:${API_PORT:-8081}"
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:5173"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5173/').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 5s
+      timeout: 5s
+      start_period: 10s
+      retries: 10
 
 volumes:
   govoyage_data:

@@ -20,12 +20,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -33,6 +37,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 
 /** Applique les couleurs Vichy aux roles de Material 3. */
 @Composable
@@ -62,33 +71,60 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { MaterialTheme(colorScheme = paletteVichy()) { EspaceVoyage() } }
+        val app = application as GoVoyageApplication
+        setContent { MaterialTheme(colorScheme = paletteVichy()) { EspaceVoyage(app) } }
     }
 }
 
 /** Choisit l'ecran selon l'etat de connexion. */
 @Composable
-private fun EspaceVoyage(etat: CompteViewModel = viewModel()) {
+private fun EspaceVoyage(app: GoVoyageApplication) {
+    val compte: CompteViewModel = viewModel(factory = viewModelFactory { initializer { CompteViewModel(app.auth) } })
+    val etat by compte.etat.collectAsStateWithLifecycle()
     Scaffold(contentWindowInsets = WindowInsets.safeDrawing) { marge ->
         Box(
             modifier = Modifier.fillMaxSize().padding(marge),
             contentAlignment = Alignment.TopCenter
         ) {
-            Column(
-                modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth()
-                    .verticalScroll(rememberScrollState()).padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.logo_go_voyage),
-                    contentDescription = "GO VOYAGE",
-                    modifier = Modifier.width(200.dp).height(65.dp)
-                )
-                val compte = etat.compte
-                if (compte == null) ConnexionScreen(etat)
-                else ProfilScreen(compte, etat::deconnecter)
+            val session = etat.session
+            when {
+                etat.initialisation -> CircularProgressIndicator(Modifier.padding(top = 40.dp))
+                session == null -> AccesCompte(compte)
+                else -> EspaceConnecte(app, session, compte::deconnecter)
             }
         }
+    }
+}
+
+/** Garde l'etat du voyage isole pour la session active. */
+@Composable
+private fun EspaceConnecte(app: GoVoyageApplication, session: SessionLocale, deconnecter: () -> Unit) {
+    val store = remember(session.jeton) {
+        object : ViewModelStoreOwner {
+            override val viewModelStore = ViewModelStore()
+        }
+    }
+    DisposableEffect(store) { onDispose { store.viewModelStore.clear() } }
+    val voyage: VoyageViewModel = viewModel(viewModelStoreOwner = store, factory = viewModelFactory {
+        initializer { VoyageViewModel(app.destinations, app.circuits, app.auth, session) }
+    })
+    VoyageScreen(voyage) { ProfilScreen(session.compte, deconnecter) }
+}
+
+/** Conserve la page de connexion du Sprint 1. */
+@Composable
+private fun AccesCompte(compte: CompteViewModel) {
+    Column(
+        modifier = Modifier.widthIn(max = 560.dp).fillMaxWidth()
+            .verticalScroll(rememberScrollState()).padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Image(
+            painter = painterResource(R.drawable.logo_go_voyage),
+            contentDescription = "GO VOYAGE",
+            modifier = Modifier.width(200.dp).height(65.dp)
+        )
+        ConnexionScreen(compte)
     }
 }
 

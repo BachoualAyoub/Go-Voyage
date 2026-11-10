@@ -3,6 +3,7 @@ import { api, autorisation, erreurApi, ErreurApi, Profil, Session } from './api'
 import { AdministrationPage } from './AdministrationPage';
 import { ConnexionPage } from './ConnexionPage';
 import { Message } from './ChampsCompte';
+import { EspaceVoyage } from './EspaceVoyage';
 
 const cleSession = 'govoyage.jeton';
 
@@ -11,6 +12,9 @@ export function App() {
   const [jeton, definirJeton] = useState(() => sessionStorage.getItem(cleSession) ?? '');
   const [profil, definirProfil] = useState<Profil>();
   const [erreur, definirErreur] = useState<ErreurApi>();
+  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin'>();
+  const onglet = section === 'admin' && profil?.role !== 'ADMIN' ? 'explorer' :
+    section ?? (profil?.role === 'ADMIN' ? 'admin' : 'explorer');
 
   /** Ferme la session dans cet onglet. */
   const deconnecter = useCallback(() => {
@@ -18,6 +22,7 @@ export function App() {
     definirJeton('');
     definirProfil(undefined);
     definirErreur(undefined);
+    definirSection(undefined);
   }, []);
 
   /** Verifie la session et le role actuel. */
@@ -56,14 +61,23 @@ export function App() {
         <button type="button" className="bouton secondaire-bouton" onClick={deconnecter}>Déconnexion</button>
       </div> : <span className="barre-note">VOTRE ESPACE VOYAGE</span>}
     </header>
+    {profil && jeton && <nav className="nav-voyage" aria-label="Espace GO VOYAGE">
+      <button aria-current={onglet === 'explorer' ? 'page' : undefined} onClick={() => definirSection('explorer')}>Explorer</button>
+      <button aria-current={onglet === 'circuits' ? 'page' : undefined} onClick={() => definirSection('circuits')}>Mes circuits</button>
+      <button aria-current={onglet === 'profil' ? 'page' : undefined} onClick={() => definirSection('profil')}>Mon compte</button>
+      {profil.role === 'ADMIN' && <button aria-current={onglet === 'admin' ? 'page' : undefined}
+        onClick={() => definirSection('admin')}>Administration</button>}
+    </nav>}
     {!jeton ? <ConnexionPage connecter={connecter} /> :
       erreur ? <main className="espace" id="contenu">
         <Message erreur={erreur} />
         <button className="bouton secondaire-bouton" onClick={() => actualiser()}>Réessayer</button>
       </main> :
       !profil ? <main className="espace" id="contenu"><p role="status">Vérification de votre session…</p></main> :
-      profil.role === 'ADMIN' ?
+      onglet === 'admin' ?
         <AdministrationPage jeton={jeton} admin={profil} actualiser={actualiser} /> :
+      onglet !== 'profil' ?
+        <EspaceVoyage jeton={jeton} onglet={onglet} actualiser={actualiser} afficherCircuits={() => definirSection('circuits')} /> :
         <main className="espace" id="contenu">
           <div className="en-tete-espace"><div>
             <p className="surtitre"><i /> ESPACE VOYAGEUR</p>
@@ -76,7 +90,7 @@ export function App() {
               <div><dt>Nom complet</dt><dd>{profil.prenom} {profil.nom}</dd></div>
               <div><dt>Adresse e-mail</dt><dd>{profil.email}</dd></div>
               <div><dt>Téléphone</dt><dd>{profil.tel}</dd></div>
-              <div><dt>Rôle</dt><dd><span className="badge">Utilisateur</span></dd></div>
+              <div><dt>Rôle</dt><dd><span className="badge">{profil.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur'}</span></dd></div>
             </dl>
           </section>
         </main>}

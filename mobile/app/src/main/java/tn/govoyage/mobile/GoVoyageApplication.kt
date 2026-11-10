@@ -1,0 +1,13 @@
+package tn.govoyage.mobile
+
+import android.app.Application
+import androidx.room.Room
+
+/** Partage le client et la base privee durant la vie de l'application. */
+class GoVoyageApplication : Application() {
+    private val api by lazy { creerApiVoyage() }
+    private val base by lazy { Room.databaseBuilder(this, BaseVoyage::class.java, "go-voyage.db").build() }
+    val auth by lazy { AuthRepository(api, base) }
+    val destinations by lazy { DestinationRepository(api, base) }
+    val circuits by lazy { CircuitRepository(api, base) }
+}

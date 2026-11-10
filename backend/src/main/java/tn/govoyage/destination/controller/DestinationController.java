@@ -1,7 +1,6 @@
 package tn.govoyage.destination.controller;
 
 import java.util.List;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,10 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import tn.govoyage.destination.dto.DestinationResponse;
 import tn.govoyage.destination.service.DestinationService;
 
-/** Routes de consultation du catalogue. */
+/** Routes de consultation du catalogue, ouvertes a tous. */
 @RestController
 @RequestMapping("/api/destinations")
-@SecurityRequirement(name = "jeton")
 public class DestinationController {
     private final DestinationService destinations;
 

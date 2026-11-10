@@ -7,12 +7,13 @@ import { EspaceVoyage } from './EspaceVoyage';
 
 const cleSession = 'govoyage.jeton';
 
-/** Affiche l'espace correspondant au role confirme par le serveur. */
+/** Affiche le catalogue public, puis l'espace du role confirme par le serveur. */
 export function App() {
   const [jeton, definirJeton] = useState(() => sessionStorage.getItem(cleSession) ?? '');
   const [profil, definirProfil] = useState<Profil>();
   const [erreur, definirErreur] = useState<ErreurApi>();
   const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin'>();
+  const [motifConnexion, definirMotifConnexion] = useState<string>();
   const onglet = section === 'admin' && profil?.role !== 'ADMIN' ? 'explorer' :
     section ?? (profil?.role === 'ADMIN' ? 'admin' : 'explorer');
 
@@ -23,6 +24,7 @@ export function App() {
     definirProfil(undefined);
     definirErreur(undefined);
     definirSection(undefined);
+    definirMotifConnexion(undefined);
   }, []);
 
   /** Verifie la session et le role actuel. */
@@ -51,6 +53,17 @@ export function App() {
     sessionStorage.setItem(cleSession, session.jeton);
     definirProfil(session.utilisateur);
     definirJeton(session.jeton);
+    definirMotifConnexion(undefined);
+  }
+
+  /** Presente le formulaire de connexion, avec le motif d'une operation demandee. */
+  function demanderConnexion(motif: string) {
+    definirMotifConnexion(motif);
+  }
+
+  /** Retourne au catalogue public sans se connecter. */
+  function annulerConnexion() {
+    definirMotifConnexion(undefined);
   }
 
   return <div className="app">
@@ -59,7 +72,10 @@ export function App() {
       {jeton ? <div className="barre-droite">
         {profil && <span>{profil.prenom} {profil.nom}</span>}
         <button type="button" className="bouton secondaire-bouton" onClick={deconnecter}>Déconnexion</button>
-      </div> : <span className="barre-note">VOTRE ESPACE VOYAGE</span>}
+      </div> : <div className="barre-droite">
+        <span className="barre-note">CATALOGUE OUVERT À TOUS</span>
+        <button type="button" className="bouton secondaire-bouton" onClick={() => demanderConnexion('')}>Connexion</button>
+      </div>}
     </header>
     {profil && jeton && <nav className="nav-voyage" aria-label="Espace GO VOYAGE">
       <button aria-current={onglet === 'explorer' ? 'page' : undefined} onClick={() => definirSection('explorer')}>Explorer</button>
@@ -68,7 +84,10 @@ export function App() {
       {profil.role === 'ADMIN' && <button aria-current={onglet === 'admin' ? 'page' : undefined}
         onClick={() => definirSection('admin')}>Administration</button>}
     </nav>}
-    {!jeton ? <ConnexionPage connecter={connecter} /> :
+    {!jeton ? (motifConnexion === undefined ?
+      <EspaceVoyage jeton={jeton} onglet="explorer" afficherCircuits={() => definirSection('circuits')}
+        actualiser={actualiser} demanderConnexion={demanderConnexion} /> :
+      <ConnexionPage connecter={connecter} motif={motifConnexion} annuler={annulerConnexion} />) :
       erreur ? <main className="espace" id="contenu">
         <Message erreur={erreur} />
         <button className="bouton secondaire-bouton" onClick={() => actualiser()}>Réessayer</button>
@@ -77,7 +96,8 @@ export function App() {
       onglet === 'admin' ?
         <AdministrationPage jeton={jeton} admin={profil} actualiser={actualiser} /> :
       onglet !== 'profil' ?
-        <EspaceVoyage jeton={jeton} onglet={onglet} actualiser={actualiser} afficherCircuits={() => definirSection('circuits')} /> :
+        <EspaceVoyage jeton={jeton} onglet={onglet} actualiser={actualiser}
+          afficherCircuits={() => definirSection('circuits')} demanderConnexion={demanderConnexion} /> :
         <main className="espace" id="contenu">
           <div className="en-tete-espace"><div>
             <p className="surtitre"><i /> ESPACE VOYAGEUR</p>

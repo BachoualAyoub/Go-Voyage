@@ -30,7 +30,7 @@ class CircuitControllerTest {
     /** Verifie les modeles et le rejet des etapes hors du catalogue. */
     @Test
     void consulteLeCatalogueEtValideLesEtapes() throws Exception {
-        mvc.perform(get("/api/destinations")).andExpect(status().isUnauthorized());
+        mvc.perform(get("/api/destinations")).andExpect(status().isOk());
         String jeton = connecter("catalogue.sprint2@mail.tn");
         mvc.perform(get("/api/destinations").header("Authorization", jeton))
                 .andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(8)));

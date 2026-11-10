@@ -3,7 +3,7 @@ import { api, erreurApi, ErreurApi, Session } from './api';
 import { Champ, lireCoordonnees, Message } from './ChampsCompte';
 
 /** Affiche l'inscription et la connexion sur une meme page. */
-export function ConnexionPage({ connecter }: { connecter: (session: Session) => void }) {
+export function ConnexionPage({ connecter, motif, annuler }: { connecter: (session: Session) => void; motif?: string; annuler?: () => void }) {
   const [inscription, definirInscription] = useState(false);
   const [erreur, definirErreur] = useState<ErreurApi>();
   const [succes, definirSucces] = useState('');
@@ -70,6 +70,7 @@ export function ConnexionPage({ connecter }: { connecter: (session: Session) => 
       </div>
       <h2 id="titre-auth">{inscription ? 'Créez votre compte' : 'Content de vous revoir.'}</h2>
       <p className="secondaire">{inscription ? 'Renseignez vos coordonnées pour rejoindre GO VOYAGE.' : 'Connectez-vous pour retrouver votre espace.'}</p>
+      {motif && <div className="message info" role="note">{motif}</div>}
       <Message erreur={erreur} enfants={succes} />
       <form key={String(inscription)} onSubmit={soumettre}>
         {inscription && <div className="duo">
@@ -85,6 +86,7 @@ export function ConnexionPage({ connecter }: { connecter: (session: Session) => 
           {attente ? 'Veuillez patienter…' : inscription ? 'Créer mon compte' : 'Me connecter'} <span aria-hidden="true">↗</span>
         </button>
       </form>
+      {annuler && <button type="button" className="bouton secondaire-bouton lien-retour" onClick={annuler}>← Retour au catalogue</button>}
     </section>
   </main>;
 }

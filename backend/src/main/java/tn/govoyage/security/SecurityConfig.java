@@ -2,6 +2,7 @@ package tn.govoyage.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,7 +36,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /** Definit qui a le droit d'appeler quoi : public, connexion, ADMIN, reste connecte. */
+    /** Definit qui a le droit d'appeler quoi : catalogue en lecture, connexion, ADMIN, reste connecte. */
     @Bean
     public SecurityFilterChain chaineSecurite(HttpSecurity http) throws Exception {
         http
@@ -45,6 +46,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/inscription", "/api/auth/connexion").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/destinations/**", "/api/circuits/modeles").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .exceptionHandling(exceptions -> exceptions

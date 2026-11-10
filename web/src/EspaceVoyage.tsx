@@ -8,7 +8,7 @@ import './voyage.css';
 type Dialogue = { type: 'destination'; destination: Destination } |
   { type: 'edition'; circuit?: Circuit; destination?: Destination } |
   { type: 'suppression'; circuit: Circuit };
-type Props = { jeton: string; onglet: 'explorer' | 'circuits'; afficherCircuits: () => void; actualiser: () => void };
+type Props = { jeton: string; onglet: 'explorer' | 'circuits'; afficherCircuits: () => void; actualiser: () => void; demanderConnexion: (motif: string) => void };
 
 /** Affiche un circuit du catalogue ou du compte, avec ses actions. */
 function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir: () => void; supprimer?: () => void }) {
@@ -26,8 +26,8 @@ function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir
   </article>;
 }
 
-/** Charge le catalogue, les inspirations et les circuits personnels. */
-export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser }: Props) {
+/** Charge le catalogue public et, si connecte, les inspirations et les circuits personnels. */
+export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, demanderConnexion }: Props) {
   const [destinations, definirDestinations] = useState<Destination[]>([]);
   const [modeles, definirModeles] = useState<Circuit[]>([]);
   const [circuits, definirCircuits] = useState<Circuit[]>([]);
@@ -44,14 +44,17 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser }: Pr
 
   useEffect(() => {
     const controle = new AbortController();
-    const config = { ...autorisation(jeton), signal: controle.signal };
+    const config = jeton ? { ...autorisation(jeton), signal: controle.signal } : { signal: controle.signal };
     definirChargement(true);
     definirErreur(undefined);
+    // Un visiteur sans compte consulte le catalogue public : jamais l'appel aux circuits personnels.
+    const mesCircuits = jeton ? api.get<Circuit[]>('/api/circuits', config) : Promise.resolve(undefined);
     Promise.all([api.get<Destination[]>('/api/destinations', config),
-      api.get<Circuit[]>('/api/circuits/modeles', config), api.get<Circuit[]>('/api/circuits', config)])
+      api.get<Circuit[]>('/api/circuits/modeles', config), mesCircuits])
       .then(([catalogue, inspirations, personnels]) => {
         if (controle.signal.aborted) return;
-        definirDestinations(catalogue.data); definirModeles(inspirations.data); definirCircuits(personnels.data);
+        definirDestinations(catalogue.data); definirModeles(inspirations.data);
+        if (personnels) definirCircuits(personnels.data);
       }).catch(cause => {
         if (controle.signal.aborted) return;
         const retour = erreurApi(cause); definirErreur(retour);
@@ -66,6 +69,15 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser }: Pr
 
   /** Ouvre une action avec son propre etat d'erreur. */
   function ouvrir(action: Dialogue) { definirErreurDialogue(undefined); definirDialogue(action); }
+
+  /** Ouvre l'atelier d'itineraire, ou oriente vers la connexion le visiteur sans compte. */
+  function composer(circuit?: Circuit, destination?: Destination) {
+    if (!jeton) {
+      demanderConnexion('Composer un circuit demande un compte GO VOYAGE. Connectez-vous ou créez votre compte pour personnaliser cet itinéraire.');
+      return;
+    }
+    ouvrir({ type: 'edition', circuit, destination });
+  }
 
   /** Met a jour la liste locale apres une reponse reussie. */
   async function enregistrer(demande: CircuitDemande) {
@@ -122,7 +134,7 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser }: Pr
           <button className="bouton secondaire-bouton" type="button" disabled={chargement || attente}
             onClick={() => definirRecharge(n => n + 1)}>Actualiser</button>
           <button className="bouton principal" type="button" disabled={chargement || !destinations.length}
-            onClick={() => ouvrir({ type: 'edition' })}>＋ Nouveau circuit</button>
+            onClick={() => composer()}>＋ Nouveau circuit</button>
         </div>
       </header>}
     <Message erreur={erreur} enfants={succes} />
@@ -155,12 +167,12 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser }: Pr
       <section className="section-voyage" id="modeles"><div className="titre-section"><div><p className="voyage-etiquette">02 · CIRCUITS PROPOSÉS</p>
         <h2>Des idées de départ</h2></div></div>
         <div className="grille-circuits">{modeles.map(circuit => <CarteCircuit key={circuit.id} circuit={circuit}
-          ouvrir={() => ouvrir({ type: 'edition', circuit })} />)}</div>
+          ouvrir={() => composer(circuit)} />)}</div>
       </section>
     </> : <section aria-label="Circuits personnels">
       {!circuits.length ? <p className="etat-voyage">Votre carnet est vide. Créez un circuit ou personnalisez une inspiration du catalogue.</p> :
         <div className="grille-circuits">{circuits.map(circuit => <CarteCircuit key={circuit.id} circuit={circuit}
-          ouvrir={() => ouvrir({ type: 'edition', circuit })} supprimer={() => ouvrir({ type: 'suppression', circuit })} />)}</div>}
+          ouvrir={() => composer(circuit)} supprimer={() => ouvrir({ type: 'suppression', circuit })} />)}</div>}
     </section>)}
     <dialog ref={modale} className={dialogue?.type === 'edition' ? 'dialogue-circuit' : 'dialogue-voyage'}
       aria-labelledby="titre-dialogue-voyage" onClose={() => definirDialogue(undefined)}
@@ -172,7 +184,7 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser }: Pr
         <p><strong>{dinars(dialogue.destination.tarifJourTnd)}</strong> estimés par jour</p>
         <div className="actions-dialogue">
           <button className="bouton secondaire-bouton" onClick={() => modale.current?.close()}>Fermer</button>
-          <button className="bouton principal" onClick={() => ouvrir({ type: 'edition', destination: dialogue.destination })}>Commencer un circuit</button>
+          <button className="bouton principal" onClick={() => composer(undefined, dialogue.destination)}>Commencer un circuit</button>
         </div>
       </>}
       {dialogue?.type === 'edition' && <>

@@ -79,6 +79,8 @@ input, select { min-width: 0; border: 1px solid var(--gris); color: var(--encre)
 .message small { display: block; margin-top: 5px; }
 .message.erreur { background: #faebe5; color: #7c2b22; }
 .message.succes { background: var(--turquoise-clair); color: var(--turquoise-fonce); }
+.message.info { background: var(--turquoise-clair); color: var(--encre); border-left: 4px solid var(--turquoise); }
+.bloc-auth .lien-retour { margin-top: 14px; }
 .espace { width: min(calc(100% - 48px), 1120px); margin: 52px auto; }
 .en-tete-espace { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
 .en-tete-espace h1 { font-size: clamp(2.1rem, 5vw, 4.1rem); line-height: 1.02; margin: 12px 0 9px; }

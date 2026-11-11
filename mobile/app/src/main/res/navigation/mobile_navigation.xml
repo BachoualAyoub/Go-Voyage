@@ -9,7 +9,14 @@
         android:id="@+id/nav_home"
         android:name="tn.govoyage.mobile.ui.home.HomeFragment"
         android:label="@string/menu_explorer"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_nav_destination_detail"
+            app:destination="@id/nav_destination_detail" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_circuit_detail"
+            app:destination="@id/nav_circuit_detail" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_circuits"
@@ -22,5 +29,17 @@
         android:name="tn.govoyage.mobile.ui.compte.CompteFragment"
         android:label="@string/menu_compte"
         tools:layout="@layout/fragment_compte" />
+
+    <fragment
+        android:id="@+id/nav_destination_detail"
+        android:name="tn.govoyage.mobile.ui.destination.DestinationDetailFragment"
+        android:label="@string/titre_detail_destination"
+        tools:layout="@layout/fragment_destination_detail" />
+
+    <fragment
+        android:id="@+id/nav_circuit_detail"
+        android:name="tn.govoyage.mobile.ui.circuit.CircuitDetailFragment"
+        android:label="@string/titre_detail_circuit"
+        tools:layout="@layout/fragment_circuit_detail" />
 
 </navigation>

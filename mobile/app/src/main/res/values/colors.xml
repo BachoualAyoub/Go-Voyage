@@ -10,4 +10,6 @@
     <color name="palette_turquoise_fonce">#0A6558</color>
     <color name="palette_fond">#F8F9F9</color>
     <color name="palette_gris_clair">#ECEDED</color>
+    <color name="palette_banniere_fond">#E0092928</color>
+    <color name="palette_banniere_texte">#8FF0E3</color>
 </resources>

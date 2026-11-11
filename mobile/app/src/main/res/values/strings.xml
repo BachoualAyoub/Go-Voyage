@@ -39,6 +39,39 @@
     <string name="deconnexion_oui">Oui</string>
     <string name="deconnexion_non">Non</string>
 
+    <string name="item_circuit_voir_modele">Voir le modèle</string>
+    <string name="item_circuit_voir_circuit">Voir le circuit</string>
+    <string name="item_circuit_modifier">Modifier</string>
+    <string name="item_circuit_supprimer">Supprimer</string>
+
+    <!-- Ecran Explorer. -->
+    <string name="banniere_surtitre">ESCALE EN TUNISIE</string>
+    <string name="banniere_titre">La Tunisie, à votre rythme.</string>
+    <string name="banniere_texte">Du littoral aux dunes, composez votre voyage.</string>
+    <string name="description_banniere">Côte de Sidi Bou Saïd</string>
+    <string name="chip_destinations">Destinations</string>
+    <string name="chip_modeles">Circuits proposés</string>
+    <string name="explorer_titre_destinations">Où partir ?</string>
+    <string name="explorer_recherche">Chercher une destination</string>
+    <string name="explorer_filtre_toutes">Toutes</string>
+    <string name="explorer_filtre_mer">Bord de mer</string>
+    <string name="explorer_filtre_culture">Culture</string>
+    <string name="explorer_filtre_nature">Nature</string>
+    <string name="explorer_aucune">Aucune destination trouvée. Essayez une autre recherche.</string>
+    <string name="explorer_titre_modeles">Idées de départ</string>
+    <string name="explorer_texte_modeles">Choisissez un circuit et adaptez-le à votre rythme.</string>
+    <string name="bouton_reessayer">Réessayer</string>
+    <string name="chargement_en_cours">Chargement…</string>
+
+    <!-- Fiche destination. -->
+    <string name="fiche_destination_creer_circuit">Créer un circuit</string>
+    <string name="fiche_destination_tarif_jour">TND par jour (indicatif)</string>
+    <string name="fiche_bouton_fermer">Fermer</string>
+
+    <!-- Fiche circuit. -->
+    <string name="fiche_circuit_budget">Budget cible : %1$d TND</string>
+    <string name="fiche_circuit_jours_estimes">%1$d jours · %2$d TND estimés</string>
+
     <!-- Ecrans provisoires du squelette (remplaces phase par phase). -->
     <string name="titre_explorer">Explorer</string>
     <string name="titre_circuits">Mes circuits</string>

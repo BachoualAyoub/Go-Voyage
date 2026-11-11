@@ -20,7 +20,7 @@ L'application Android reprend l'essentiel : inscription, connexion, profil, cata
 | --- | --- |
 | `backend/` | Java 21, Spring Boot 3, Spring Security (JWT), Flyway, PostgreSQL |
 | `web/` | React 18, TypeScript, Vite, axios |
-| `mobile/` | Android, Kotlin, Jetpack Compose, Retrofit, Room |
+| `mobile/` | Android, Kotlin, Fragments + XML (MVVM, ViewBinding, LiveData), Retrofit, Room |
 | `docs/` | Documents d'origine, maquette, collection Postman, guides de sprint |
 | `scripts/` | Script d'instance PostgreSQL isolée (optionnel) |
 
@@ -126,6 +126,8 @@ cd mobile
 ```
 
 L'APK apparaît dans `mobile/app/build/outputs/apk/debug/`.
+
+L'application suit l'architecture MVVM vue en cours : écrans en **Fragments/Activities** (XML + ViewBinding) avec un **Drawer** latéral, **ViewModels** exposant des **LiveData**, **repositories** séparés (`AuthRepository`, `DestinationRepository`, `CircuitRepository`) et session en **Room**. La connexion et l'inscription sont deux Activities (`LoginActivity`, `RegisterActivity`) ; l'espace de voyage est hébergé par `MainActivity` avec la navigation Fragments (`mobile_navigation.xml`). Le détail de la migration Compose → Fragments se trouve dans `mobile/MIGRATION_PLAN.md` et `mobile/RAPPORT_MIGRATION.md`.
 
 ## Comptes de démonstration
 

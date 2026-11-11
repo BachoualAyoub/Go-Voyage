@@ -10,6 +10,35 @@
     <string name="menu_compte">Mon compte</string>
     <string name="menu_deconnexion">Déconnexion</string>
 
+    <!-- Ecran de connexion. -->
+    <string name="login_surtitre">VOTRE ESPACE VOYAGE</string>
+    <string name="login_titre">Le départ, c’est ici.</string>
+    <string name="login_email">Adresse e-mail</string>
+    <string name="login_password">Mot de passe</string>
+    <string name="login_bouton">Me connecter</string>
+    <string name="login_vers_inscription">Pas encore de compte ? Créez-en un</string>
+    <string name="login_champs_vides">Veuillez remplir tous les champs</string>
+    <string name="login_message_cree">Votre compte est créé. Vous pouvez vous connecter.</string>
+
+    <!-- Ecran d'inscription. -->
+    <string name="register_titre">Créez votre compte</string>
+    <string name="register_prenom">Prénom</string>
+    <string name="register_nom">Nom</string>
+    <string name="register_email">Adresse e-mail</string>
+    <string name="register_tel">Téléphone</string>
+    <string name="register_password">Mot de passe</string>
+    <string name="register_password_indication">8 caractères minimum.</string>
+    <string name="register_password_court">Le mot de passe doit contenir 8 caractères minimum.</string>
+    <string name="register_bouton">Créer mon compte</string>
+    <string name="register_patientez">Veuillez patienter…</string>
+    <string name="register_champs_vides">Veuillez remplir tous les champs</string>
+
+    <!-- Confirmation de deconnexion. -->
+    <string name="deconnexion_titre">Confirmation de déconnexion</string>
+    <string name="deconnexion_message">Êtes-vous sûr de vouloir vous déconnecter et quitter votre session ?</string>
+    <string name="deconnexion_oui">Oui</string>
+    <string name="deconnexion_non">Non</string>
+
     <!-- Ecrans provisoires du squelette (remplaces phase par phase). -->
     <string name="titre_explorer">Explorer</string>
     <string name="titre_circuits">Mes circuits</string>

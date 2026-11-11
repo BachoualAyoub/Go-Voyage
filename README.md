@@ -118,6 +118,28 @@ Pour viser une autre API, copiez `web/.env.example` vers `web/.env`, ajustez `VI
 2. Lancez un émulateur depuis **Device Manager**, avec le backend démarré sur le PC.
 3. Cliquez sur **Run ▶** : l'application appelle par défaut `http://10.0.2.2:8081/`, l'adresse du PC vue depuis l'émulateur (modifiable via la propriété Gradle `GO_VOYAGE_API_URL`).
 
+Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
+
+1. Démarrez le backend sur toutes les interfaces réseau :
+
+   ```powershell
+   cd backend
+   $env:SERVER_ADDRESS = "0.0.0.0"
+   $env:SPRING_PROFILES_ACTIVE = "dev"
+   .\mvnw.cmd spring-boot:run
+   ```
+
+2. Relevez l'adresse IPv4 du PC (`ipconfig`) et, si Windows le demande, autorisez le port 8081 pour le profil réseau en cours.
+3. Compilez avec cette adresse, puis installez l'APK sur le téléphone :
+
+   ```powershell
+   cd mobile
+   .\gradlew.bat :app:assembleDebug -PGO_VOYAGE_API_URL=http://192.168.1.4:8081/
+   adb install -r app\build\outputs\apk\debug\app-debug.apk
+   ```
+
+Le téléphone et le PC doivent être sur le même sous-réseau ; l'application de développement autorise le HTTP en clair (`src/debug/AndroidManifest.xml`).
+
 Pour générer un APK de développement :
 
 ```powershell

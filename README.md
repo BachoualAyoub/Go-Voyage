@@ -116,7 +116,7 @@ Pour viser une autre API, copiez `web/.env.example` vers `web/.env`, ajustez `VI
 
 1. Dans Android Studio, ouvrez le dossier `mobile` (JDK 21 dans les réglages Gradle, SDK Android 36).
 2. Lancez un émulateur depuis **Device Manager**, avec le backend démarré sur le PC.
-3. Cliquez sur **Run ▶** : l'application appelle par défaut `http://10.0.2.2:8081/`, l'adresse du PC vue depuis l'émulateur (modifiable via la propriété Gradle `GO_VOYAGE_API_URL`).
+3. Cliquez sur **Run ▶** : l'application appelle par défaut `http://10.0.2.2:8081/`, l'adresse du PC vue depuis l'émulateur. La propriété Gradle `GO_VOYAGE_API_URL` permet de viser une autre adresse.
 
 Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
 
@@ -139,6 +139,14 @@ Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
    ```
 
 Le téléphone et le PC doivent être sur le même sous-réseau ; l'application de développement autorise le HTTP en clair (`src/debug/AndroidManifest.xml`).
+
+Pour que **Run ▶** vise directement l'adresse LAN (téléphone physique comme émulateur), ajoutez une fois pour toutes la propriété dans le fichier Gradle de la machine, `%USERPROFILE%\.gradle\gradle.properties` :
+
+```properties
+GO_VOYAGE_API_URL=http://192.168.1.4:8081/
+```
+
+Sans cette propriété, Android Studio recompile avec `10.0.2.2`, une adresse qui n'existe que dans l'émulateur. Pensez à mettre à jour l'adresse si l'IP du PC change.
 
 Pour générer un APK de développement :
 

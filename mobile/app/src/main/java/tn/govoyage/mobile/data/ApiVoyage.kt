@@ -1,5 +1,11 @@
-package tn.govoyage.mobile
+package tn.govoyage.mobile.data
 
+import tn.govoyage.mobile.model.Circuit
+import tn.govoyage.mobile.model.CircuitRequest
+import tn.govoyage.mobile.model.Destination
+import tn.govoyage.mobile.model.EtapeRequest
+import tn.govoyage.mobile.model.UtilisateurResponse
+import tn.govoyage.mobile.BuildConfig
 import retrofit2.Retrofit
 import retrofit2.Response
 import retrofit2.converter.gson.GsonConverterFactory
@@ -20,15 +26,6 @@ data class InscriptionRequest(
 )
 
 data class ConnexionRequest(val email: String, val motDePasse: String)
-
-data class UtilisateurResponse(
-    val id: Long,
-    val nom: String,
-    val prenom: String,
-    val email: String,
-    val tel: String,
-    val role: String
-)
 
 data class ConnexionResponse(val jeton: String, val utilisateur: UtilisateurResponse)
 data class ErreurResponse(val message: String?, val erreurs: Map<String, String>?)

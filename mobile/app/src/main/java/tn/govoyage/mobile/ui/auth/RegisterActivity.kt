@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import tn.govoyage.mobile.GoVoyageApplication
-import tn.govoyage.mobile.InscriptionRequest
 import tn.govoyage.mobile.R
+import tn.govoyage.mobile.data.InscriptionRequest
 import tn.govoyage.mobile.databinding.ActivityRegisterBinding
 import tn.govoyage.mobile.viewModel.AuthViewModel
 

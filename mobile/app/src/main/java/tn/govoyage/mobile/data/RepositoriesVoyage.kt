@@ -1,4 +1,4 @@
-package tn.govoyage.mobile
+package tn.govoyage.mobile.data
 
 import androidx.room.withTransaction
 import com.google.gson.Gson
@@ -6,6 +6,9 @@ import com.google.gson.JsonParseException
 import java.io.IOException
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
+import tn.govoyage.mobile.model.Circuit
+import tn.govoyage.mobile.model.CircuitRequest
+import tn.govoyage.mobile.model.Destination
 
 /** Gere les appels d'authentification et la persistance de la session. */
 class AuthRepository(private val api: ApiVoyage, private val base: BaseVoyage) {

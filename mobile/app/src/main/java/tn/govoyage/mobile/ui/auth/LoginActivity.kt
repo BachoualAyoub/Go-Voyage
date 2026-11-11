@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.activity.viewModels
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import tn.govoyage.mobile.ConnexionRequest
+import tn.govoyage.mobile.data.ConnexionRequest
 import tn.govoyage.mobile.GoVoyageApplication
 import tn.govoyage.mobile.MainActivity
 import tn.govoyage.mobile.R

@@ -8,11 +8,11 @@ import com.google.gson.JsonParseException
 import java.io.IOException
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
-import tn.govoyage.mobile.AuthRepository
-import tn.govoyage.mobile.ConnexionRequest
-import tn.govoyage.mobile.InscriptionRequest
-import tn.govoyage.mobile.SessionLocale
-import tn.govoyage.mobile.lireErreur
+import tn.govoyage.mobile.data.AuthRepository
+import tn.govoyage.mobile.data.ConnexionRequest
+import tn.govoyage.mobile.data.InscriptionRequest
+import tn.govoyage.mobile.data.SessionLocale
+import tn.govoyage.mobile.data.lireErreur
 
 /** Etat des formulaires d'authentification. */
 data class EtatAuth(

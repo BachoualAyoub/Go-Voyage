@@ -2,6 +2,11 @@ package tn.govoyage.mobile
 
 import android.app.Application
 import androidx.room.Room
+import tn.govoyage.mobile.data.AuthRepository
+import tn.govoyage.mobile.data.BaseVoyage
+import tn.govoyage.mobile.data.CircuitRepository
+import tn.govoyage.mobile.data.DestinationRepository
+import tn.govoyage.mobile.data.creerApiVoyage
 
 /** Partage le client et la base privee durant la vie de l'application. */
 class GoVoyageApplication : Application() {

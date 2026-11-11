@@ -1,4 +1,4 @@
-package tn.govoyage.mobile
+package tn.govoyage.mobile.data
 
 import androidx.room.Dao
 import androidx.room.Database
@@ -13,6 +13,10 @@ import androidx.room.RoomDatabase
 import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import tn.govoyage.mobile.model.Circuit
+import tn.govoyage.mobile.model.Destination
+import tn.govoyage.mobile.model.EtapeCircuit
+import tn.govoyage.mobile.model.UtilisateurResponse
 
 /** Session active, conservee dans le stockage prive de l'application. */
 @Entity(tableName = "session")

@@ -176,6 +176,15 @@ La migration ne supprime aucune fonctionnalité existante ; elle n'en ajoute auc
    ( chips = simples boutons/selectables Material, sans lib hors cours).
 6. **Restauration rapide au démarrage** : `LoginActivity` fait une lecture Room directe du jeton
    (petite méthode supplémentaire `suspend` dans `AuthRepository`, sans toucher au reste).
+7. **Complément de la Phase 3** : `@Parcelize` sur `UtilisateurResponse` (utilisée en `@Embedded`
+   par Room) a été essayé puis retiré : la combinaison plugin `kotlin-parcelize` + KSP Room
+   produit une erreur `MissingType` sur cette toolchain (AGP 9 Kotlin intégré). Comme aucune
+   navigation par Intent ne transporte l'utilisateur (session en Room, décision 3), la classe
+   reste une data class simple ; le plugin n'est pas appliqué.
+8. **Complément de la Phase 3** : les fichiers Compose (`*Screen.kt`, anciens ViewModels
+   StateFlow, `ModelesVoyage.kt`) ont été supprimés dès la Phase 3 : devenus du code mort (plus
+   référencés par `MainActivity` depuis la Phase 1) et bloqués par les changements de package et
+   la conversion StateFlow→LiveData. La Phase 5 se limite donc à Gradle, aux imports et au README.
 
 ## 11. Phases suivantes et vérification
 

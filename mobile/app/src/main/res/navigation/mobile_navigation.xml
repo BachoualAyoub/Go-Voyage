@@ -22,7 +22,14 @@
         android:id="@+id/nav_circuits"
         android:name="tn.govoyage.mobile.ui.circuit.CircuitsFragment"
         android:label="@string/menu_circuits"
-        tools:layout="@layout/fragment_circuits" />
+        tools:layout="@layout/fragment_circuits">
+        <action
+            android:id="@+id/action_nav_circuits_to_nav_circuit_detail"
+            app:destination="@id/nav_circuit_detail" />
+        <action
+            android:id="@+id/action_nav_circuits_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_compte"
@@ -34,12 +41,31 @@
         android:id="@+id/nav_destination_detail"
         android:name="tn.govoyage.mobile.ui.destination.DestinationDetailFragment"
         android:label="@string/titre_detail_destination"
-        tools:layout="@layout/fragment_destination_detail" />
+        tools:layout="@layout/fragment_destination_detail">
+        <action
+            android:id="@+id/action_nav_destination_detail_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_circuit_detail"
         android:name="tn.govoyage.mobile.ui.circuit.CircuitDetailFragment"
         android:label="@string/titre_detail_circuit"
-        tools:layout="@layout/fragment_circuit_detail" />
+        tools:layout="@layout/fragment_circuit_detail">
+        <action
+            android:id="@+id/action_nav_circuit_detail_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_editeur_circuit"
+        android:name="tn.govoyage.mobile.ui.circuit.EditeurCircuitFragment"
+        android:label="@string/titre_editeur_circuit"
+        tools:layout="@layout/fragment_editeur_circuit">
+        <action
+            android:id="@+id/action_nav_editeur_circuit_to_nav_circuits"
+            app:destination="@id/nav_circuits"
+            app:popUpTo="@id/nav_home" />
+    </fragment>
 
 </navigation>

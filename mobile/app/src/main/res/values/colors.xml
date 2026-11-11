@@ -12,4 +12,5 @@
     <color name="palette_gris_clair">#ECEDED</color>
     <color name="palette_banniere_fond">#E0092928</color>
     <color name="palette_banniere_texte">#8FF0E3</color>
+    <color name="palette_erreur">#B3261E</color>
 </resources>

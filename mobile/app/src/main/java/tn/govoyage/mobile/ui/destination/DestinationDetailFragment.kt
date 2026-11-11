@@ -8,7 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.fragment.findNavController
 import tn.govoyage.mobile.GoVoyageApplication
+import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentDestinationDetailBinding
 import tn.govoyage.mobile.viewModel.VoyageViewModel
 
@@ -51,7 +53,15 @@ class DestinationDetailFragment : Fragment() {
             // Retour a l'ecran precedent.
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-        // Le bouton « Créer un circuit » s'active avec l'editeur (phase suivante).
+        voyageViewModel.destinations.observe(viewLifecycleOwner) { liste ->
+            // Un circuit a besoin d'au moins une destination du catalogue.
+            binding.boutonCreerCircuit.visibility = if (liste.isEmpty()) View.GONE else View.VISIBLE
+        }
+        binding.boutonCreerCircuit.setOnClickListener {
+            voyageViewModel.selectCircuit(null)
+            // L'editeur part de la destination selectionnee.
+            findNavController().navigate(R.id.action_nav_destination_detail_to_nav_editeur_circuit)
+        }
     }
 
     override fun onDestroyView() {

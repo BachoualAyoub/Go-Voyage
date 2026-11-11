@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.circuit.EditeurCircuitFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/texteTitreEditeur"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/editeur_titre_creation"
+            android:textColor="@color/palette_encre"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/boutonFermerEditeur"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/editeur_bouton_fermer"
+            android:textColor="@color/palette_turquoise_fonce" />
+    </LinearLayout>
+
+    <!-- Bilan instantane de la composition. -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="@color/palette_gris_clair"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <TextView
+                android:id="@+id/texteBilanSurtitre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editeur_bilan_surtitre"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/texteBilanTotaux"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/palette_encre"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/barreBudget"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:progressTint="@color/palette_turquoise_fonce"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/texteBilanMarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/editNomCircuit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/editeur_nom"
+                android:inputType="text"
+                android:maxLength="90"
+                android:minHeight="48dp" />
+
+            <EditText
+                android:id="@+id/editBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:hint="@string/editeur_budget"
+                android:inputType="number"
+                android:maxLength="7"
+                android:minHeight="48dp" />
+
+            <TextView
+                android:id="@+id/texteErreurBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editeur_budget_erreur"
+                android:textColor="@color/palette_turquoise_fonce"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/texteTitreEtapes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/editeur_titre_etapes"
+                android:textColor="@color/palette_encre"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/texteEtapesVides"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/editeur_etapes_vides" />
+
+            <LinearLayout
+                android:id="@+id/listeEtapesEditeur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/boutonAjouterEtape"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/editeur_ajouter_etape"
+                android:textColor="@color/palette_turquoise_fonce" />
+
+            <TextView
+                android:id="@+id/texteLimite"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/editeur_limite"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/texteJoursExcessifs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/editeur_jours_excessifs"
+                android:textColor="@color/palette_turquoise_fonce"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/texteErreurEditeur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/palette_turquoise_fonce" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/boutonEnregistrer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/palette_turquoise_fonce"
+        android:text="@string/editeur_enregistrer"
+        android:textColor="@color/palette_blanc" />
+</LinearLayout>

@@ -44,6 +44,51 @@
     <string name="item_circuit_modifier">Modifier</string>
     <string name="item_circuit_supprimer">Supprimer</string>
 
+    <!-- Ecran Mes circuits. -->
+    <string name="circuits_titre">Mes circuits</string>
+    <string name="circuits_sous_titre">Retrouvez vos itinéraires sur le web et sur votre téléphone.</string>
+    <string name="bouton_nouveau_circuit">+ Nouveau circuit</string>
+    <string name="bouton_actualiser_circuits">Actualiser mes circuits</string>
+    <string name="circuits_carnet_vide">Votre carnet est encore vide. Créez un circuit ou partez d’un modèle dans Explorer.</string>
+
+    <!-- Confirmation de suppression d'un circuit. -->
+    <string name="suppression_titre">Supprimer ce circuit ?</string>
+    <string name="suppression_message">« %1$s » sera retiré de votre carnet.</string>
+    <string name="suppression_oui">Supprimer</string>
+    <string name="suppression_non">Annuler</string>
+
+    <!-- Editeur de circuit. -->
+    <string name="editeur_titre_creation">Composer un circuit</string>
+    <string name="editeur_titre_modification">Modifier le circuit</string>
+    <string name="editeur_bouton_fermer">Fermer</string>
+    <string name="editeur_bilan_surtitre">VOTRE ESTIMATION</string>
+    <string name="editeur_bilan_marge">%1$d TND de marge</string>
+    <string name="editeur_bilan_depassement">%1$d TND au-dessus du budget</string>
+    <string name="editeur_bilan_tarifs">Tarifs indicatifs par destination.</string>
+    <string name="editeur_nom">Nom du circuit</string>
+    <string name="editeur_budget">Budget cible en TND (facultatif)</string>
+    <string name="editeur_budget_erreur">Entrez un budget entre 1 et 1 000 000 TND.</string>
+    <string name="editeur_titre_etapes">Vos étapes</string>
+    <string name="editeur_etapes_vides">Ajoutez votre première destination.</string>
+    <string name="editeur_etape_jours">Jours à cette étape</string>
+    <string name="editeur_etape_retirer">Retirer</string>
+    <string name="editeur_etape_monter">Monter l’étape %1$d</string>
+    <string name="editeur_etape_descendre">Descendre l’étape %1$d</string>
+    <string name="editeur_fleche_monter">↑</string>
+    <string name="editeur_fleche_descendre">↓</string>
+    <string name="editeur_ajouter_etape">+ Ajouter une étape</string>
+    <string name="editeur_etape_ajout_tarif">%1$s · %2$d TND/j</string>
+    <string name="editeur_limite">1 à 30 jours par étape · 10 étapes et 60 jours maximum.</string>
+    <string name="editeur_jours_excessifs">Ramenez la durée à 60 jours maximum.</string>
+    <string name="editeur_destination_indisponible">Destination indisponible</string>
+    <string name="editeur_enregistrer">Enregistrer le circuit</string>
+    <string name="editeur_patientez">Veuillez patienter…</string>
+    <string name="fiche_destination_creer_circuit">Créer un circuit</string>
+
+    <!-- Fiche circuit : bouton d'edition. -->
+    <string name="fiche_circuit_personnaliser">Personnaliser</string>
+    <string name="fiche_circuit_modifier">Modifier</string>
+
     <!-- Ecran Explorer. -->
     <string name="banniere_surtitre">ESCALE EN TUNISIE</string>
     <string name="banniere_titre">La Tunisie, à votre rythme.</string>
@@ -64,7 +109,6 @@
     <string name="chargement_en_cours">Chargement…</string>
 
     <!-- Fiche destination. -->
-    <string name="fiche_destination_creer_circuit">Créer un circuit</string>
     <string name="fiche_destination_tarif_jour">TND par jour (indicatif)</string>
     <string name="fiche_bouton_fermer">Fermer</string>
 

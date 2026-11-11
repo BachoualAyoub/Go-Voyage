@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.fragment.findNavController
 import tn.govoyage.mobile.GoVoyageApplication
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentCircuitDetailBinding
@@ -59,13 +60,22 @@ class CircuitDetailFragment : Fragment() {
                     binding.texteFicheCircuitBudget.visibility = View.GONE
                 }
                 remplirEtapes(circuit)
-                // Le bouton « Personnaliser / Modifier » s'active avec l'editeur (phase suivante).
+                binding.boutonPersonnaliser.text = if (circuit.modele) {
+                    getString(R.string.fiche_circuit_personnaliser)
+                } else {
+                    getString(R.string.fiche_circuit_modifier)
+                }
+                binding.boutonPersonnaliser.visibility = View.VISIBLE
             }
         }
         binding.boutonFermerCircuit.setOnClickListener {
             voyageViewModel.selectCircuit(null)
             // Retour a l'ecran precedent.
             requireActivity().onBackPressedDispatcher.onBackPressed()
+        }
+        binding.boutonPersonnaliser.setOnClickListener {
+            // L'editeur part du circuit selectionne.
+            findNavController().navigate(R.id.action_nav_circuit_detail_to_nav_editeur_circuit)
         }
     }
 

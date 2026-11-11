@@ -58,7 +58,9 @@ class VoyageViewModel(
             auth.session.collect { sessionOuverte ->
                 if (sessionOuverte != null && session == null) {
                     session = sessionOuverte
-                    chargerCircuits(sessionOuverte.compte.id)
+                    // L'observation du carnet est un flux continu : elle ne doit pas
+                    // bloquer le chargement distant qui suit.
+                    viewModelScope.launch { chargerCircuits(sessionOuverte.compte.id) }
                     actualiser()
                 }
             }

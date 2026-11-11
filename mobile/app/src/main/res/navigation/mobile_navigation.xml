@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="tn.govoyage.mobile.ui.home.HomeFragment"
+        android:label="@string/menu_explorer"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_circuits"
+        android:name="tn.govoyage.mobile.ui.circuit.CircuitsFragment"
+        android:label="@string/menu_circuits"
+        tools:layout="@layout/fragment_circuits" />
+
+    <fragment
+        android:id="@+id/nav_compte"
+        android:name="tn.govoyage.mobile.ui.compte.CompteFragment"
+        android:label="@string/menu_compte"
+        tools:layout="@layout/fragment_compte" />
+
+</navigation>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Textes generaux. -->
+    <string name="app_name">GO VOYAGE</string>
+    <string name="description_logo">GO VOYAGE</string>
+
+    <!-- Menu du tiroir lateral. -->
+    <string name="menu_explorer">Explorer</string>
+    <string name="menu_circuits">Mes circuits</string>
+    <string name="menu_compte">Mon compte</string>
+    <string name="menu_deconnexion">Déconnexion</string>
+
+    <!-- Ecrans provisoires du squelette (remplaces phase par phase). -->
+    <string name="titre_explorer">Explorer</string>
+    <string name="titre_circuits">Mes circuits</string>
+    <string name="titre_compte">Mon compte</string>
+    <string name="titre_detail_destination">Fiche destination</string>
+    <string name="titre_detail_circuit">Fiche circuit</string>
+    <string name="titre_editeur_circuit">Éditeur de circuit</string>
+</resources>

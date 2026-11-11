@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme Vichy de l'application, base AppCompat comme dans les TP. -->
+    <style name="Theme.GoVoyage" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/palette_turquoise_fonce</item>
+        <item name="colorOnPrimary">@color/palette_blanc</item>
+        <item name="colorPrimaryDark">@color/palette_turquoise_fonce</item>
+        <item name="colorAccent">@color/palette_turquoise</item>
+        <item name="android:colorBackground">@color/palette_fond</item>
+        <item name="android:statusBarColor">@color/palette_turquoise_fonce</item>
+        <item name="android:windowBackground">@color/palette_fond</item>
+    </style>
+
+    <!-- Superposition de la barre d'application. -->
+    <style name="Theme.GoVoyage.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">@color/palette_blanc</item>
+    </style>
+
+    <!-- Superposition des menus surgissants. -->
+    <style name="Theme.GoVoyage.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

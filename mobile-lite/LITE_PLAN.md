@@ -57,3 +57,79 @@ second compte de démo : `sarra@govoyage.tn` / `sarra123` (rôle USER).
 ## Rapport final
 
 Voir la section « Rapport final » en bas de ce document (complétée après le build).
+
+---
+
+# Rapport final (mission LITE, terminée)
+
+## Arborescence livrée
+
+```
+mobile-lite/
+  settings.gradle.kts · build.gradle.kts · gradle.properties · gradlew(.bat)
+  gradle/wrapper/ (copié de mobile/) · .gitignore · local.properties (non committé)
+  README.md (comptes de démo) · LITE_PLAN.md (ce document)
+  app/build.gradle.kts          → viewBinding, AGP 9.1.0, deps = liste fermée du cours
+  app/src/main/AndroidManifest.xml → MainActivity seule (LAUNCHER), 0 permission
+  app/src/main/java/tn/govoyage/mobile/lite/
+    MainActivity.kt             → Drawer + NavHost, masquage toolbar/tiroir sur auth
+    model/                      → Utilisateur, Destination, Circuit, Etape (+ SaisieEtape)
+    viewModel/                  → AuthViewModel, VoyageViewModel (init {} = données fictives)
+    ui/auth/                    → LoginFragment, RegisterFragment
+    ui/home/                    → HomeFragment (Explorer)
+    ui/destination/             → DestinationAdapter (+ libelleAmbiance), DestinationDetailFragment
+    ui/circuit/                 → CircuitAdapter, CircuitsFragment, CircuitDetailFragment,
+                                  EditeurCircuitFragment
+    ui/compte/                  → CompteFragment
+  app/src/main/res/
+    layout/                     → 15 layouts (activity_main + fragments + items,
+                                  fragment_login/register adaptés des anciens Activity XML)
+    navigation/mobile_navigation.xml → départ nav_login, actions avec popUpTo
+    menu/activity_main_drawer.xml    → ids = ids des fragments du graphe
+    values/ (strings, colors, themes, dimens) · drawable/ · drawable-nodpi/
+```
+
+## Écrans conservés (aucun écran inventé)
+
+Connexion → Inscription → Explorer (recherche + filtres + circuits proposés) →
+fiche destination / fiche circuit → Mes circuits (CRUD + AlertDialog de suppression) →
+éditeur de circuit (étapes, budget, marge en direct) → Mon compte → déconnexion (AlertDialog).
+Toolbar et tiroir masqués sur Connexion/Inscription ; connexion → accueil avec `popUpTo`
+inclusif ; déconnexion → retour connexion avec `popUpTo`.
+
+## Compte de démonstration
+
+`admin@govoyage.tn` / `admin123` (ADMIN) · `sarra@govoyage.tn` / `sarra123` (USER) ;
+l'inscription ajoute un compte (mot de passe ≥ 8, e-mail unique).
+
+## Vérifications exécutées
+
+1. `.\gradlew.bat :app:assembleDebug` → **BUILD SUCCESSFUL** (29 s ; après correction
+   d'un import `Toast` manquant dans `CircuitsFragment.kt`).
+2. Contrôle grep (retrofit, okhttp, room, sharedpreferences, datastore, viewModelScope,
+   coroutines, compose, glide, coil, intent, internet) sur `mobile-lite/app` → seules
+   correspondances :
+   - `intent-filter` + `android.intent.action.MAIN` dans le Manifest : **incontournable**
+     (déclaration d'activité LAUNCHER, exigée par Android, ce n'est pas un Intent en code) ;
+   - 2 libellés français dans `strings.xml` (« composez votre voyage », « Composer un
+     circuit ») : verbes du texte UI, identiques à `mobile/`, pas la techno.
+3. `git status` → 57 fichiers, tous sous `mobile-lite/` ; rien sous `build/`, `.gradle/`,
+   `local.properties` (ignorés par `.gitignore`). `mobile/`, `backend/`, `web/` inchangés.
+
+## Décisions prises là où les TP ne couvraient pas le cas
+
+- **Login en départ du graphe** : dans `mobile/` la connexion est une Activity séparée ;
+  ici tout tient dans `MainActivity`, donc `nav_login` est la destination de départ, et
+  MainActivity observe la session pour ouvrir/fermer le carnet et revenir à la connexion
+  (garde-fou : si on est déjà sur `nav_login`, on ne re-navigue pas).
+- **ViewModels sans factory** : constructeurs sans paramètre → fabrique par défaut de
+  `by viewModels()` / `activityViewModels()`, ce qui évite tout ViewModelFactory (interdit).
+- **Carnet par compte** : `MutableMap<Long, MutableList<Circuit>>` dans le ViewModel, un
+  carnet par identifiant de compte ; ouvert à la connexion, vidé de l'écran à la
+  déconnexion, perdu au redémarrage (normal pour la beta).
+- **Rechargement des écrans** : les layouts copiés contiennent des vues d'erreur/chargement
+  (`barreChargement`, `carteErreur`, `boutonActualiser`) inutiles hors-ligne ; elles sont
+  simplement ignorées par les fragments LITE (visibilité `gone` d'origine).
+- **Retour depuis une fiche** : bouton « Fermer » → `onBackPressedDispatcher` (même
+  comportement que `mobile/`), aucune navigation par Intent.
+

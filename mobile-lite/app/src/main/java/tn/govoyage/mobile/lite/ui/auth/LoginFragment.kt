@@ -40,7 +40,8 @@ class LoginFragment : Fragment() {
     /** Verifie les identifiants dans la liste en memoire puis va a l'accueil. */
     private fun seConnecter() {
         val email = binding.editEmail.text.toString().trim()
-        val motDePasse = binding.editPassword.text.toString()
+        // trim pour tolerer un espace accidentel du clavier.
+        val motDePasse = binding.editPassword.text.toString().trim()
         if (email.isEmpty() || motDePasse.isEmpty()) {
             Toast.makeText(requireContext(), R.string.login_champs_vides, Toast.LENGTH_SHORT).show()
             return

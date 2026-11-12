@@ -1,0 +1,6 @@
+# Fichiers locaux et compilations, jamais pousses sur GitHub.
+.gradle/
+build/
+local.properties
+.idea/
+*.iml

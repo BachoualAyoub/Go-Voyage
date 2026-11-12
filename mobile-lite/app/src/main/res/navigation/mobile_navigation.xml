@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_login">
+
+    <fragment
+        android:id="@+id/nav_login"
+        android:name="tn.govoyage.mobile.lite.ui.auth.LoginFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_nav_login_to_nav_register"
+            app:destination="@id/nav_register" />
+        <action
+            android:id="@+id/action_nav_login_to_nav_home"
+            app:destination="@id/nav_home"
+            app:popUpTo="@id/nav_login"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_register"
+        android:name="tn.govoyage.mobile.lite.ui.auth.RegisterFragment"
+        android:label="@string/register_titre"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_nav_register_to_nav_login"
+            app:destination="@id/nav_login"
+            app:popUpTo="@id/nav_login"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="tn.govoyage.mobile.lite.ui.home.HomeFragment"
+        android:label="@string/menu_explorer"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_nav_destination_detail"
+            app:destination="@id/nav_destination_detail" />
+        <action
+            android:id="@+id/action_nav_home_to_nav_circuit_detail"
+            app:destination="@id/nav_circuit_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_circuits"
+        android:name="tn.govoyage.mobile.lite.ui.circuit.CircuitsFragment"
+        android:label="@string/menu_circuits"
+        tools:layout="@layout/fragment_circuits">
+        <action
+            android:id="@+id/action_nav_circuits_to_nav_circuit_detail"
+            app:destination="@id/nav_circuit_detail" />
+        <action
+            android:id="@+id/action_nav_circuits_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_compte"
+        android:name="tn.govoyage.mobile.lite.ui.compte.CompteFragment"
+        android:label="@string/menu_compte"
+        tools:layout="@layout/fragment_compte" />
+
+    <fragment
+        android:id="@+id/nav_destination_detail"
+        android:name="tn.govoyage.mobile.lite.ui.destination.DestinationDetailFragment"
+        android:label="@string/titre_detail_destination"
+        tools:layout="@layout/fragment_destination_detail">
+        <action
+            android:id="@+id/action_nav_destination_detail_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_circuit_detail"
+        android:name="tn.govoyage.mobile.lite.ui.circuit.CircuitDetailFragment"
+        android:label="@string/titre_detail_circuit"
+        tools:layout="@layout/fragment_circuit_detail">
+        <action
+            android:id="@+id/action_nav_circuit_detail_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_editeur_circuit"
+        android:name="tn.govoyage.mobile.lite.ui.circuit.EditeurCircuitFragment"
+        android:label="@string/titre_editeur_circuit"
+        tools:layout="@layout/fragment_editeur_circuit">
+        <action
+            android:id="@+id/action_nav_editeur_circuit_to_nav_circuits"
+            app:destination="@id/nav_circuits"
+            app:popUpTo="@id/nav_home" />
+    </fragment>
+
+</navigation>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".ui.home.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <ProgressBar
+            android:id="@+id/barreChargement"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/carteErreur"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/palette_gris_clair"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/texteErreur"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/palette_encre" />
+
+            <Button
+                android:id="@+id/boutonReessayer"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bouton_reessayer"
+                android:textColor="@color/palette_turquoise_fonce" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/texteInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/palette_turquoise_fonce"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <!-- Banniere identique au web et a la version complete. -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="220dp">
+
+            <ImageView
+                android:id="@+id/imageBanniere"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/description_banniere"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/voyage_sidi" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/palette_banniere_fond" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/texteBanniereSurtitre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/banniere_surtitre"
+                    android:textColor="@color/palette_banniere_texte"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/texteBanniereTitre"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/banniere_titre"
+                    android:textColor="@color/palette_blanc"
+                    android:textSize="22sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/texteBanniereTexte"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/banniere_texte"
+                    android:textColor="@color/palette_blanc"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Bascule entre le catalogue et les circuits proposes. -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/choixOnglet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipDestinations"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/chip_destinations" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipModeles"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chip_modeles" />
+        </com.google.android.material.chip.ChipGroup>
+
+        <!-- Vue destinations : recherche, filtres et catalogue. -->
+        <LinearLayout
+            android:id="@+id/groupeDestinations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/texteOuPartir"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/explorer_titre_destinations"
+                android:textColor="@color/palette_encre"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/editRecherche"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="@string/explorer_recherche"
+                android:inputType="text"
+                android:minHeight="48dp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/choixAmbiance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:singleSelection="true"
+                app:selectionRequired="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipToutes"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/explorer_filtre_toutes" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMer"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/explorer_filtre_mer" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCulture"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/explorer_filtre_culture" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipNature"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/explorer_filtre_nature" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <TextView
+                android:id="@+id/texteAucune"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/explorer_aucune"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listeDestinations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Vue circuits proposes. -->
+        <LinearLayout
+            android:id="@+id/groupeModeles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/texteIdees"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/explorer_titre_modeles"
+                android:textColor="@color/palette_encre"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/texteSousTitreModeles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/explorer_texte_modeles" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listeModeles"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

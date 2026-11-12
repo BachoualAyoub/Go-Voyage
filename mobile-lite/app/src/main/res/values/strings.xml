@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Textes generaux. -->
+    <string name="app_name">GO-VOYAGE Lite</string>
+    <string name="description_logo">GO VOYAGE</string>
+
+    <!-- Menu du tiroir lateral. -->
+    <string name="menu_explorer">Explorer</string>
+    <string name="menu_circuits">Mes circuits</string>
+    <string name="menu_compte">Mon compte</string>
+    <string name="menu_deconnexion">Déconnexion</string>
+
+    <!-- Ecran de connexion. -->
+    <string name="login_surtitre">VOTRE ESPACE VOYAGE</string>
+    <string name="login_titre">Le départ, c’est ici.</string>
+    <string name="login_email">Adresse e-mail</string>
+    <string name="login_password">Mot de passe</string>
+    <string name="login_bouton">Me connecter</string>
+    <string name="login_vers_inscription">Pas encore de compte ? Créez-en un</string>
+    <string name="login_champs_vides">Veuillez remplir tous les champs</string>
+    <string name="login_identifiants_incorrects">Email ou mot de passe incorrect</string>
+
+    <!-- Ecran d'inscription. -->
+    <string name="register_titre">Créez votre compte</string>
+    <string name="register_prenom">Prénom</string>
+    <string name="register_nom">Nom</string>
+    <string name="register_email">Adresse e-mail</string>
+    <string name="register_tel">Téléphone</string>
+    <string name="register_password">Mot de passe</string>
+    <string name="register_password_indication">8 caractères minimum.</string>
+    <string name="register_password_court">Le mot de passe doit contenir 8 caractères minimum.</string>
+    <string name="register_bouton">Créer mon compte</string>
+    <string name="register_champs_vides">Veuillez remplir tous les champs</string>
+    <string name="register_email_existant">Un compte existe déjà avec cet email.</string>
+    <string name="register_succes">Votre compte est créé. Vous pouvez vous connecter.</string>
+
+    <!-- Confirmation de deconnexion. -->
+    <string name="deconnexion_titre">Confirmation de déconnexion</string>
+    <string name="deconnexion_message">Êtes-vous sûr de vouloir vous déconnecter et quitter votre session ?</string>
+    <string name="deconnexion_oui">Oui</string>
+    <string name="deconnexion_non">Non</string>
+
+    <!-- Ecran Explorer. -->
+    <string name="banniere_surtitre">ESCALE EN TUNISIE</string>
+    <string name="banniere_titre">La Tunisie, à votre rythme.</string>
+    <string name="banniere_texte">Du littoral aux dunes, composez votre voyage.</string>
+    <string name="description_banniere">Côte de Sidi Bou Saïd</string>
+    <string name="chip_destinations">Destinations</string>
+    <string name="chip_modeles">Circuits proposés</string>
+    <string name="explorer_titre_destinations">Où partir ?</string>
+    <string name="explorer_recherche">Chercher une destination</string>
+    <string name="explorer_filtre_toutes">Toutes</string>
+    <string name="explorer_filtre_mer">Bord de mer</string>
+    <string name="explorer_filtre_culture">Culture</string>
+    <string name="explorer_filtre_nature">Nature</string>
+    <string name="explorer_aucune">Aucune destination trouvée. Essayez une autre recherche.</string>
+    <string name="explorer_titre_modeles">Idées de départ</string>
+    <string name="explorer_texte_modeles">Choisissez un circuit et adaptez-le à votre rythme.</string>
+    <string name="bouton_reessayer">Réessayer</string>
+
+    <!-- Fiche destination. -->
+    <string name="fiche_destination_creer_circuit">Créer un circuit</string>
+    <string name="fiche_bouton_fermer">Fermer</string>
+
+    <!-- Fiche circuit. -->
+    <string name="fiche_circuit_budget">Budget cible : %1$d TND</string>
+    <string name="fiche_circuit_jours_estimes">%1$d jours · %2$d TND estimés</string>
+    <string name="fiche_circuit_personnaliser">Personnaliser</string>
+    <string name="fiche_circuit_modifier">Modifier</string>
+
+    <!-- Ecran Mes circuits. -->
+    <string name="circuits_titre">Mes circuits</string>
+    <string name="circuits_sous_titre">Version Lite : votre carnet vit le temps de la session.</string>
+    <string name="bouton_nouveau_circuit">+ Nouveau circuit</string>
+    <string name="bouton_actualiser_circuits">Actualiser mes circuits</string>
+    <string name="item_circuit_modifier">Modifier</string>
+    <string name="item_circuit_supprimer">Supprimer</string>
+    <string name="item_circuit_voir_modele">Voir le modèle</string>
+    <string name="item_circuit_voir_circuit">Voir le circuit</string>
+    <string name="circuits_carnet_vide">Votre carnet est encore vide. Créez un circuit ou partez d’un modèle dans Explorer.</string>
+
+    <!-- Confirmation de suppression d'un circuit. -->
+    <string name="suppression_titre">Supprimer ce circuit ?</string>
+    <string name="suppression_message">« %1$s » sera retiré de votre carnet.</string>
+    <string name="suppression_oui">Supprimer</string>
+    <string name="suppression_non">Annuler</string>
+    <string name="suppression_succes">Circuit supprimé de votre carnet.</string>
+
+    <!-- Editeur de circuit. -->
+    <string name="editeur_titre_creation">Composer un circuit</string>
+    <string name="editeur_titre_modification">Modifier le circuit</string>
+    <string name="editeur_bouton_fermer">Fermer</string>
+    <string name="editeur_bilan_surtitre">VOTRE ESTIMATION</string>
+    <string name="editeur_bilan_marge">%1$d TND de marge</string>
+    <string name="editeur_bilan_depassement">%1$d TND au-dessus du budget</string>
+    <string name="editeur_bilan_tarifs">Tarifs indicatifs par destination.</string>
+    <string name="editeur_nom">Nom du circuit</string>
+    <string name="editeur_budget">Budget cible en TND (facultatif)</string>
+    <string name="editeur_budget_erreur">Entrez un budget entre 1 et 1 000 000 TND.</string>
+    <string name="editeur_titre_etapes">Vos étapes</string>
+    <string name="editeur_etapes_vides">Ajoutez votre première destination.</string>
+    <string name="editeur_etape_jours">Jours à cette étape</string>
+    <string name="editeur_etape_retirer">Retirer</string>
+    <string name="editeur_etape_monter">Monter l’étape %1$d</string>
+    <string name="editeur_etape_descendre">Descendre l’étape %1$d</string>
+    <string name="editeur_fleche_monter">↑</string>
+    <string name="editeur_fleche_descendre">↓</string>
+    <string name="editeur_ajouter_etape">+ Ajouter une étape</string>
+    <string name="editeur_etape_ajout_tarif">%1$s · %2$d TND/j</string>
+    <string name="editeur_limite">1 à 30 jours par étape · 10 étapes et 60 jours maximum.</string>
+    <string name="editeur_jours_excessifs">Ramenez la durée à 60 jours maximum.</string>
+    <string name="editeur_destination_indisponible">Destination indisponible</string>
+    <string name="editeur_enregistrer">Enregistrer le circuit</string>
+    <string name="editeur_sauvegarde_succes">Circuit enregistré dans votre carnet.</string>
+
+    <!-- Ecran Mon compte. -->
+    <string name="compte_espace_admin">ESPACE ADMINISTRATEUR</string>
+    <string name="compte_espace_voyageur">ESPACE VOYAGEUR</string>
+    <string name="compte_bonjour">Bonjour, %1$s.</string>
+    <string name="compte_titre_carte">Mon compte</string>
+    <string name="compte_nom_complet">Nom complet</string>
+    <string name="compte_email">Adresse e-mail</string>
+    <string name="compte_telephone">Téléphone</string>
+    <string name="compte_role">Rôle</string>
+    <string name="compte_role_admin">Administrateur</string>
+    <string name="compte_role_user">Utilisateur</string>
+    <string name="compte_note_admin">La gestion des comptes se fait dans l’espace web de la version complète.</string>
+    <string name="bouton_deconnexion">Déconnexion</string>
+
+    <!-- Ecrans du squelette. -->
+    <string name="titre_detail_destination">Fiche destination</string>
+    <string name="titre_detail_circuit">Fiche circuit</string>
+    <string name="titre_editeur_circuit">Éditeur de circuit</string>
+</resources>

@@ -6,9 +6,16 @@ import com.google.gson.JsonParseException
 import java.io.IOException
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
+import retrofit2.Response
 import tn.govoyage.mobile.model.Circuit
 import tn.govoyage.mobile.model.CircuitRequest
 import tn.govoyage.mobile.model.Destination
+
+/** Verifie le code HTTP puis renvoie le corps attendu de la reponse. */
+private fun <T> Response<T>.corps(): T {
+    if (!isSuccessful) throw HttpException(this)
+    return body() ?: throw HttpException(this)
+}
 
 /** Gere les appels d'authentification et la persistance de la session. */
 class AuthRepository(private val api: ApiVoyage, private val base: BaseVoyage) {
@@ -16,13 +23,13 @@ class AuthRepository(private val api: ApiVoyage, private val base: BaseVoyage) {
 
     /** Cree un compte sur le serveur. */
     suspend fun inscrire(demande: InscriptionRequest) {
-        api.inscrire(demande)
+        api.inscrire(demande).corps()
     }
 
     /** Enregistre la session apres verification du compte. */
     suspend fun connecter(demande: ConnexionRequest) {
-        val connexion = api.connecter(demande)
-        val compte = api.moi("Bearer " + connexion.jeton)
+        val connexion = api.connecter(demande).corps()
+        val compte = api.moi("Bearer " + connexion.jeton).corps()
         base.sessionDAO().enregistrer(SessionLocale(jeton = connexion.jeton, compte = compte))
     }
 
@@ -30,7 +37,7 @@ class AuthRepository(private val api: ApiVoyage, private val base: BaseVoyage) {
     suspend fun restaurer() {
         val session = base.sessionDAO().lire() ?: return
         try {
-            val compte = api.moi(session.autorisation)
+            val compte = api.moi(session.autorisation).corps()
             base.withTransaction {
                 if (base.sessionDAO().lire()?.jeton == session.jeton) {
                     base.sessionDAO().enregistrer(session.copy(compte = compte))
@@ -64,7 +71,7 @@ class DestinationRepository(private val api: ApiVoyage, private val base: BaseVo
 
     /** Remplace le catalogue en une seule transaction. */
     suspend fun actualiser(session: SessionLocale) {
-        val destinations = api.destinations(session.autorisation)
+        val destinations = api.destinations(session.autorisation).corps()
         base.withTransaction {
             dao.effacerDestinations()
             dao.enregistrerDestinations(destinations.map { DestinationLocale(it.id, it) })
@@ -84,8 +91,8 @@ class CircuitRepository(private val api: ApiVoyage, private val base: BaseVoyage
 
     /** Recharge les modeles et les circuits du compte actif. */
     suspend fun actualiser(session: SessionLocale) {
-        val modeles = api.modeles(session.autorisation)
-        val circuits = api.circuits(session.autorisation)
+        val modeles = api.modeles(session.autorisation).corps()
+        val circuits = api.circuits(session.autorisation).corps()
         base.withTransaction {
             if (sessionActive(session)) {
                 remplacer(0, modeles)
@@ -96,8 +103,8 @@ class CircuitRepository(private val api: ApiVoyage, private val base: BaseVoyage
 
     /** Cree ou modifie sur le serveur puis actualise la ligne locale. */
     suspend fun sauver(session: SessionLocale, id: Long?, demande: CircuitRequest) {
-        val circuit = if (id == null) api.creer(session.autorisation, demande)
-        else api.modifier(session.autorisation, id, demande)
+        val circuit = if (id == null) api.creer(session.autorisation, demande).corps()
+        else api.modifier(session.autorisation, id, demande).corps()
         val compteId = session.compte.id
         base.withTransaction {
             if (sessionActive(session)) {

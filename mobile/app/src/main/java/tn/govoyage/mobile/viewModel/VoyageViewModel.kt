@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParseException
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import tn.govoyage.mobile.data.AuthRepository
 import tn.govoyage.mobile.data.CircuitRepository
@@ -84,15 +86,15 @@ class VoyageViewModel(
     fun sauver(id: Long?, demande: CircuitRequest, terminer: () -> Unit) = executer {
         val session = session ?: return@executer
         repoCircuits.sauver(session, id, demande)
-        _etat.value = EtatVoyage(information = "Circuit enregistré.")
-        terminer()
+        majEtat { EtatVoyage(information = "Circuit enregistré.") }
+        withContext(Dispatchers.Main) { terminer() }
     }
 
     /** Supprime un circuit confirme par le voyageur. */
     fun supprimer(id: Long) = executer {
         val session = session ?: return@executer
         repoCircuits.supprimer(session, id)
-        _etat.value = EtatVoyage(information = "Circuit supprimé.")
+        majEtat { EtatVoyage(information = "Circuit supprimé.") }
     }
 
     /** Remet a zero le retour d'une action precedente. */
@@ -120,7 +122,7 @@ class VoyageViewModel(
         val etat = _etat.value ?: EtatVoyage()
         if (etat.actionEnCours) return
         _etat.value = etat.copy(actionEnCours = true, chargement = chargement, erreur = "", information = "")
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 action()
             } catch (cause: HttpException) {
@@ -128,15 +130,23 @@ class VoyageViewModel(
                 if (cause.code() == 401 || cause.code() == 403) {
                     if (session != null) auth.deconnecter(session.jeton)
                 } else {
-                    _etat.value = _etat.value?.copy(erreur = lireErreur(cause))
+                    majEtat { it.copy(erreur = lireErreur(cause)) }
                 }
             } catch (_: IOException) {
-                _etat.value = _etat.value?.copy(erreur = "Connexion indisponible. Les données déjà chargées restent visibles.")
+                majEtat { it.copy(erreur = "Connexion indisponible. Les données déjà chargées restent visibles.") }
             } catch (_: JsonParseException) {
-                _etat.value = _etat.value?.copy(erreur = "La réponse de l’API est illisible.")
+                majEtat { it.copy(erreur = "La réponse de l’API est illisible.") }
             } finally {
-                _etat.value = _etat.value?.copy(actionEnCours = false, chargement = false)
+                majEtat { it.copy(actionEnCours = false, chargement = false) }
             }
+        }
+    }
+
+    /** Modifie l'etat depuis le thread principal (LiveData). */
+    private suspend fun majEtat(bloc: (EtatVoyage) -> EtatVoyage) {
+        withContext(Dispatchers.Main) {
+            val courant = _etat.value ?: EtatVoyage()
+            _etat.value = bloc(courant)
         }
     }
 }

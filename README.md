@@ -116,7 +116,7 @@ Pour viser une autre API, copiez `web/.env.example` vers `web/.env`, ajustez `VI
 
 1. Dans Android Studio, ouvrez le dossier `mobile` (JDK 21 dans les réglages Gradle, SDK Android 36).
 2. Lancez un émulateur depuis **Device Manager**, avec le backend démarré sur le PC.
-3. Cliquez sur **Run ▶** : l'application appelle par défaut `http://10.0.2.2:8081/`, l'adresse du PC vue depuis l'émulateur. La propriété Gradle `GO_VOYAGE_API_URL` permet de viser une autre adresse.
+3. Cliquez sur **Run ▶** : l'application appelle `http://10.0.2.2:8081/`, l'adresse du PC vue depuis l'émulateur. Cette adresse est la constante `BASE_URL` du fichier `mobile/app/src/main/java/tn/govoyage/mobile/data/ApiVoyage.kt`.
 
 Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
 
@@ -130,23 +130,21 @@ Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
    ```
 
 2. Relevez l'adresse IPv4 du PC (`ipconfig`) et, si Windows le demande, autorisez le port 8081 pour le profil réseau en cours.
-3. Compilez avec cette adresse, puis installez l'APK sur le téléphone :
+3. Dans `mobile/app/src/main/java/tn/govoyage/mobile/data/ApiVoyage.kt`, remplacez la constante `BASE_URL` par l'adresse du PC, par exemple :
+
+   ```kotlin
+   const val BASE_URL = "http://192.168.1.4:$API_PORT/"
+   ```
+
+4. Recompilez, puis installez l'APK sur le téléphone :
 
    ```powershell
    cd mobile
-   .\gradlew.bat :app:assembleDebug -PGO_VOYAGE_API_URL=http://192.168.1.4:8081/
+   .\gradlew.bat :app:assembleDebug
    adb install -r app\build\outputs\apk\debug\app-debug.apk
    ```
 
-Le téléphone et le PC doivent être sur le même sous-réseau ; l'application de développement autorise le HTTP en clair (`src/debug/AndroidManifest.xml`).
-
-Pour que **Run ▶** vise directement l'adresse LAN (téléphone physique comme émulateur), ajoutez une fois pour toutes la propriété dans le fichier Gradle de la machine, `%USERPROFILE%\.gradle\gradle.properties` :
-
-```properties
-GO_VOYAGE_API_URL=http://192.168.1.4:8081/
-```
-
-Sans cette propriété, Android Studio recompile avec `10.0.2.2`, une adresse qui n'existe que dans l'émulateur. Pensez à mettre à jour l'adresse si l'IP du PC change.
+Le téléphone et le PC doivent être sur le même sous-réseau ; l'application de développement autorise le HTTP en clair (`src/debug/AndroidManifest.xml`). L'adresse est compilée dans l'APK : après un changement d'IP, modifiez `BASE_URL` et recompilez.
 
 Pour générer un APK de développement :
 
@@ -157,7 +155,7 @@ cd mobile
 
 L'APK apparaît dans `mobile/app/build/outputs/apk/debug/`.
 
-L'application suit l'architecture MVVM vue en cours : écrans en **Fragments/Activities** (XML + ViewBinding) avec un **Drawer** latéral, **ViewModels** exposant des **LiveData**, **repositories** séparés (`AuthRepository`, `DestinationRepository`, `CircuitRepository`) et session en **Room**. La connexion et l'inscription sont deux Activities (`LoginActivity`, `RegisterActivity`) ; l'espace de voyage est hébergé par `MainActivity` avec la navigation Fragments (`mobile_navigation.xml`). Le détail de la migration Compose → Fragments se trouve dans `mobile/MIGRATION_PLAN.md` et `mobile/RAPPORT_MIGRATION.md`.
+L'application suit l'architecture MVVM vue en cours : écrans en **Fragments/Activities** (XML + ViewBinding) avec un **Drawer** latéral, **ViewModels** exposant des **LiveData**, **repositories** séparés (`AuthRepository`, `DestinationRepository`, `CircuitRepository`) et session en **Room**. Les appels REST passent par un client **Retrofit** unique (`RetrofitInstance` dans `ApiVoyage.kt` : `BASE_URL`, `OkHttpClient`, convertisseur Gson, journal des requêtes) et les repositories vérifient le code HTTP (`isSuccessful`, `code()`) avant d'écrire dans Room. La connexion et l'inscription sont deux Activities (`LoginActivity`, `RegisterActivity`) ; l'espace de voyage est hébergé par `MainActivity` avec la navigation Fragments (`mobile_navigation.xml`). Le détail de la migration Compose → Fragments se trouve dans `mobile/MIGRATION_PLAN.md` et `mobile/RAPPORT_MIGRATION.md`.
 
 ## Comptes de démonstration
 

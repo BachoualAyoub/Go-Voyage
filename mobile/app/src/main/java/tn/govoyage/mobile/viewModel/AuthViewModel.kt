@@ -6,7 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonParseException
 import java.io.IOException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import tn.govoyage.mobile.data.AuthRepository
 import tn.govoyage.mobile.data.ConnexionRequest
@@ -33,13 +35,13 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             auth.session.collect { session -> _session.postValue(session) }
         }
-        viewModelScope.launch { auth.restaurer() }
+        viewModelScope.launch(Dispatchers.IO) { auth.restaurer() }
     }
 
     /** Cree le compte sur le serveur. */
     fun inscrire(demande: InscriptionRequest) = effectuer {
         auth.inscrire(demande)
-        publier(EtatAuth(chargement = false, message = "Votre compte est créé. Vous pouvez vous connecter."))
+        majEtat { EtatAuth(chargement = false, message = "Votre compte est créé. Vous pouvez vous connecter.") }
     }
 
     /** Ouvre une session persistante. */
@@ -63,23 +65,26 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
     private fun effectuer(action: suspend () -> Unit) {
         if (_etat.value?.chargement == true) return
         _etat.value = EtatAuth(chargement = true)
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 action()
             } catch (cause: HttpException) {
-                publier(EtatAuth(erreur = true, message = lireErreur(cause)))
+                majEtat { EtatAuth(erreur = true, message = lireErreur(cause)) }
             } catch (_: IOException) {
-                publier(EtatAuth(erreur = true, message = "API injoignable. Vérifiez que le backend GO VOYAGE est démarré."))
+                majEtat { EtatAuth(erreur = true, message = "API injoignable. Vérifiez que le backend GO VOYAGE est démarré.") }
             } catch (_: JsonParseException) {
-                publier(EtatAuth(erreur = true, message = "La réponse de l’API est illisible."))
+                majEtat { EtatAuth(erreur = true, message = "La réponse de l’API est illisible.") }
             } finally {
-                _etat.value = _etat.value?.copy(chargement = false)
+                majEtat { it.copy(chargement = false) }
             }
         }
     }
 
-    /** Publie l'etat du formulaire. */
-    private fun publier(etat: EtatAuth) {
-        _etat.postValue(etat)
+    /** Publie l'etat du formulaire depuis le thread principal. */
+    private suspend fun majEtat(bloc: (EtatAuth) -> EtatAuth) {
+        withContext(Dispatchers.Main) {
+            val courant = _etat.value ?: EtatAuth()
+            _etat.value = bloc(courant)
+        }
     }
 }

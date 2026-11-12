@@ -51,11 +51,11 @@
 .plan-titre h3 { margin: 0; }
 .plan-titre span { color: var(--secondaire); }
 .liste-etapes { list-style: none; display: grid; gap: 8px; padding: 0; margin: 0; }
-.plan-etape { display: grid; grid-template-columns: auto minmax(0, 1fr) 66px auto; align-items: center; gap: 9px; border: 1px solid var(--trait); border-radius: 12px; padding: 9px; }
+.plan-etape { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; align-items: center; gap: 10px; border: 1px solid var(--trait); border-radius: 12px; padding: 9px; }
 .numero-etape { align-self: center; background: var(--turquoise-clair); color: var(--turquoise-fonce); font-weight: 800; padding: 7px; border-radius: 8px; }
 .plan-etape small { display: block; color: var(--secondaire); }
-.mini-champ { font-size: .72rem; }
-.mini-champ input { width: 100%; padding: 5px 7px; }
+.plan-etape .mini-champ { flex-direction: row; align-items: center; gap: 6px; font-size: .8rem; white-space: nowrap; }
+.plan-etape .mini-champ input { width: 56px; min-height: 40px; padding: 4px 6px; text-align: center; }
 .plan-actions { display: flex; gap: 4px; }
 .plan-actions button { border: 1px solid var(--trait); background: var(--fond); color: var(--encre); min-width: 31px; min-height: 36px; border-radius: 7px; font-weight: 700; }
 .ajout-etape { display: flex; gap: 8px; }
@@ -67,7 +67,7 @@
   .titre-section, .titre-circuits { align-items: start; flex-direction: column; gap: 8px; }
   .recherche-voyage, .recherche-voyage input { width: 100%; }
   .grille-destinations, .grille-circuits { grid-template-columns: 1fr; }
-  .plan-etape { grid-template-columns: auto minmax(0, 1fr) 60px; }
+  .plan-etape { grid-template-columns: auto minmax(0, 1fr) auto; }
   .plan-actions { grid-column: 2 / -1; }
 }
 .hero-actions {

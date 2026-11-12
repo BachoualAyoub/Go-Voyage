@@ -88,8 +88,10 @@ class EditeurCircuitFragment : Fragment() {
             getString(R.string.editeur_titre_creation)
         }
         binding.editNomCircuit.setText(circuit?.nom.orEmpty())
-        binding.editBudget.setText(circuit?.budgetTnd?.toString().orEmpty())
-        for (etape in preparerEtapes()) ajouterLigne(etape)
+        val etapes = preparerEtapes()
+        // Les cles de depart occupent deja 0..n-1 : la suivante doit continuer apres.
+        prochaineCle = etapes.size
+        for (etape in etapes) ajouterLigne(etape)
     }
 
     /** Construit le brouillon sans modifier le modele d'origine. */
@@ -104,24 +106,11 @@ class EditeurCircuitFragment : Fragment() {
         return listOf(EtapeBrouillon(0, destination.id, "1"))
     }
 
-    /** Installe les ecouteurs des champs nom et budget. */
+    /** Installe l'ecouteur du nom du circuit. */
     private fun installerChamps() {
         binding.editNomCircuit.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(texte: CharSequence, debut: Int, avant: Int, apres: Int) {
                 actualiserBoutonEnregistrer()
-            }
-
-            override fun beforeTextChanged(texte: CharSequence, debut: Int, compte: Int, apres: Int) {
-                // Aucun traitement avant le changement.
-            }
-
-            override fun afterTextChanged(texte: Editable) {
-                // Aucun traitement apres le changement.
-            }
-        })
-        binding.editBudget.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(texte: CharSequence, debut: Int, avant: Int, apres: Int) {
-                recalculerBilan()
             }
 
             override fun beforeTextChanged(texte: CharSequence, debut: Int, compte: Int, apres: Int) {
@@ -145,7 +134,8 @@ class EditeurCircuitFragment : Fragment() {
 
     /** Ajoute une ligne d'etape a la fin, avec sa duree par defaut. */
     private fun ajouterLigne(etape: EtapeBrouillon) {
-        val ligneBinding = ItemEtapeBinding.inflate(layoutInflater)
+        // Le parent transmet les marges et la largeur declares dans item_etape.
+        val ligneBinding = ItemEtapeBinding.inflate(layoutInflater, binding.listeEtapesEditeur, false)
         val vue = LigneEtapeVue(etape.cle, ligneBinding)
         ligneBinding.editJours.setText(etape.jours)
         ligneBinding.editJours.addTextChangedListener(object : TextWatcher {
@@ -211,18 +201,22 @@ class EditeurCircuitFragment : Fragment() {
     /** Position d'une ligne dans la liste courante. */
     private fun indiceDe(cle: Int) = vues.indexOfFirst { it.cle == cle }
 
-    /** Met a jour les titres, les descriptions et les fleches actives. */
+    /** Met a jour le numero, le tarif, le compteur et les fleches actives. */
     private fun renumeroter() {
+        binding.texteCompteurEtapes.text = getString(R.string.editeur_compteur_etapes, brouillons.size)
         for ((index, vue) in vues.withIndex()) {
             val etape = brouillons[index]
             val destination = catalogue[etape.destinationId]
-            vue.binding.tvNomEtape.text = "${index + 1}. ${
+            val numero = index + 1
+            vue.binding.tvNumeroEtape.text = if (numero < 10) "0$numero" else numero.toString()
+            vue.binding.tvNomEtape.text =
                 destination?.nom ?: getString(R.string.editeur_destination_indisponible)
-            }"
+            vue.binding.tvTarifEtape.text =
+                getString(R.string.editeur_etape_tarif, destination?.tarifJourTnd ?: 0)
             vue.binding.boutonMonter.isEnabled = index > 0
             vue.binding.boutonDescendre.isEnabled = index < vues.size - 1
-            vue.binding.boutonMonter.contentDescription = getString(R.string.editeur_etape_monter, index + 1)
-            vue.binding.boutonDescendre.contentDescription = getString(R.string.editeur_etape_descendre, index + 1)
+            vue.binding.boutonMonter.contentDescription = getString(R.string.editeur_etape_monter, numero)
+            vue.binding.boutonDescendre.contentDescription = getString(R.string.editeur_etape_descendre, numero)
         }
     }
 
@@ -247,38 +241,13 @@ class EditeurCircuitFragment : Fragment() {
         ajouterLigne(EtapeBrouillon(prochaineCle++, destination.id, "1"))
     }
 
-    /** Affiche les deux totaux et la marge de budget pendant la saisie. */
+    /** Affiche les deux totaux pendant la saisie. */
     private fun recalculerBilan() {
         val jours = brouillons.sumOf { it.jours.toIntOrNull() ?: 0 }
         val estimation = brouillons.sumOf {
             (catalogue[it.destinationId]?.tarifJourTnd ?: 0) * (it.jours.toIntOrNull() ?: 0)
         }
         binding.texteBilanTotaux.text = "$jours j  ·  $estimation TND"
-
-        val budget = binding.editBudget.text.toString().toIntOrNull()
-        val budgetValide = binding.editBudget.text.toString().isEmpty() || (budget ?: 0) in 1..1_000_000
-        binding.texteErreurBudget.visibility = if (budgetValide) View.GONE else View.VISIBLE
-
-        if (budget != null && budget > 0) {
-            binding.barreBudget.visibility = View.VISIBLE
-            binding.barreBudget.max = budget
-            binding.barreBudget.progress = estimation
-            val ecart = budget - estimation
-            val depasse = estimation > budget
-            binding.texteBilanMarge.text = if (depasse) {
-                getString(R.string.editeur_bilan_depassement, -ecart)
-            } else {
-                getString(R.string.editeur_bilan_marge, ecart)
-            }
-            val couleur = if (depasse) R.color.palette_erreur else R.color.palette_turquoise_fonce
-            binding.texteBilanMarge.setTextColor(requireContext().getColor(couleur))
-            binding.barreBudget.progressTintList = android.content.res.ColorStateList.valueOf(requireContext().getColor(couleur))
-        } else {
-            binding.barreBudget.visibility = View.GONE
-            binding.texteBilanMarge.text = getString(R.string.editeur_bilan_tarifs)
-            binding.texteBilanMarge.setTextColor(requireContext().getColor(R.color.palette_texte_secondaire))
-        }
-
         binding.texteJoursExcessifs.visibility = if (jours > 60) View.VISIBLE else View.GONE
         actualiserBoutonEnregistrer()
     }
@@ -286,20 +255,18 @@ class EditeurCircuitFragment : Fragment() {
     /** Le bouton enregistre quand le formulaire est complet. */
     private fun actualiserBoutonEnregistrer() {
         val jours = brouillons.sumOf { it.jours.toIntOrNull() ?: 0 }
-        val budget = binding.editBudget.text.toString().toIntOrNull()
-        val budgetValide = binding.editBudget.text.toString().isEmpty() || (budget ?: 0) in 1..1_000_000
         val etapesValides = brouillons.isNotEmpty() && jours <= 60 && brouillons.all {
             (it.jours.toIntOrNull() ?: 0) in 1..30 && catalogue.containsKey(it.destinationId)
         }
         binding.boutonEnregistrer.isEnabled = binding.editNomCircuit.text.isNotBlank()
-            && budgetValide && etapesValides && brouillons.size < 10
+            && etapesValides && brouillons.size < 10
     }
 
     /** Envoie la sauvegarde puis revient au carnet. */
     private fun enregistrerCircuit() {
         val demande = CircuitRequest(
             binding.editNomCircuit.text.toString().trim(),
-            binding.editBudget.text.toString().toIntOrNull(),
+            null,
             brouillons.map { EtapeRequest(it.destinationId, it.jours.toInt()) },
             personnel?.version
         )

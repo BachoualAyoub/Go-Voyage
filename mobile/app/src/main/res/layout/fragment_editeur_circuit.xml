@@ -8,9 +8,11 @@
     android:padding="16dp"
     tools:context=".ui.circuit.EditeurCircuitFragment">
 
+    <!-- En-tete de l'editeur. -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
@@ -28,6 +30,9 @@
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="0dp"
             android:text="@string/editeur_bouton_fermer"
             android:textColor="@color/palette_turquoise_fonce" />
     </LinearLayout>
@@ -36,7 +41,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         app:cardBackgroundColor="@color/palette_gris_clair"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp">
@@ -52,29 +57,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/editeur_bilan_surtitre"
+                android:textColor="@color/palette_texte_secondaire"
                 android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/texteBilanTotaux"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/palette_encre"
                 android:textSize="22sp"
                 android:textStyle="bold" />
-
-            <ProgressBar
-                android:id="@+id/barreBudget"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:progressTint="@color/palette_turquoise_fonce"
-                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/texteBilanMarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/editeur_bilan_tarifs"
+                android:textColor="@color/palette_texte_secondaire"
                 android:textSize="13sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -82,8 +83,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp">
+        android:layout_marginTop="12dp"
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -99,40 +100,39 @@
                 android:maxLength="90"
                 android:minHeight="48dp" />
 
-            <EditText
-                android:id="@+id/editBudget"
+            <!-- Titre de la liste avec le compteur d'etapes. -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="@string/editeur_budget"
-                android:inputType="number"
-                android:maxLength="7"
-                android:minHeight="48dp" />
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/texteErreurBudget"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/editeur_budget_erreur"
-                android:textColor="@color/palette_turquoise_fonce"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/texteTitreEtapes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/editeur_titre_etapes"
+                    android:textColor="@color/palette_encre"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/texteTitreEtapes"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/editeur_titre_etapes"
-                android:textColor="@color/palette_encre"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/texteCompteurEtapes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/palette_texte_secondaire"
+                    android:textSize="13sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/texteEtapesVides"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/editeur_etapes_vides" />
+                android:text="@string/editeur_etapes_vides"
+                android:textColor="@color/palette_texte_secondaire" />
 
             <LinearLayout
                 android:id="@+id/listeEtapesEditeur"
@@ -143,9 +143,9 @@
             <Button
                 android:id="@+id/boutonAjouterEtape"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:text="@string/editeur_ajouter_etape"
                 android:textColor="@color/palette_turquoise_fonce" />
 
@@ -155,22 +155,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/editeur_limite"
-                android:textSize="13sp" />
+                android:textColor="@color/palette_texte_secondaire"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/texteJoursExcessifs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/editeur_jours_excessifs"
-                android:textColor="@color/palette_turquoise_fonce"
+                android:textColor="@color/palette_erreur"
                 android:visibility="gone" />
 
             <TextView
                 android:id="@+id/texteErreurEditeur"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="@color/palette_turquoise_fonce" />
+                android:layout_marginTop="8dp"
+                android:textColor="@color/palette_erreur" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -179,7 +181,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:backgroundTint="@color/palette_turquoise_fonce"
         android:text="@string/editeur_enregistrer"
         android:textColor="@color/palette_blanc" />

@@ -8,6 +8,7 @@
     <color name="palette_encre">#242B2B</color>
     <color name="palette_texte_secondaire">#555B5B</color>
     <color name="palette_turquoise_fonce">#0A6558</color>
+    <color name="palette_turquoise_clair">#D8F2EE</color>
     <color name="palette_fond">#F8F9F9</color>
     <color name="palette_gris_clair">#ECEDED</color>
     <color name="palette_banniere_fond">#E0092928</color>

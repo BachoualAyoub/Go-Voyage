@@ -8,13 +8,13 @@ import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import androidx.navigation.fragment.NavHostFragment
 import tn.govoyage.mobile.lite.databinding.ActivityMainBinding
 import tn.govoyage.mobile.lite.viewModel.AuthViewModel
 import tn.govoyage.mobile.lite.viewModel.VoyageViewModel
@@ -29,6 +29,14 @@ class MainActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels()
     private val voyageViewModel: VoyageViewModel by viewModels()
 
+    // Controleur obtenu via le NavHostFragment (facon documentee avec FragmentContainerView).
+    private val navController: NavController
+        get() {
+            val navHostFragment = supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
+            return navHostFragment.navController
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-        val navController: NavController = findNavController(R.id.nav_host_fragment_content_main)
+        val navController = this.navController
 
         // Les trois ecrans de haut niveau ouvrent le tiroir sans fleche retour.
         appBarConfiguration = AppBarConfiguration(
@@ -98,7 +106,6 @@ class MainActivity : AppCompatActivity() {
 
     /** Revient au formulaire de connexion et vide la pile d'ecrans. */
     private fun revenirConnexion() {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
         if (navController.currentDestination?.id == R.id.nav_login) return
         val options = NavOptions.Builder()
             .setPopUpTo(R.id.nav_home, true)
@@ -107,7 +114,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }

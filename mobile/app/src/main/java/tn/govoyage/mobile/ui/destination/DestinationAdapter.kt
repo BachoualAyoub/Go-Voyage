@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.ItemDestinationBinding
 import tn.govoyage.mobile.model.Destination
+import tn.govoyage.mobile.ui.imageDestination
 
 /** Traduit les categories du catalogue en libelles de navigation. */
 fun libelleAmbiance(ambiance: String) = when (ambiance) {
@@ -25,6 +26,7 @@ class DestinationAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(destination: Destination) {
+            binding.imageDestination.setImageResource(imageDestination(destination.code))
             binding.tvAmbiance.text = libelleAmbiance(destination.ambiance)
             binding.tvNom.text = destination.nom
             binding.tvLieu.text = "${destination.ville} · ${destination.region}"

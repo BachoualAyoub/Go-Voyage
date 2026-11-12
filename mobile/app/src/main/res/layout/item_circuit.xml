@@ -11,62 +11,75 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvDureeEstimation"
+        <ImageView
+            android:id="@+id/imageCircuit"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/palette_turquoise_fonce"
-            android:textSize="14sp" />
-
-        <TextView
-            android:id="@+id/tvNomCircuit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/palette_encre"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tvItineraire"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/palette_texte_secondaire"
-            android:textSize="14sp" />
-
-        <Button
-            android:id="@+id/boutonVoirCircuit"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/palette_turquoise_fonce" />
+            android:layout_height="140dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop" />
 
         <LinearLayout
-            android:id="@+id/groupeActions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvDureeEstimation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/palette_turquoise_fonce"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvNomCircuit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/palette_encre"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvItineraire"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/palette_texte_secondaire"
+                android:textSize="14sp" />
 
             <Button
-                android:id="@+id/boutonModifier"
-                style="?android:attr/borderlessButtonStyle"
+                android:id="@+id/boutonVoirCircuit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/item_circuit_modifier"
+                android:layout_marginTop="8dp"
                 android:textColor="@color/palette_turquoise_fonce" />
 
-            <Button
-                android:id="@+id/boutonSupprimer"
-                style="?android:attr/borderlessButtonStyle"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/groupeActions"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/item_circuit_supprimer"
-                android:textColor="@color/palette_texte_secondaire" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/boutonModifier"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/item_circuit_modifier"
+                    android:textColor="@color/palette_turquoise_fonce" />
+
+                <Button
+                    android:id="@+id/boutonSupprimer"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/item_circuit_supprimer"
+                    android:textColor="@color/palette_texte_secondaire" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

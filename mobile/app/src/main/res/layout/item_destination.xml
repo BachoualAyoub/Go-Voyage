@@ -11,47 +11,60 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvAmbiance"
+        <ImageView
+            android:id="@+id/imageDestination"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/palette_turquoise_fonce"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvNom"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/palette_encre"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvAmbiance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/palette_turquoise_fonce"
+                android:textSize="12sp" />
 
-        <TextView
-            android:id="@+id/tvLieu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/palette_texte_secondaire"
-            android:textSize="13sp" />
+            <TextView
+                android:id="@+id/tvNom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/palette_encre"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvAccroche"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textColor="@color/palette_encre"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tvLieu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/palette_texte_secondaire"
+                android:textSize="13sp" />
 
-        <TextView
-            android:id="@+id/tvTarif"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/palette_turquoise_fonce"
-            android:textSize="15sp" />
+            <TextView
+                android:id="@+id/tvAccroche"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/palette_encre"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/tvTarif"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/palette_turquoise_fonce"
+                android:textSize="15sp" />
+        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

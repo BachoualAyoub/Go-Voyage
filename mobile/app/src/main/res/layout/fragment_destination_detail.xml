@@ -13,8 +13,16 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <ImageView
+            android:id="@+id/imageDestinationDetail"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop" />
+
         <TextView
             android:id="@+id/texteFicheNom"
+            android:layout_marginTop="12dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/palette_encre"

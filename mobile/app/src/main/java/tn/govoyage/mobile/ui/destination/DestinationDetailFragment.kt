@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import tn.govoyage.mobile.GoVoyageApplication
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentDestinationDetailBinding
+import tn.govoyage.mobile.ui.imageDestination
 import tn.govoyage.mobile.viewModel.VoyageViewModel
 
 /** Fiche d'une destination du catalogue. */
@@ -42,6 +43,7 @@ class DestinationDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         voyageViewModel.destinationSelectionne.observe(viewLifecycleOwner) { destination ->
             if (destination != null) {
+                binding.imageDestinationDetail.setImageResource(imageDestination(destination.code))
                 binding.texteFicheNom.text = destination.nom
                 binding.texteFicheLieu.text = "${destination.region} · ${destination.pays} · ${libelleAmbiance(destination.ambiance)}"
                 binding.texteFicheDescription.text = destination.description

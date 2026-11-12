@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.ItemCircuitBinding
 import tn.govoyage.mobile.model.Circuit
+import tn.govoyage.mobile.ui.imageCircuit
 
 /** Liste les circuits proposes et le carnet personnel du voyageur. */
 class CircuitAdapter(
@@ -20,6 +21,7 @@ class CircuitAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(circuit: Circuit) {
+            binding.imageCircuit.setImageResource(imageCircuit(circuit))
             binding.tvDureeEstimation.text = "${circuit.dureeJours} j  ·  ${circuit.estimationTnd} TND estimés"
             binding.tvNomCircuit.text = circuit.nom
             binding.tvItineraire.text = circuit.etapes.joinToString(" → ") { it.nom }

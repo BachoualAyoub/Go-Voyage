@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import tn.govoyage.mobile.GoVoyageApplication
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentCircuitDetailBinding
+import tn.govoyage.mobile.ui.imageCircuit
 import tn.govoyage.mobile.viewModel.VoyageViewModel
 
 /** Fiche complete d'un circuit : itineraire et totaux. */
@@ -43,6 +44,7 @@ class CircuitDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         voyageViewModel.circuitSelectionne.observe(viewLifecycleOwner) { circuit ->
             if (circuit != null) {
+                binding.imageCircuitDetail.setImageResource(imageCircuit(circuit))
                 binding.texteFicheCircuitNom.text = circuit.nom
                 if (circuit.description.isNullOrEmpty()) {
                     binding.texteFicheCircuitDescription.visibility = View.GONE

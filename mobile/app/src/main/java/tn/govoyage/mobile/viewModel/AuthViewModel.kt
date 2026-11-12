@@ -51,8 +51,7 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
 
     /** Ferme la session et efface le cache personnel. */
     fun deconnecter() = effectuer {
-        val session = _session.value ?: return@effectuer
-        auth.deconnecter(session.jeton)
+        auth.fermer()
     }
 
     /** Evite un message repete apres son affichage. */

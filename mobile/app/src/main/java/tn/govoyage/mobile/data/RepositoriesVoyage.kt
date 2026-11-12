@@ -52,6 +52,12 @@ class AuthRepository(private val api: ApiVoyage, private val base: BaseVoyage) {
         }
     }
 
+    /** Ferme la session enregistree, meme si l'ecran ne l'a pas encore recue. */
+    suspend fun fermer() {
+        val session = base.sessionDAO().lire() ?: return
+        deconnecter(session.jeton)
+    }
+
     /** Efface uniquement la session et les circuits du compte actif. */
     suspend fun deconnecter(jeton: String) {
         base.withTransaction {

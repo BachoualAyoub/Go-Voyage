@@ -18,6 +18,8 @@ import tn.govoyage.mobile.viewModel.AuthViewModel
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    // Evite d'ouvrir deux fois l'espace quand la session est reemise.
+    private var espaceOuvert = false
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory {
             initializer { AuthViewModel((application as GoVoyageApplication).auth) }
@@ -62,9 +64,14 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /** Ouvre l'espace connecte et ferme le formulaire. */
+    /** Ouvre l'espace connecte une seule fois, puis ferme le formulaire. */
     private fun ouvrirEspace() {
-        startActivity(Intent(this, MainActivity::class.java))
+        if (espaceOuvert) return
+        espaceOuvert = true
+        // Une seule MainActivity dans la tache, meme si la session est reemise.
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
         finish()
     }
 }

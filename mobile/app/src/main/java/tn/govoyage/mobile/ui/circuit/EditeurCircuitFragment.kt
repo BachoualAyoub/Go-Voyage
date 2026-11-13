@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.initializer
@@ -258,12 +259,17 @@ class EditeurCircuitFragment : Fragment() {
         val etapesValides = brouillons.isNotEmpty() && jours <= 60 && brouillons.all {
             (it.jours.toIntOrNull() ?: 0) in 1..30 && catalogue.containsKey(it.destinationId)
         }
-        binding.boutonEnregistrer.isEnabled = binding.editNomCircuit.text.isNotBlank()
-            && etapesValides && brouillons.size < 10
+        binding.boutonEnregistrer.isEnabled = etapesValides && brouillons.size < 10
     }
 
     /** Envoie la sauvegarde puis revient au carnet. */
     private fun enregistrerCircuit() {
+        // Le nom reste obligatoire : on guide l'utilisateur au lieu de bloquer le bouton.
+        if (binding.editNomCircuit.text.isBlank()) {
+            Toast.makeText(requireContext(), R.string.editeur_nom_obligatoire, Toast.LENGTH_SHORT).show()
+            binding.editNomCircuit.requestFocus()
+            return
+        }
         val demande = CircuitRequest(
             binding.editNomCircuit.text.toString().trim(),
             null,

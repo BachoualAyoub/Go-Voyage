@@ -99,30 +99,6 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/palette_encre"
                     android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/labelRole"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/compte_role"
-                    android:textColor="@color/palette_texte_secondaire"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tvValeurRole"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/palette_encre"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:id="@+id/texteNoteAdmin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/compte_note_admin"
-                    android:visibility="gone" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

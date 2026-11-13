@@ -39,22 +39,11 @@ class CompteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         authViewModel.session.observe(viewLifecycleOwner) { session ->
             val compte = session?.compte ?: return@observe
-            val estAdmin = compte.role == "ADMIN"
-            binding.texteEspace.text = if (estAdmin) {
-                getString(R.string.compte_espace_admin)
-            } else {
-                getString(R.string.compte_espace_voyageur)
-            }
+            binding.texteEspace.text = getString(R.string.compte_espace_voyageur)
             binding.texteBonjour.text = getString(R.string.compte_bonjour, compte.prenom)
             binding.tvValeurNom.text = "${compte.prenom} ${compte.nom}"
             binding.tvValeurEmail.text = compte.email
             binding.tvValeurTelephone.text = compte.tel
-            binding.tvValeurRole.text = if (estAdmin) {
-                getString(R.string.compte_role_admin)
-            } else {
-                getString(R.string.compte_role_user)
-            }
-            binding.texteNoteAdmin.visibility = if (estAdmin) View.VISIBLE else View.GONE
         }
         binding.boutonDeconnexion.setOnClickListener {
             confirmerDeconnexion()

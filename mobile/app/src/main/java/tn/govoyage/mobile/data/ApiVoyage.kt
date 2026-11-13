@@ -23,7 +23,7 @@ import tn.govoyage.mobile.model.UtilisateurResponse
 const val API_PORT = 8081
 
 // IP du PC sur le Wi-Fi : commande ipconfig. A mettre a jour si elle change.
-private const val LOCAL_IP = "172.16.20.85"
+private const val LOCAL_IP = "192.168.1.4"
 
 // L'emulateur joint le PC par 10.0.2.2 ; un telephone passe par le reseau local.
 private fun adresseApi(): String {

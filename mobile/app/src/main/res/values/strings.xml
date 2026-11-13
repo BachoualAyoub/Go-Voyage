@@ -45,17 +45,12 @@
     <string name="item_circuit_supprimer">Supprimer</string>
 
     <!-- Ecran Mon compte. -->
-    <string name="compte_espace_admin">ESPACE ADMINISTRATEUR</string>
     <string name="compte_espace_voyageur">ESPACE VOYAGEUR</string>
     <string name="compte_bonjour">Bonjour, %1$s.</string>
     <string name="compte_titre_carte">Mon compte</string>
     <string name="compte_nom_complet">Nom complet</string>
     <string name="compte_email">Adresse e-mail</string>
     <string name="compte_telephone">Téléphone</string>
-    <string name="compte_role">Rôle</string>
-    <string name="compte_role_admin">Administrateur</string>
-    <string name="compte_role_user">Utilisateur</string>
-    <string name="compte_note_admin">La gestion des comptes se fait dans l’espace web.</string>
     <string name="bouton_deconnexion">Déconnexion</string>
 
     <!-- Ecran Mes circuits. -->
@@ -78,6 +73,7 @@
     <string name="editeur_bilan_surtitre">VOTRE ESTIMATION</string>
     <string name="editeur_bilan_tarifs">Tarifs indicatifs par destination.</string>
     <string name="editeur_nom">Nom du circuit</string>
+    <string name="editeur_nom_obligatoire">Veuillez saisir un nom pour le circuit.</string>
     <string name="editeur_titre_etapes">Vos étapes</string>
     <string name="editeur_compteur_etapes">%1$d / 10</string>
     <string name="editeur_etapes_vides">Ajoutez votre première destination.</string>

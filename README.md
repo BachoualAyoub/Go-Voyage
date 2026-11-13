@@ -132,7 +132,7 @@ Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
 2. Relevez l'adresse IPv4 du PC (`ipconfig`) et reportez-la dans la constante `LOCAL_IP` de `mobile/app/src/main/java/tn/govoyage/mobile/data/ApiVoyage.kt` :
 
    ```kotlin
-   private const val LOCAL_IP = "172.16.20.85"
+   private const val LOCAL_IP = "192.168.1.4"
    ```
 
 3. Si Windows le demande, autorisez le port 8081 pour le profil réseau en cours (réseau « Public » sur un Wi-Fi d'établissement).

@@ -14,6 +14,7 @@ import tn.govoyage.mobile.data.AuthRepository
 import tn.govoyage.mobile.data.ConnexionRequest
 import tn.govoyage.mobile.data.InscriptionRequest
 import tn.govoyage.mobile.data.SessionLocale
+import tn.govoyage.mobile.data.adresseApi
 import tn.govoyage.mobile.data.lireErreur
 
 /** Etat des formulaires d'authentification. */
@@ -69,8 +70,9 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
                 action()
             } catch (cause: HttpException) {
                 majEtat { EtatAuth(erreur = true, message = lireErreur(cause)) }
-            } catch (_: IOException) {
-                majEtat { EtatAuth(erreur = true, message = "API injoignable. Vérifiez que le backend GO VOYAGE est démarré.") }
+            } catch (cause: IOException) {
+                val detail = cause.message ?: "erreur reseau"
+                majEtat { EtatAuth(erreur = true, message = "API injoignable : $detail (${adresseApi()})") }
             } catch (_: JsonParseException) {
                 majEtat { EtatAuth(erreur = true, message = "La réponse de l’API est illisible.") }
             } finally {

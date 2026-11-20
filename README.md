@@ -81,8 +81,6 @@ Depuis la racine du dépôt :
 **PowerShell**
 
 ```powershell
-$env:JAVA_HOME = '<dossier de votre JDK 21>'   # ex. C:\Program Files\Android\Android Studio\jbr
-$env:SPRING_PROFILES_ACTIVE = 'dev'
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
@@ -90,15 +88,15 @@ cd backend
 **Invite de commandes (CMD)**
 
 ```bat
-set "JAVA_HOME=<dossier de votre JDK 21>"
-set "SPRING_PROFILES_ACTIVE=dev"
 cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
+Tous les réglages locaux (base `govoyage`, port 8081, profil `dev`) sont dans `backend/src/main/resources/application.properties` : aucune variable d'environnement n'est nécessaire. Dans VS Code ou IntelliJ, le bouton **Run** sur `GoVoyageApplication` suffit.
+
 Si votre base n'est pas sur le port 5432, ajoutez `$env:DB_PORT = '55433'` (PowerShell) ou `set "DB_PORT=55433"` (CMD).
 
-L'API écoute sur [127.0.0.1:8081](http://127.0.0.1:8081/swagger-ui.html). Au premier démarrage, Flyway crée les tables puis insère le catalogue de démonstration : 8 destinations tunisiennes, 3 circuits proposés et 4 comptes.
+L'API écoute sur toutes les interfaces (port 8081), donc aussi sur l'IP du PC : [http://127.0.0.1:8081/swagger-ui.html](http://127.0.0.1:8081/swagger-ui.html). Au premier démarrage, Flyway crée les tables puis insère le catalogue de démonstration : 8 destinations tunisiennes, 3 circuits proposés et 4 comptes.
 
 #### 3. Interface web — nécessite Node.js 22
 
@@ -120,19 +118,12 @@ Pour viser une autre API, copiez `web/.env.example` vers `web/.env`, ajustez `VI
 
 Pour tester sur un téléphone physique relié au même Wi-Fi que le PC :
 
-1. Démarrez le backend sur toutes les interfaces réseau :
-
-   ```powershell
-   cd backend
-   $env:SERVER_ADDRESS = "0.0.0.0"
-   $env:SPRING_PROFILES_ACTIVE = "dev"
-   .\mvnw.cmd spring-boot:run
-   ```
+1. Démarrez le backend normalement (bouton **Run** ou `.\mvnw.cmd spring-boot:run`) : il écoute déjà sur toutes les interfaces réseau.
 
 2. Relevez l'adresse IPv4 du PC (`ipconfig`) et reportez-la dans la constante `LOCAL_IP` de `mobile/app/src/main/java/tn/govoyage/mobile/data/ApiVoyage.kt` :
 
    ```kotlin
-   private const val LOCAL_IP = "192.168.1.4"
+   private const val LOCAL_IP = "172.16.20.246"
    ```
 
 3. Si Windows le demande, autorisez le port 8081 pour le profil réseau en cours (réseau « Public » sur un Wi-Fi d'établissement).

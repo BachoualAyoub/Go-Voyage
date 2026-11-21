@@ -4,8 +4,15 @@
     <string name="app_name">GO VOYAGE</string>
     <string name="description_logo">GO VOYAGE</string>
 
+    <!-- Ecran d'accueil. -->
+    <string name="accueil_bienvenue">Bienvenue</string>
+    <string name="accueil_sous_titre">Composez votre prochain voyage en quelques étapes.</string>
+    <string name="accueil_creer_circuit">Créer un circuit</string>
+    <string name="accueil_voir_circuits">Voir mes circuits</string>
+
     <!-- Menu du tiroir lateral. -->
-    <string name="menu_explorer">Explorer</string>
+    <string name="menu_accueil">Accueil</string>
+    <string name="menu_destinations">Destinations</string>
     <string name="menu_circuits">Mes circuits</string>
     <string name="menu_compte">Mon compte</string>
     <string name="menu_deconnexion">Déconnexion</string>
@@ -18,7 +25,6 @@
     <string name="login_bouton">Me connecter</string>
     <string name="login_vers_inscription">Pas encore de compte ? Créez-en un</string>
     <string name="login_champs_vides">Veuillez remplir tous les champs</string>
-    <string name="login_message_cree">Votre compte est créé. Vous pouvez vous connecter.</string>
 
     <!-- Ecran d'inscription. -->
     <string name="register_titre">Créez votre compte</string>
@@ -30,19 +36,13 @@
     <string name="register_password_indication">8 caractères minimum.</string>
     <string name="register_password_court">Le mot de passe doit contenir 8 caractères minimum.</string>
     <string name="register_bouton">Créer mon compte</string>
-    <string name="register_patientez">Veuillez patienter…</string>
     <string name="register_champs_vides">Veuillez remplir tous les champs</string>
 
     <!-- Confirmation de deconnexion. -->
     <string name="deconnexion_titre">Confirmation de déconnexion</string>
-    <string name="deconnexion_message">Êtes-vous sûr de vouloir vous déconnecter et quitter votre session ?</string>
+    <string name="deconnexion_message">Êtes-vous sûr de vouloir vous déconnecter et quitter votre espace ?</string>
     <string name="deconnexion_oui">Oui</string>
     <string name="deconnexion_non">Non</string>
-
-    <string name="item_circuit_voir_modele">Voir le modèle</string>
-    <string name="item_circuit_voir_circuit">Voir le circuit</string>
-    <string name="item_circuit_modifier">Modifier</string>
-    <string name="item_circuit_supprimer">Supprimer</string>
 
     <!-- Ecran Mon compte. -->
     <string name="compte_espace_voyageur">ESPACE VOYAGEUR</string>
@@ -53,12 +53,24 @@
     <string name="compte_telephone">Téléphone</string>
     <string name="bouton_deconnexion">Déconnexion</string>
 
-    <!-- Ecran Mes circuits. -->
+    <!-- Catalogue des destinations. -->
+    <string name="explorer_titre_destinations">Où partir ?</string>
+    <string name="banniere_texte">Du littoral aux dunes, composez votre voyage.</string>
+    <string name="explorer_aucune">Aucune destination disponible pour le moment.</string>
+    <string name="bouton_reessayer">Réessayer</string>
+    <string name="fiche_destination_creer_circuit">Créer un circuit</string>
+    <string name="fiche_destination_tarif_jour">TND par jour (indicatif)</string>
+    <string name="titre_detail_destination">Fiche destination</string>
+
+    <!-- Carnet de circuits. -->
     <string name="circuits_titre">Mes circuits</string>
-    <string name="circuits_sous_titre">Retrouvez vos itinéraires sur le web et sur votre téléphone.</string>
+    <string name="circuits_sous_titre_local">Vos circuits sont enregistrés sur le téléphone. Synchronisez-les avec votre compte quand vous le souhaitez.</string>
+    <string name="circuits_carnet_vide">Votre carnet est encore vide. Créez un circuit depuis l’accueil.</string>
     <string name="bouton_nouveau_circuit">+ Nouveau circuit</string>
-    <string name="bouton_actualiser_circuits">Actualiser mes circuits</string>
-    <string name="circuits_carnet_vide">Votre carnet est encore vide. Créez un circuit ou partez d’un modèle dans Explorer.</string>
+    <string name="bouton_sync_distance">Synchroniser avec le serveur</string>
+    <string name="item_circuit_voir_circuit">Voir le circuit</string>
+    <string name="item_circuit_modifier">Modifier</string>
+    <string name="item_circuit_supprimer">Supprimer</string>
 
     <!-- Confirmation de suppression d'un circuit. -->
     <string name="suppression_titre">Supprimer ce circuit ?</string>
@@ -77,7 +89,6 @@
     <string name="editeur_titre_etapes">Vos étapes</string>
     <string name="editeur_compteur_etapes">%1$d / 10</string>
     <string name="editeur_etapes_vides">Ajoutez votre première destination.</string>
-    <string name="editeur_etape_jours">Jours à cette étape</string>
     <string name="editeur_etape_jours_court">Jours</string>
     <string name="editeur_etape_tarif">%1$d TND / jour</string>
     <string name="editeur_etape_retirer">Retirer</string>
@@ -92,44 +103,11 @@
     <string name="editeur_destination_indisponible">Destination indisponible</string>
     <string name="editeur_enregistrer">Enregistrer le circuit</string>
     <string name="editeur_patientez">Veuillez patienter…</string>
-    <string name="fiche_destination_creer_circuit">Créer un circuit</string>
-
-    <!-- Fiche circuit : bouton d'edition. -->
-    <string name="fiche_circuit_personnaliser">Personnaliser</string>
-    <string name="fiche_circuit_modifier">Modifier</string>
-
-    <!-- Ecran Explorer. -->
-    <string name="banniere_surtitre">ESCALE EN TUNISIE</string>
-    <string name="banniere_titre">La Tunisie, à votre rythme.</string>
-    <string name="banniere_texte">Du littoral aux dunes, composez votre voyage.</string>
-    <string name="description_banniere">Côte de Sidi Bou Saïd</string>
-    <string name="chip_destinations">Destinations</string>
-    <string name="chip_modeles">Circuits proposés</string>
-    <string name="explorer_titre_destinations">Où partir ?</string>
-    <string name="explorer_recherche">Chercher une destination</string>
-    <string name="explorer_filtre_toutes">Toutes</string>
-    <string name="explorer_filtre_mer">Bord de mer</string>
-    <string name="explorer_filtre_culture">Culture</string>
-    <string name="explorer_filtre_nature">Nature</string>
-    <string name="explorer_aucune">Aucune destination trouvée. Essayez une autre recherche.</string>
-    <string name="explorer_titre_modeles">Idées de départ</string>
-    <string name="explorer_texte_modeles">Choisissez un circuit et adaptez-le à votre rythme.</string>
-    <string name="bouton_reessayer">Réessayer</string>
-    <string name="chargement_en_cours">Chargement…</string>
-
-    <!-- Fiche destination. -->
-    <string name="fiche_destination_tarif_jour">TND par jour (indicatif)</string>
-    <string name="fiche_bouton_fermer">Fermer</string>
 
     <!-- Fiche circuit. -->
-    <string name="fiche_circuit_budget">Budget cible : %1$d TND</string>
+    <string name="fiche_bouton_fermer">Fermer</string>
+    <string name="fiche_circuit_modifier">Modifier</string>
     <string name="fiche_circuit_jours_estimes">%1$d jours · %2$d TND estimés</string>
-
-    <!-- Ecrans provisoires du squelette (remplaces phase par phase). -->
-    <string name="titre_explorer">Explorer</string>
-    <string name="titre_circuits">Mes circuits</string>
-    <string name="titre_compte">Mon compte</string>
-    <string name="titre_detail_destination">Fiche destination</string>
     <string name="titre_detail_circuit">Fiche circuit</string>
     <string name="titre_editeur_circuit">Éditeur de circuit</string>
 </resources>

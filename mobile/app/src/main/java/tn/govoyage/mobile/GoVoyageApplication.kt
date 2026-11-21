@@ -1,41 +1,34 @@
 package tn.govoyage.mobile
 
 import android.app.Application
-import android.content.pm.PackageManager
 import androidx.room.Room
-import kotlinx.coroutines.runBlocking
-import tn.govoyage.mobile.data.AuthRepository
-import tn.govoyage.mobile.data.BaseVoyage
-import tn.govoyage.mobile.data.CircuitRepository
-import tn.govoyage.mobile.data.DestinationRepository
-import tn.govoyage.mobile.data.RetrofitInstance
+import tn.govoyage.mobile.data.local.database.MIGRATION_1_3
+import tn.govoyage.mobile.data.local.database.MIGRATION_2_3
+import tn.govoyage.mobile.data.local.database.MIGRATION_3_4
+import tn.govoyage.mobile.data.local.database.MIGRATION_4_5
+import tn.govoyage.mobile.data.local.database.MIGRATION_5_6
+import tn.govoyage.mobile.data.local.database.MIGRATION_6_7
+import tn.govoyage.mobile.data.local.database.VoyageDatabase
+import tn.govoyage.mobile.data.remote.RetrofitInstance
+import tn.govoyage.mobile.data.repository.AuthRepository
+import tn.govoyage.mobile.data.repository.CircuitRepository
+import tn.govoyage.mobile.data.repository.DestinationRepository
 
-/** Partage le client et la base privee durant la vie de l'application. */
+/** Partage la base locale et les repositories pendant la vie de l'application. */
 class GoVoyageApplication : Application() {
-    private val api = RetrofitInstance.api
-    private val base by lazy { Room.databaseBuilder(this, BaseVoyage::class.java, "go-voyage.db").build() }
-    val auth by lazy { AuthRepository(api, base) }
-    val destinations by lazy { DestinationRepository(api, base) }
-    val circuits by lazy { CircuitRepository(api, base) }
 
-    override fun onCreate() {
-        super.onCreate()
-        // Chaque nouvelle installation de l'APK repart sans session.
-        reinitialiserApresMiseAJour()
+    private val base by lazy {
+        Room.databaseBuilder(this, VoyageDatabase::class.java, "go-voyage.db")
+            .addMigrations(
+                MIGRATION_1_3, MIGRATION_2_3, MIGRATION_3_4,
+                MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7
+            )
+            .build()
     }
 
-    /** Efface la session quand l'application a ete reinstallee. */
-    @Suppress("DEPRECATION")
-    private fun reinitialiserApresMiseAJour() {
-        val preferences = getSharedPreferences("installation", MODE_PRIVATE)
-        val miseAJour = try {
-            packageManager.getPackageInfo(packageName, 0).lastUpdateTime
-        } catch (_: PackageManager.NameNotFoundException) {
-            return
-        }
-        if (preferences.getLong("derniereMiseAJour", 0L) == miseAJour) return
-        // On attend la suppression avant d'afficher le premier ecran.
-        runBlocking { base.sessionDAO().effacer() }
-        preferences.edit().putLong("derniereMiseAJour", miseAJour).apply()
-    }
+    val auth by lazy { AuthRepository(RetrofitInstance.auth, base.utilisateurDAO()) }
+
+    val circuits by lazy { CircuitRepository(base.circuitDAO(), RetrofitInstance.circuits) }
+
+    val destinations by lazy { DestinationRepository(RetrofitInstance.destinations, base.destinationDAO()) }
 }

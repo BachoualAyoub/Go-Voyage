@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.viewmodel.initializer
@@ -13,8 +14,9 @@ import androidx.navigation.fragment.findNavController
 import tn.govoyage.mobile.GoVoyageApplication
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentCircuitDetailBinding
-import tn.govoyage.mobile.ui.imageCircuit
-import tn.govoyage.mobile.viewModel.VoyageViewModel
+import tn.govoyage.mobile.model.Circuit
+import tn.govoyage.mobile.ui.afficherImageCircuit
+import tn.govoyage.mobile.viewModel.CircuitViewModel
 
 /** Fiche complete d'un circuit : itineraire et totaux. */
 class CircuitDetailFragment : Fragment() {
@@ -22,14 +24,16 @@ class CircuitDetailFragment : Fragment() {
     private var _binding: FragmentCircuitDetailBinding? = null
     private val binding get() = _binding!!
 
-    private val voyageViewModel: VoyageViewModel by activityViewModels {
+    private val circuitViewModel: CircuitViewModel by activityViewModels {
         viewModelFactory {
             initializer {
                 val app = requireActivity().application as GoVoyageApplication
-                VoyageViewModel(app.destinations, app.circuits, app.auth)
+                CircuitViewModel(app.circuits, app.destinations)
             }
         }
     }
+
+    private val circuitId by lazy { arguments?.getLong("circuitId", -1L) ?: -1L }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,47 +46,35 @@ class CircuitDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        voyageViewModel.circuitSelectionne.observe(viewLifecycleOwner) { circuit ->
-            if (circuit != null) {
-                binding.imageCircuitDetail.setImageResource(imageCircuit(circuit))
-                binding.texteFicheCircuitNom.text = circuit.nom
-                if (circuit.description.isNullOrEmpty()) {
-                    binding.texteFicheCircuitDescription.visibility = View.GONE
-                } else {
-                    binding.texteFicheCircuitDescription.visibility = View.VISIBLE
-                    binding.texteFicheCircuitDescription.text = circuit.description
-                }
-                binding.texteFicheCircuitTotaux.text =
-                    getString(R.string.fiche_circuit_jours_estimes, circuit.dureeJours, circuit.estimationTnd)
-                if (circuit.budgetTnd != null) {
-                    binding.texteFicheCircuitBudget.visibility = View.VISIBLE
-                    binding.texteFicheCircuitBudget.text =
-                        getString(R.string.fiche_circuit_budget, circuit.budgetTnd)
-                } else {
-                    binding.texteFicheCircuitBudget.visibility = View.GONE
-                }
-                remplirEtapes(circuit)
-                binding.boutonPersonnaliser.text = if (circuit.modele) {
-                    getString(R.string.fiche_circuit_personnaliser)
-                } else {
-                    getString(R.string.fiche_circuit_modifier)
-                }
-                binding.boutonPersonnaliser.visibility = View.VISIBLE
-            }
+        circuitViewModel.demarrer()
+
+        circuitViewModel.circuits.observe(viewLifecycleOwner) { liste ->
+            val circuit = liste.firstOrNull { it.id == circuitId } ?: return@observe
+            afficherCircuit(circuit)
         }
+
         binding.boutonFermerCircuit.setOnClickListener {
-            voyageViewModel.selectCircuit(null)
-            // Retour a l'ecran precedent.
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
         binding.boutonPersonnaliser.setOnClickListener {
-            // L'editeur part du circuit selectionne.
-            findNavController().navigate(R.id.action_nav_circuit_detail_to_nav_editeur_circuit)
+            findNavController().navigate(
+                R.id.action_nav_circuit_detail_to_nav_editeur_circuit,
+                bundleOf("circuitId" to circuitId)
+            )
         }
     }
 
+    /** Remplit la fiche avec le circuit trouve dans le carnet local. */
+    private fun afficherCircuit(circuit: Circuit) {
+        afficherImageCircuit(binding.imageCircuitDetail, circuit)
+        binding.texteFicheCircuitNom.text = circuit.nom
+        binding.texteFicheCircuitTotaux.text =
+            getString(R.string.fiche_circuit_jours_estimes, circuit.dureeJours, circuit.estimationTnd)
+        remplirEtapes(circuit)
+    }
+
     /** Ajoute une ligne par etape, dans l'ordre du circuit. */
-    private fun remplirEtapes(circuit: tn.govoyage.mobile.model.Circuit) {
+    private fun remplirEtapes(circuit: Circuit) {
         binding.listeEtapesFiche.removeAllViews()
         for ((ordre, etape) in circuit.etapes.withIndex()) {
             val ligne = TextView(requireContext())

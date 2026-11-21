@@ -6,15 +6,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.google.android.material.navigation.NavigationView
 import tn.govoyage.mobile.databinding.ActivityMainBinding
 import tn.govoyage.mobile.ui.auth.LoginActivity
@@ -35,60 +36,83 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        installerNavigation()
+        observerDeconnexion()
+    }
+
+    /** Installe le controleur de navigation et le tiroir lateral. */
+    private fun installerNavigation() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
-        // Le NavHostFragment est deja ajoute par FragmentContainerView : on lit son
-        // controleur au lieu de findNavController, sa vue n'existe pas encore ici.
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Les trois ecrans de haut niveau ouvrent le tiroir sans fleche retour.
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.nav_circuits, R.id.nav_compte), drawerLayout
+            setOf(R.id.nav_home, R.id.nav_destinations, R.id.nav_circuits, R.id.nav_compte),
+            drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        // La deconnexion du tiroir passe par une confirmation, comme en TP3.
         navView.setNavigationItemSelectedListener { item ->
-            drawerLayout.closeDrawer(navView)
             when (item.itemId) {
                 R.id.nav_deconnexion -> {
+                    drawerLayout.closeDrawer(navView)
                     confirmerDeconnexion()
                     true
                 }
-                else -> NavigationUI.onNavDestinationSelected(item, navController)
+                R.id.nav_home -> {
+                    revenirAccueil()
+                    drawerLayout.closeDrawer(navView)
+                    true
+                }
+                else -> {
+                    val navigue = NavigationUI.onNavDestinationSelected(item, navController)
+                    if (navigue) drawerLayout.closeDrawer(navView)
+                    navigue
+                }
             }
-        }
-
-        // Session fermee (deconnexion ou jeton refuse) : retour a la connexion.
-        authViewModel.session.observe(this) { session ->
-            if (session == null) revenirConnexion()
         }
     }
 
-    /** Dialogue de confirmation, identique au TP3. */
+    /** Revient toujours a l'accueil en vidant la pile des fragments. */
+    private fun revenirAccueil() {
+        val options = NavOptions.Builder()
+            .setPopUpTo(R.id.nav_home, true)
+            .setLaunchSingleTop(true)
+            .build()
+        navController.navigate(R.id.nav_home, null, options)
+    }
+
+    /** Retourne a la connexion des que le compte en memoire disparait. */
+    private fun observerDeconnexion() {
+        authViewModel.compte.observe(this) { compte ->
+            if (compte == null) revenirConnexion()
+        }
+    }
+
+    /** Demande confirmation avant de fermer la session. */
     private fun confirmerDeconnexion() {
         AlertDialog.Builder(this)
             .setTitle(R.string.deconnexion_titre)
             .setMessage(R.string.deconnexion_message)
-            .setPositiveButton(R.string.deconnexion_oui) { dialog, which ->
+            .setPositiveButton(R.string.deconnexion_oui) { dialog, _ ->
                 authViewModel.deconnecter()
+                dialog.dismiss()
             }
-            .setNegativeButton(R.string.deconnexion_non) { dialog, which ->
+            .setNegativeButton(R.string.deconnexion_non) { dialog, _ ->
                 dialog.dismiss()
             }
             .setIcon(R.drawable.ic_logout)
             .show()
     }
 
-    /** Revient au formulaire de connexion et vide la pile d'ecrans. */
+    /** Revient au formulaire de connexion et vide la pile d'activites. */
     private fun revenirConnexion() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

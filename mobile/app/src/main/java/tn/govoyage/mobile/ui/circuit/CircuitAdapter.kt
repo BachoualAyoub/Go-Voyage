@@ -6,12 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.ItemCircuitBinding
 import tn.govoyage.mobile.model.Circuit
-import tn.govoyage.mobile.ui.imageCircuit
+import tn.govoyage.mobile.ui.afficherImageCircuit
 
-/** Liste les circuits proposes et le carnet personnel du voyageur. */
+/** Liste du carnet local avec les actions du voyageur. */
 class CircuitAdapter(
     private var circuits: MutableList<Circuit>,
-    private val avecActions: Boolean,
     private val onClique: (Circuit) -> Unit,
     private val onModifier: (Circuit) -> Unit,
     private val onSupprimer: (Circuit) -> Unit
@@ -21,29 +20,18 @@ class CircuitAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(circuit: Circuit) {
-            binding.imageCircuit.setImageResource(imageCircuit(circuit))
-            binding.tvDureeEstimation.text = "${circuit.dureeJours} j  ·  ${circuit.estimationTnd} TND estimés"
+            afficherImageCircuit(binding.imageCircuit, circuit)
+            binding.tvDureeEstimation.text =
+                "${circuit.dureeJours} j  ·  ${circuit.estimationTnd} TND estimés"
             binding.tvNomCircuit.text = circuit.nom
             binding.tvItineraire.text = circuit.etapes.joinToString(" → ") { it.nom }
-            binding.boutonVoirCircuit.text = if (circuit.modele) {
-                binding.root.context.getString(R.string.item_circuit_voir_modele)
-            } else {
+            binding.boutonVoirCircuit.text =
                 binding.root.context.getString(R.string.item_circuit_voir_circuit)
-            }
-            binding.groupeActions.visibility = if (avecActions) ViewGroup.VISIBLE else ViewGroup.GONE
 
-            binding.root.setOnClickListener {
-                onClique(circuit)
-            }
-            binding.boutonVoirCircuit.setOnClickListener {
-                onClique(circuit)
-            }
-            binding.boutonModifier.setOnClickListener {
-                onModifier(circuit)
-            }
-            binding.boutonSupprimer.setOnClickListener {
-                onSupprimer(circuit)
-            }
+            binding.root.setOnClickListener { onClique(circuit) }
+            binding.boutonVoirCircuit.setOnClickListener { onClique(circuit) }
+            binding.boutonModifier.setOnClickListener { onModifier(circuit) }
+            binding.boutonSupprimer.setOnClickListener { onSupprimer(circuit) }
         }
     }
 

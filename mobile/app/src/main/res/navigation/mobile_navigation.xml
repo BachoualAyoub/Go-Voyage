@@ -8,14 +8,38 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="tn.govoyage.mobile.ui.home.HomeFragment"
-        android:label="@string/menu_explorer"
+        android:label="@string/menu_accueil"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_nav_home_to_nav_destination_detail"
-            app:destination="@id/nav_destination_detail" />
+            android:id="@+id/action_nav_home_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
         <action
-            android:id="@+id/action_nav_home_to_nav_circuit_detail"
-            app:destination="@id/nav_circuit_detail" />
+            android:id="@+id/action_nav_home_to_nav_circuits"
+            app:destination="@id/nav_circuits" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_destinations"
+        android:name="tn.govoyage.mobile.ui.destination.DestinationsFragment"
+        android:label="@string/menu_destinations"
+        tools:layout="@layout/fragment_destinations">
+        <action
+            android:id="@+id/action_nav_destinations_to_nav_destination_detail"
+            app:destination="@id/nav_destination_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_destination_detail"
+        android:name="tn.govoyage.mobile.ui.destination.DestinationDetailFragment"
+        android:label="@string/titre_detail_destination"
+        tools:layout="@layout/fragment_destination_detail">
+        <argument
+            android:name="destinationId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <action
+            android:id="@+id/action_nav_destination_detail_to_nav_editeur_circuit"
+            app:destination="@id/nav_editeur_circuit" />
     </fragment>
 
     <fragment
@@ -32,26 +56,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_compte"
-        android:name="tn.govoyage.mobile.ui.compte.CompteFragment"
-        android:label="@string/menu_compte"
-        tools:layout="@layout/fragment_compte" />
-
-    <fragment
-        android:id="@+id/nav_destination_detail"
-        android:name="tn.govoyage.mobile.ui.destination.DestinationDetailFragment"
-        android:label="@string/titre_detail_destination"
-        tools:layout="@layout/fragment_destination_detail">
-        <action
-            android:id="@+id/action_nav_destination_detail_to_nav_editeur_circuit"
-            app:destination="@id/nav_editeur_circuit" />
-    </fragment>
-
-    <fragment
         android:id="@+id/nav_circuit_detail"
         android:name="tn.govoyage.mobile.ui.circuit.CircuitDetailFragment"
         android:label="@string/titre_detail_circuit"
         tools:layout="@layout/fragment_circuit_detail">
+        <argument
+            android:name="circuitId"
+            app:argType="long" />
         <action
             android:id="@+id/action_nav_circuit_detail_to_nav_editeur_circuit"
             app:destination="@id/nav_editeur_circuit" />
@@ -62,10 +73,24 @@
         android:name="tn.govoyage.mobile.ui.circuit.EditeurCircuitFragment"
         android:label="@string/titre_editeur_circuit"
         tools:layout="@layout/fragment_editeur_circuit">
+        <argument
+            android:name="circuitId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+        <argument
+            android:name="destinationId"
+            app:argType="long"
+            android:defaultValue="-1L" />
         <action
             android:id="@+id/action_nav_editeur_circuit_to_nav_circuits"
             app:destination="@id/nav_circuits"
             app:popUpTo="@id/nav_home" />
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_compte"
+        android:name="tn.govoyage.mobile.ui.compte.CompteFragment"
+        android:label="@string/menu_compte"
+        tools:layout="@layout/fragment_compte" />
 
 </navigation>

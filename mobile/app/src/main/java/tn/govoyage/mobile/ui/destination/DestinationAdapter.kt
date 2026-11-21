@@ -3,10 +3,9 @@ package tn.govoyage.mobile.ui.destination
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.ItemDestinationBinding
 import tn.govoyage.mobile.model.Destination
-import tn.govoyage.mobile.ui.imageDestination
+import tn.govoyage.mobile.ui.afficherImageDestination
 
 /** Traduit les categories du catalogue en libelles de navigation. */
 fun libelleAmbiance(ambiance: String) = when (ambiance) {
@@ -25,17 +24,15 @@ class DestinationAdapter(
     inner class DestinationViewHolder(private val binding: ItemDestinationBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
+        /** Remplit une carte avec la photo, le lieu et le tarif. */
         fun bind(destination: Destination) {
-            binding.imageDestination.setImageResource(imageDestination(destination.code))
+            afficherImageDestination(binding.imageDestination, destination)
             binding.tvAmbiance.text = libelleAmbiance(destination.ambiance)
             binding.tvNom.text = destination.nom
             binding.tvLieu.text = "${destination.ville} · ${destination.region}"
             binding.tvAccroche.text = destination.accroche
             binding.tvTarif.text = "${destination.tarifJourTnd} TND / jour  ·  Voir la destination"
-
-            binding.root.setOnClickListener {
-                onItemClicked(destination)
-            }
+            binding.root.setOnClickListener { onItemClicked(destination) }
         }
     }
 
@@ -52,6 +49,7 @@ class DestinationAdapter(
 
     override fun getItemCount() = destinations.size
 
+    /** Remplace le contenu affiche apres un chargement ou une mise a jour locale. */
     fun updateList(newList: List<Destination>) {
         this.destinations.clear()
         this.destinations.addAll(newList)

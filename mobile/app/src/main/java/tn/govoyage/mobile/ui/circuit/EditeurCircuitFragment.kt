@@ -18,10 +18,12 @@ import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentEditeurCircuitBinding
 import tn.govoyage.mobile.databinding.ItemEtapeBinding
 import tn.govoyage.mobile.model.Circuit
-import tn.govoyage.mobile.model.CircuitRequest
 import tn.govoyage.mobile.model.Destination
-import tn.govoyage.mobile.model.EtapeRequest
-import tn.govoyage.mobile.viewModel.VoyageViewModel
+import tn.govoyage.mobile.model.EtapeCircuit
+import tn.govoyage.mobile.viewModel.CircuitViewModel
+
+private const val ARG_CIRCUIT_ID = "circuitId"
+private const val ARG_DESTINATION_ID = "destinationId"
 
 /** Etape editable avec une cle stable lors des deplacements. */
 private data class EtapeBrouillon(val cle: Int, val destinationId: Long, var jours: String)
@@ -29,22 +31,27 @@ private data class EtapeBrouillon(val cle: Int, val destinationId: Long, var jou
 /** Vue d'une ligne d'etape, gardee en memoire pour conserver la saisie. */
 private class LigneEtapeVue(val cle: Int, val binding: ItemEtapeBinding)
 
-/** Editeur plein ecran avec bilan instantane, comme dans l'app Compose. */
+/** Editeur plein ecran avec bilan instantane. */
 class EditeurCircuitFragment : Fragment() {
 
     private var _binding: FragmentEditeurCircuitBinding? = null
     private val binding get() = _binding!!
 
-    private val voyageViewModel: VoyageViewModel by activityViewModels {
+    private val circuitViewModel: CircuitViewModel by activityViewModels {
         viewModelFactory {
             initializer {
                 val app = requireActivity().application as GoVoyageApplication
-                VoyageViewModel(app.destinations, app.circuits, app.auth)
+                CircuitViewModel(app.circuits, app.destinations)
             }
         }
     }
 
+    private val circuitId by lazy { arguments?.getLong(ARG_CIRCUIT_ID, -1L) ?: -1L }
+    private val destinationId by lazy { arguments?.getLong(ARG_DESTINATION_ID, -1L) ?: -1L }
+
     private var personnel: Circuit? = null
+    private var departCharge = false
+    private var destinationInitialAjoutee = false
     private val brouillons = mutableListOf<EtapeBrouillon>()
     private val vues = mutableListOf<LigneEtapeVue>()
     private var prochaineCle = 0
@@ -62,49 +69,63 @@ class EditeurCircuitFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        preparerDepart()
+        circuitViewModel.demarrer()
+        val circuitInitial = circuitViewModel.circuits.value?.firstOrNull { it.id == circuitId }
+        if (circuitId != -1L && circuitInitial != null) {
+            departCharge = true
+            preparerDepart(circuitInitial)
+        } else {
+            preparerDepart(null)
+        }
         installerChamps()
         installerBoutons()
 
-        voyageViewModel.destinations.observe(viewLifecycleOwner) { liste ->
+        circuitViewModel.circuits.observe(viewLifecycleOwner) { liste ->
+            if (circuitId == -1L || departCharge) return@observe
+            val circuit = liste.firstOrNull { it.id == circuitId } ?: return@observe
+            departCharge = true
+            viderLignes()
+            preparerDepart(circuit)
+        }
+
+        circuitViewModel.destinations.observe(viewLifecycleOwner) { liste ->
             listeDestinationsCatalogue = liste
             catalogue = liste.associateBy { it.id }
+            ajouterDestinationInitiale(liste)
             renumeroter()
             recalculerBilan()
         }
-        voyageViewModel.etat.observe(viewLifecycleOwner) { etat ->
+
+        circuitViewModel.etat.observe(viewLifecycleOwner) { etat ->
             binding.boutonEnregistrer.text =
-                if (etat.actionEnCours) getString(R.string.editeur_patientez) else getString(R.string.editeur_enregistrer)
+                if (etat.actionEnCours) getString(R.string.editeur_patientez)
+                else getString(R.string.editeur_enregistrer)
             binding.texteErreurEditeur.text = etat.erreur
         }
+
+        if (circuitViewModel.destinations.value.isNullOrEmpty()) {
+            circuitViewModel.chargerDestinations()
+        }
     }
 
-    /** Pre-remplit l'editeur depuis la fiche ouverte ou depuis zero. */
-    private fun preparerDepart() {
-        val circuit = voyageViewModel.circuitSelectionne.value
-        personnel = circuit?.takeUnless { it.modele }
-        binding.texteTitreEditeur.text = if (personnel != null) {
-            getString(R.string.editeur_titre_modification)
-        } else {
+    /** Pre-remplit l'editeur depuis le circuit transmis ou depuis zero. */
+    private fun preparerDepart(circuit: Circuit?) {
+        personnel = circuit
+        binding.texteTitreEditeur.text = if (circuit == null) {
             getString(R.string.editeur_titre_creation)
+        } else {
+            getString(R.string.editeur_titre_modification)
         }
         binding.editNomCircuit.setText(circuit?.nom.orEmpty())
-        val etapes = preparerEtapes()
-        // Les cles de depart occupent deja 0..n-1 : la suivante doit continuer apres.
-        prochaineCle = etapes.size
-        for (etape in etapes) ajouterLigne(etape)
-    }
-
-    /** Construit le brouillon sans modifier le modele d'origine. */
-    private fun preparerEtapes(): List<EtapeBrouillon> {
-        val circuit = voyageViewModel.circuitSelectionne.value
-        if (circuit != null) {
-            return circuit.etapes.mapIndexed { index, etape ->
+        val etapes = if (circuit == null) {
+            emptyList()
+        } else {
+            circuit.etapes.mapIndexed { index, etape ->
                 EtapeBrouillon(index, etape.destinationId, etape.jours.toString())
             }
         }
-        val destination = voyageViewModel.destinationSelectionne.value ?: return emptyList()
-        return listOf(EtapeBrouillon(0, destination.id, "1"))
+        prochaineCle = etapes.size
+        for (etape in etapes) ajouterLigne(etape)
     }
 
     /** Installe l'ecouteur du nom du circuit. */
@@ -221,13 +242,24 @@ class EditeurCircuitFragment : Fragment() {
         }
     }
 
+    /** Demarre un nouveau circuit avec la destination choisie dans sa fiche. */
+    private fun ajouterDestinationInitiale(liste: List<Destination>) {
+        if (destinationId == -1L || circuitId != -1L || destinationInitialAjoutee) return
+        val destination = liste.firstOrNull { it.id == destinationId } ?: return
+        destinationInitialAjoutee = true
+        ajouterEtape(destination)
+    }
+
     /** Ouvre le catalogue pour ajouter une etape. */
     private fun ouvrirChoixDestination() {
         val destinations = listeDestinationsCatalogue
         if (destinations.isEmpty()) return
         val popup = PopupMenu(requireContext(), binding.boutonAjouterEtape)
         for ((index, destination) in destinations.withIndex()) {
-            popup.menu.add(0, index, index, getString(R.string.editeur_etape_ajout_tarif, destination.nom, destination.tarifJourTnd))
+            popup.menu.add(
+                0, index, index,
+                getString(R.string.editeur_etape_ajout_tarif, destination.nom, destination.tarifJourTnd)
+            )
         }
         popup.setOnMenuItemClickListener { item ->
             ajouterEtape(destinations[item.itemId])
@@ -264,27 +296,48 @@ class EditeurCircuitFragment : Fragment() {
 
     /** Envoie la sauvegarde puis revient au carnet. */
     private fun enregistrerCircuit() {
-        // Le nom reste obligatoire : on guide l'utilisateur au lieu de bloquer le bouton.
         if (binding.editNomCircuit.text.isBlank()) {
             Toast.makeText(requireContext(), R.string.editeur_nom_obligatoire, Toast.LENGTH_SHORT).show()
             binding.editNomCircuit.requestFocus()
             return
         }
-        val demande = CircuitRequest(
-            binding.editNomCircuit.text.toString().trim(),
-            null,
-            brouillons.map { EtapeRequest(it.destinationId, it.jours.toInt()) },
-            personnel?.version
-        )
-        voyageViewModel.sauver(personnel?.id, demande) {
+        val nom = binding.editNomCircuit.text.toString().trim()
+        circuitViewModel.sauver(personnel?.id, nom, construireEtapes()) {
             findNavController().navigate(R.id.action_nav_editeur_circuit_to_nav_circuits)
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    /** Construit les etapes locales a partir du catalogue affiche. */
+    private fun construireEtapes(): List<EtapeCircuit> {
+        val etapes = mutableListOf<EtapeCircuit>()
+        for (brouillon in brouillons) {
+            val destination = catalogue[brouillon.destinationId] ?: continue
+            val jours = brouillon.jours.toInt()
+            etapes.add(
+                EtapeCircuit(
+                    destinationId = destination.id,
+                    nom = destination.nom,
+                    ville = destination.ville,
+                    ambiance = destination.ambiance,
+                    jours = jours,
+                    tarifJourTnd = destination.tarifJourTnd,
+                    coutTnd = destination.tarifJourTnd * jours
+                )
+            )
+        }
+        return etapes
+    }
+
+    /** Vide les brouillons avant de charger un circuit a modifier. */
+    private fun viderLignes() {
         brouillons.clear()
         vues.clear()
+        binding.listeEtapesEditeur.removeAllViews()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viderLignes()
         _binding = null
     }
 }

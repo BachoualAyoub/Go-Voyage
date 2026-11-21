@@ -9,14 +9,15 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import tn.govoyage.mobile.GoVoyageApplication
 import tn.govoyage.mobile.R
-import tn.govoyage.mobile.data.InscriptionRequest
 import tn.govoyage.mobile.databinding.ActivityRegisterBinding
+import tn.govoyage.mobile.model.InscriptionRequest
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Ecran de creation de compte, style TP3, branche sur le vrai backend. */
+/** Ecran de creation de compte, branche sur le vrai backend. */
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
+
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory {
             initializer { AuthViewModel((application as GoVoyageApplication).auth) }
@@ -28,24 +29,22 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        observerEtat()
+        binding.boutonCreerCompte.setOnClickListener { creerCompte() }
+    }
+
+    /** Revient a la connexion apres une inscription reussie. */
+    private fun observerEtat() {
         authViewModel.etat.observe(this) { etat ->
             if (etat.message.isNotEmpty()) {
                 Toast.makeText(this, etat.message, Toast.LENGTH_LONG).show()
-                if (etat.erreur) {
-                    authViewModel.viderMessage()
-                } else {
-                    revenirConnexion()
-                }
+                if (!etat.erreur) revenirConnexion()
             }
             binding.boutonCreerCompte.isEnabled = !etat.chargement
         }
-
-        binding.boutonCreerCompte.setOnClickListener {
-            creerCompte()
-        }
     }
 
-    /** Controle la saisie puis demande la creation au ViewModel. */
+    /** Controle la saisie puis demande la creation du compte. */
     private fun creerCompte() {
         val prenom = binding.editPrenom.text.toString().trim()
         val nom = binding.editNom.text.toString().trim()
@@ -67,7 +66,7 @@ class RegisterActivity : AppCompatActivity() {
     /** Renvoie au formulaire de connexion avec l'email deja saisi. */
     private fun revenirConnexion() {
         val intent = Intent(this, LoginActivity::class.java)
-        intent.putExtra("EXTRA_EMAIL", binding.editEmail.text.toString().trim())
+        intent.putExtra(LoginActivity.EXTRA_EMAIL, binding.editEmail.text.toString().trim())
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         finish()

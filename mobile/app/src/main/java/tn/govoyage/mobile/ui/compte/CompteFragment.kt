@@ -14,7 +14,7 @@ import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentCompteBinding
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Coordonnees du compte connecte et deconnexion. */
+/** Coordonnees du compte connecte et bouton de deconnexion. */
 class CompteFragment : Fragment() {
 
     private var _binding: FragmentCompteBinding? = null
@@ -37,28 +37,32 @@ class CompteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        authViewModel.session.observe(viewLifecycleOwner) { session ->
-            val compte = session?.compte ?: return@observe
+        observerCompte()
+        binding.boutonDeconnexion.setOnClickListener { confirmerDeconnexion() }
+    }
+
+    /** Affiche les informations du compte present uniquement en memoire. */
+    private fun observerCompte() {
+        authViewModel.compte.observe(viewLifecycleOwner) { compte ->
+            val utilisateur = compte ?: return@observe
             binding.texteEspace.text = getString(R.string.compte_espace_voyageur)
-            binding.texteBonjour.text = getString(R.string.compte_bonjour, compte.prenom)
-            binding.tvValeurNom.text = "${compte.prenom} ${compte.nom}"
-            binding.tvValeurEmail.text = compte.email
-            binding.tvValeurTelephone.text = compte.tel
-        }
-        binding.boutonDeconnexion.setOnClickListener {
-            confirmerDeconnexion()
+            binding.texteBonjour.text = getString(R.string.compte_bonjour, utilisateur.prenom)
+            binding.tvValeurNom.text = "${utilisateur.prenom} ${utilisateur.nom}"
+            binding.tvValeurEmail.text = utilisateur.email
+            binding.tvValeurTelephone.text = utilisateur.tel
         }
     }
 
-    /** Dialogue de confirmation, identique au TP3. */
+    /** Demande confirmation avant de vider le compte et le jeton. */
     private fun confirmerDeconnexion() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.deconnexion_titre)
             .setMessage(R.string.deconnexion_message)
-            .setPositiveButton(R.string.deconnexion_oui) { dialog, which ->
+            .setPositiveButton(R.string.deconnexion_oui) { dialog, _ ->
                 authViewModel.deconnecter()
+                dialog.dismiss()
             }
-            .setNegativeButton(R.string.deconnexion_non) { dialog, which ->
+            .setNegativeButton(R.string.deconnexion_non) { dialog, _ ->
                 dialog.dismiss()
             }
             .setIcon(R.drawable.ic_logout)

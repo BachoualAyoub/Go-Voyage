@@ -1,7 +1,7 @@
 package tn.govoyage.mobile.model
 
-/** Compte rendu par l'API, utilisable entre les ecrans. */
-data class UtilisateurResponse(
+/** Compte rendu par l'API, utilise directement dans les ecrans. */
+data class Utilisateur(
     val id: Long,
     val nom: String,
     val prenom: String,

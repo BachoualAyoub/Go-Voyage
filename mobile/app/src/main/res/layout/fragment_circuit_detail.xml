@@ -30,15 +30,6 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/texteFicheCircuitDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/palette_encre"
-            android:textSize="15sp"
-            android:visibility="gone" />
-
-        <TextView
             android:id="@+id/texteFicheCircuitTotaux"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -46,15 +37,6 @@
             android:textColor="@color/palette_encre"
             android:textSize="16sp"
             android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/texteFicheCircuitBudget"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/palette_encre"
-            android:textSize="15sp"
-            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/listeEtapesFiche"
@@ -69,8 +51,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:backgroundTint="@color/palette_turquoise_fonce"
-            android:textColor="@color/palette_blanc"
-            android:visibility="gone" />
+            android:text="@string/fiche_circuit_modifier"
+            android:textColor="@color/palette_blanc" />
 
         <Button
             android:id="@+id/boutonFermerCircuit"

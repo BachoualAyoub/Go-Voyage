@@ -11,6 +11,8 @@
         <item name="android:colorBackground">@color/palette_fond</item>
         <item name="android:statusBarColor">@color/palette_turquoise_fonce</item>
         <item name="android:windowBackground">@color/palette_fond</item>
+        <!-- Evite que le contenu passe sous la barre d'etat sur Android 15+. -->
+        <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
     </style>
 
     <!-- Superposition de la barre d'application. -->

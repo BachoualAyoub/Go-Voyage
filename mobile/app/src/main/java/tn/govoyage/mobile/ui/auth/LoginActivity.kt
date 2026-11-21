@@ -14,11 +14,12 @@ import tn.govoyage.mobile.databinding.ActivityLoginBinding
 import tn.govoyage.mobile.model.ConnexionRequest
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Ecran de connexion au vrai backend, place au demarrage de l'application. */
+/** Ecran de connexion ; ouvre directement l'espace si le profil local existe deja. */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private var espaceOuvert = false
+    private var entreeAutoFaite = false
 
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory {
@@ -33,18 +34,35 @@ class LoginActivity : AppCompatActivity() {
 
         binding.editEmail.setText(intent.getStringExtra(EXTRA_EMAIL).orEmpty())
         observerProfilLocal()
+        observerSessionFermee()
         observerLeCompte()
         observerEtat()
         installerBoutons()
     }
 
-    /** Pre-remplit l'email avec le profil local, sans jamais ouvrir de session. */
+    /** Pre-remplit l'email des que le profil local est disponible. */
     private fun observerProfilLocal() {
         authViewModel.profilLocal.observe(this) { profil ->
             if (profil != null && binding.editEmail.text?.toString().isNullOrEmpty()) {
                 binding.editEmail.setText(profil.email)
             }
+            tenterEntreeAuto()
         }
+    }
+
+    /** Attend la lecture de l'indicateur de deconnexion avant d'entrer tout seul. */
+    private fun observerSessionFermee() {
+        authViewModel.sessionFermee.observe(this) { tenterEntreeAuto() }
+    }
+
+    /** Entre directement seulement si le profil existe et que la session n'est pas fermee. */
+    private fun tenterEntreeAuto() {
+        if (entreeAutoFaite) return
+        val profil = authViewModel.profilLocal.value ?: return
+        if (authViewModel.sessionFermee.value != false) return
+        if (!intent.getStringExtra(EXTRA_EMAIL).isNullOrEmpty()) return
+        entreeAutoFaite = true
+        authViewModel.entrerAvecProfilLocal(profil)
     }
 
     /** Ouvre l'espace voyage des qu'une connexion reussit. */

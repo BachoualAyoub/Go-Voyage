@@ -13,10 +13,10 @@ import tn.govoyage.mobile.data.local.entity.DestinationLocale
 import tn.govoyage.mobile.data.local.entity.EtapeLocale
 import tn.govoyage.mobile.data.local.entity.UtilisateurLocal
 
-/** Base privee du profil, du carnet et du catalogue, sans session persistante. */
+/** Base privee du profil, du carnet et du catalogue, sans jeton persistant. */
 @Database(
     entities = [UtilisateurLocal::class, DestinationLocale::class, CircuitLocal::class, EtapeLocale::class],
-    version = 7,
+    version = 11,
     exportSchema = false
 )
 abstract class VoyageDatabase : RoomDatabase() {
@@ -155,6 +155,48 @@ val MIGRATION_6_7 = object : Migration(6, 7) {
             """.trimIndent()
         )
         db.execSQL("DROP TABLE etape_sauvegarde")
+    }
+}
+
+/** V7 -> V8 : conserve l'indicateur de deconnexion apres le redemarrage. */
+val MIGRATION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        if (!colonneExiste(db, "utilisateur", "ferme")) {
+            db.execSQL("ALTER TABLE utilisateur ADD COLUMN ferme INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+}
+
+/** V8 -> V9 : empreinte locale du mot de passe pour verifier la connexion hors ligne. */
+val MIGRATION_8_9 = object : Migration(8, 9) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        if (!colonneExiste(db, "utilisateur", "empreinte")) {
+            db.execSQL("ALTER TABLE utilisateur ADD COLUMN empreinte TEXT NOT NULL DEFAULT ''")
+        }
+    }
+}
+
+/** V9 -> V10 : plusieurs comptes locaux, l'ancien profil unique devient actif. */
+val MIGRATION_9_10 = object : Migration(9, 10) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        if (!colonneExiste(db, "utilisateur", "actif")) {
+            db.execSQL("ALTER TABLE utilisateur ADD COLUMN actif INTEGER NOT NULL DEFAULT 0")
+        }
+        db.execSQL("UPDATE utilisateur SET cle = info_id WHERE cle = 1")
+        db.execSQL("UPDATE utilisateur SET actif = 1 WHERE cle = (SELECT MAX(cle) FROM utilisateur)")
+    }
+}
+
+/** V10 -> V11 : chaque circuit appartient a un compte, les anciens vont au compte actif. */
+val MIGRATION_10_11 = object : Migration(10, 11) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        if (!colonneExiste(db, "circuit", "proprietaire")) {
+            db.execSQL("ALTER TABLE circuit ADD COLUMN proprietaire INTEGER NOT NULL DEFAULT 0")
+            db.execSQL(
+                "UPDATE circuit SET proprietaire = " +
+                    "COALESCE((SELECT cle FROM utilisateur WHERE actif = 1 LIMIT 1), 0)"
+            )
+        }
     }
 }
 

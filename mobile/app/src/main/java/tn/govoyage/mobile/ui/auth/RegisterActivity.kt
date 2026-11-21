@@ -33,10 +33,13 @@ class RegisterActivity : AppCompatActivity() {
         binding.boutonCreerCompte.setOnClickListener { creerCompte() }
     }
 
-    /** Revient a la connexion apres une inscription reussie. */
+    /** Affiche les erreurs et revient a la connexion apres une inscription reussie. */
     private fun observerEtat() {
         authViewModel.etat.observe(this) { etat ->
-            if (etat.message.isNotEmpty()) {
+            if (etat.toast.isNotEmpty()) {
+                Toast.makeText(this, etat.toast, Toast.LENGTH_LONG).show()
+                authViewModel.viderMessage()
+            } else if (etat.message.isNotEmpty()) {
                 Toast.makeText(this, etat.message, Toast.LENGTH_LONG).show()
                 if (!etat.erreur) revenirConnexion()
             }

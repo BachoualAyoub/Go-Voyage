@@ -5,9 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import tn.govoyage.mobile.model.Utilisateur
 
-/** Profil du dernier compte connecte, conserve sans jeton ni session. */
+/** Un compte deja connecte, avec son empreinte locale et son etat de connexion. */
 @Entity(tableName = "utilisateur")
 data class UtilisateurLocal(
-    @PrimaryKey val cle: Int = 1,
-    @Embedded(prefix = "info_") val compte: Utilisateur
+    @PrimaryKey val cle: Int,
+    @Embedded(prefix = "info_") val compte: Utilisateur,
+    val actif: Boolean = false,
+    val ferme: Boolean = false,
+    val empreinte: String = ""
 )

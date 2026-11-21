@@ -23,7 +23,8 @@ import tn.govoyage.mobile.model.Utilisateur
 data class EtatAuth(
     val chargement: Boolean = false,
     val message: String = "",
-    val erreur: Boolean = false
+    val erreur: Boolean = false,
+    val toast: String = ""
 )
 
 /** Orchestre la connexion, l'inscription et la deconnexion sans session persistante. */
@@ -31,6 +32,10 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
 
     private val _compte = MutableLiveData<Utilisateur?>(auth.utilisateurCourant())
     val compte: LiveData<Utilisateur?> = _compte
+
+    /** Etat de deconnexion lu dans Room, bloque par defaut le temps de la lecture. */
+    private val _sessionFermee = MutableLiveData(true)
+    val sessionFermee: LiveData<Boolean> = _sessionFermee
 
     private val _profilLocal = MutableLiveData<Utilisateur?>(null)
     val profilLocal: LiveData<Utilisateur?> = _profilLocal
@@ -42,37 +47,65 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             auth.profilLocal.collect { profil -> _profilLocal.postValue(profil) }
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            _sessionFermee.postValue(auth.sessionEstFermee())
+        }
     }
 
     /** Cree un compte sur le backend puis revient au formulaire de connexion. */
     fun inscrire(demande: InscriptionRequest) = effectuer(
-        "Votre compte est cree. Vous pouvez vous connecter."
+        messageSucces = "Votre compte est cree. Vous pouvez vous connecter.",
+        afficherToastReseau = true
     ) {
         auth.inscrire(demande)
     }
 
-    /** Connecte le voyageur et publie son compte aux ecrans. */
-    fun connecter(demande: ConnexionRequest) = effectuer {
-        val utilisateur = auth.connecter(demande)
-        _compte.postValue(utilisateur)
+    /** Verifie d'abord la copie locale, sinon demande la validation au backend. */
+    fun connecter(demande: ConnexionRequest) {
+        auth.memoriserIdentifiants(demande)
+        viewModelScope.launch(Dispatchers.IO) {
+            val profil = auth.connecterLocal(demande)
+            withContext(Dispatchers.Main) {
+                if (profil != null) {
+                    entrerAvecProfilLocal(profil)
+                } else {
+                    effectuer {
+                        val utilisateur = auth.connecter(demande)
+                        _compte.postValue(utilisateur)
+                    }
+                }
+            }
+        }
     }
 
-    /** Efface le jeton, le compte et la copie locale, puis previent les ecrans. */
+    /** Entre avec le profil local et leve l'indicateur de deconnexion. */
+    fun entrerAvecProfilLocal(profil: Utilisateur) {
+        viewModelScope.launch(Dispatchers.IO) {
+            auth.utiliserProfilLocal(profil)
+            _compte.postValue(profil)
+        }
+    }
+
+    /** Ferme la session dans Room avant de prevenir les ecrans. */
     fun deconnecter() {
         viewModelScope.launch(Dispatchers.IO) {
             auth.deconnecter()
+            _compte.postValue(null)
         }
-        _compte.postValue(null)
     }
 
     /** Evite qu'un message de toast soit affiche deux fois. */
     fun viderMessage() {
         val etat = _etat.value ?: return
-        _etat.value = etat.copy(message = "")
+        _etat.value = etat.copy(message = "", toast = "")
     }
 
-    /** Lance une seule action de compte a la fois. */
-    private fun effectuer(messageSucces: String = "", action: suspend () -> Unit) {
+    /** Lance une seule action de compte a la fois et affiche les erreurs. */
+    private fun effectuer(
+        messageSucces: String = "",
+        afficherToastReseau: Boolean = false,
+        action: suspend () -> Unit
+    ) {
         if (_etat.value?.chargement == true) return
         _etat.value = EtatAuth(chargement = true)
         viewModelScope.launch(Dispatchers.IO) {
@@ -89,8 +122,17 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
                 publierEtat { EtatAuth(erreur = true, message = lireErreur(cause)) }
             } catch (cause: IOException) {
                 val detail = cause.message ?: "erreur reseau"
+                val toast = if (afficherToastReseau) {
+                    "API injoignable : verifiez le serveur (${adresseApi()})."
+                } else {
+                    ""
+                }
                 publierEtat {
-                    EtatAuth(erreur = true, message = "API injoignable : $detail (${adresseApi()})")
+                    EtatAuth(
+                        erreur = true,
+                        message = "API injoignable : $detail (${adresseApi()})",
+                        toast = toast
+                    )
                 }
             } catch (_: JsonParseException) {
                 publierEtat { EtatAuth(erreur = true, message = "La reponse de l'API est illisible.") }

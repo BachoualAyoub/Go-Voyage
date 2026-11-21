@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "circuit")
 data class CircuitLocal(
     @PrimaryKey val id: Long,
+    val proprietaire: Long = 0L,
     val nom: String,
     val dureeJours: Int,
     val estimationTnd: Int,

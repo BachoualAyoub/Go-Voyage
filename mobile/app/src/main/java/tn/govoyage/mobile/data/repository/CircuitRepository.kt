@@ -1,6 +1,7 @@
 package tn.govoyage.mobile.data.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import tn.govoyage.mobile.data.local.dao.CircuitDAO
@@ -17,25 +18,35 @@ import tn.govoyage.mobile.model.EtapeRequest
 /** Intermediaire entre le DAO circuit, le backend et les ecrans du carnet local. */
 class CircuitRepository(
     private val dao: CircuitDAO,
-    private val api: CircuitApi
+    private val api: CircuitApi,
+    private val auth: AuthRepository
 ) {
 
-    /** Carnet observe, du plus recent au plus ancien. */
+    /** Identifiant du compte connecte, utilise pour separer les carnets. */
+    private fun proprietaire(): Long {
+        return auth.proprietaireCourant()
+            ?: throw IllegalStateException("Connectez-vous avant d'ouvrir le carnet.")
+    }
+
+    /** Carnet du compte courant, du plus recent au plus ancien. */
     fun observer(): Flow<List<Circuit>> {
-        return dao.observerCircuits().map { lignes -> lignes.map { it.versCircuit() } }
+        val proprietaire = auth.proprietaireCourant() ?: return flowOf(emptyList())
+        return dao.observerCircuits(proprietaire).map { lignes -> lignes.map { it.versCircuit() } }
     }
 
     /** Lit un circuit et ses etapes pour la fiche ou l'editeur. */
     suspend fun circuit(id: Long): Circuit? {
-        return dao.circuit(id)?.versCircuit()
+        return dao.circuit(id, proprietaire())?.versCircuit()
     }
 
     /** Cree ou modifie un circuit et remplace ses etapes en une transaction locale. */
     suspend fun sauver(id: Long?, nom: String, etapes: List<EtapeCircuit>): Long {
-        val existant = if (id == null) null else dao.circuit(id)
-        val circuitId = existant?.circuit?.id ?: nouvelIdentifiant()
+        val proprietaire = proprietaire()
+        val existant = if (id == null) null else dao.circuit(id, proprietaire)
+        val circuitId = existant?.circuit?.id ?: nouvelIdentifiant(proprietaire)
         val entete = CircuitLocal(
             id = circuitId,
+            proprietaire = proprietaire,
             nom = nom.trim(),
             dureeJours = etapes.sumOf { it.jours },
             estimationTnd = etapes.sumOf { it.coutTnd },
@@ -51,23 +62,28 @@ class CircuitRepository(
 
     /** Cache la suppression ; elle sera envoyee au backend lors de la synchronisation. */
     suspend fun supprimer(id: Long) {
-        dao.marquerSupprime(id)
+        dao.marquerSupprime(id, proprietaire())
     }
 
     /** Envoie les changements locaux puis recupere les circuits du compte. */
     suspend fun synchroniser(): String {
         if (!JetonMemoire.estPresent()) {
-            throw IllegalStateException("Connectez-vous avant de synchroniser.")
+            if (auth.identifiantsConnus()) {
+                auth.reconnecter()
+            } else {
+                throw IllegalStateException("Connectez-vous avant de synchroniser.")
+            }
         }
-        val suppressions = pousserSuppressions()
-        val envoyes = pousserModifications()
-        val recus = telechargerDepuisServeur()
+        val proprietaire = proprietaire()
+        val suppressions = pousserSuppressions(proprietaire)
+        val envoyes = pousserModifications(proprietaire)
+        val recus = telechargerDepuisServeur(proprietaire)
         return "Sync terminee : $envoyes envoyes, $recus recus, $suppressions supprimés."
     }
 
     /** Envoie les suppressions en attente puis purge les lignes locales. */
-    private suspend fun pousserSuppressions(): Int {
-        val lignes = dao.suppressionsASynchroniser()
+    private suspend fun pousserSuppressions(proprietaire: Long): Int {
+        val lignes = dao.suppressionsASynchroniser(proprietaire)
         for (ligne in lignes) {
             val serveurId = ligne.serveurId
             if (serveurId == null) {
@@ -82,8 +98,8 @@ class CircuitRepository(
     }
 
     /** Envoie les circuits crees ou modifies depuis la derniere synchronisation. */
-    private suspend fun pousserModifications(): Int {
-        val lignes = dao.circuitsASynchroniser()
+    private suspend fun pousserModifications(proprietaire: Long): Int {
+        val lignes = dao.circuitsASynchroniser(proprietaire)
         for (ligne in lignes) {
             val demande = construireDemande(ligne)
             val serveurId = ligne.circuit.serveurId
@@ -95,7 +111,7 @@ class CircuitRepository(
                     dao.marquerSynchronise(ligne.circuit.id, distante.id, distante.version ?: 0L)
                 }
                 reponse.code() == 409 && serveurId != null -> {
-                    resoudreConflit(ligne, serveurId)
+                    resoudreConflit(ligne, serveurId, proprietaire)
                 }
                 else -> throw HttpException(reponse)
             }
@@ -117,42 +133,43 @@ class CircuitRepository(
     }
 
     /** En cas de conflit, la version du serveur devient la reference locale. */
-    private suspend fun resoudreConflit(ligne: CircuitAvecEtapes, serveurId: Long) {
+    private suspend fun resoudreConflit(ligne: CircuitAvecEtapes, serveurId: Long, proprietaire: Long) {
         val reponse = api.consulter(serveurId)
         if (!reponse.isSuccessful) throw HttpException(reponse)
         val distante = reponse.body() ?: throw IllegalStateException("Circuit serveur introuvable.")
-        enregistrerDepuisServeur(ligne.circuit.id, distante)
+        enregistrerDepuisServeur(ligne.circuit.id, distante, proprietaire)
     }
 
     /** Recupere les circuits du compte et supprime ceux qui ont disparu sur le serveur. */
-    private suspend fun telechargerDepuisServeur(): Int {
+    private suspend fun telechargerDepuisServeur(proprietaire: Long): Int {
         val reponse = api.lister()
         if (!reponse.isSuccessful) throw HttpException(reponse)
         val distants = reponse.body().orEmpty()
         for (distante in distants) {
-            val local = dao.parServeurId(distante.id)
+            val local = dao.parServeurId(distante.id, proprietaire)
             if (local == null) {
-                enregistrerDepuisServeur(nouvelIdentifiant(), distante)
+                enregistrerDepuisServeur(nouvelIdentifiant(proprietaire), distante, proprietaire)
             } else if (local.circuit.synchronise) {
-                enregistrerDepuisServeur(local.circuit.id, distante)
+                enregistrerDepuisServeur(local.circuit.id, distante, proprietaire)
             }
         }
-        supprimerCircuitsDisparus(distants.map { it.id }.toSet())
+        supprimerCircuitsDisparus(distants.map { it.id }.toSet(), proprietaire)
         return distants.size
     }
 
     /** Retire du carnet les circuits deja synchronises qui ne sont plus sur le serveur. */
-    private suspend fun supprimerCircuitsDisparus(idsDistants: Set<Long>) {
-        for (ligne in dao.circuitsSynchronises()) {
+    private suspend fun supprimerCircuitsDisparus(idsDistants: Set<Long>, proprietaire: Long) {
+        for (ligne in dao.circuitsSynchronises(proprietaire)) {
             val serveurId = ligne.circuit.serveurId ?: continue
             if (serveurId !in idsDistants) dao.effacerCircuit(ligne.circuit.id)
         }
     }
 
-    /** Ecrit un circuit recu du backend dans le carnet local. */
-    private suspend fun enregistrerDepuisServeur(id: Long, distante: Circuit) {
+    /** Ecrit un circuit recu du backend dans le carnet du compte courant. */
+    private suspend fun enregistrerDepuisServeur(id: Long, distante: Circuit, proprietaire: Long) {
         val entete = CircuitLocal(
             id = id,
+            proprietaire = proprietaire,
             nom = distante.nom,
             dureeJours = distante.dureeJours,
             estimationTnd = distante.estimationTnd,
@@ -180,9 +197,9 @@ class CircuitRepository(
     }
 
     /** Prepare un identifiant local qui ne collisionne pas avec une ligne existante. */
-    private suspend fun nouvelIdentifiant(): Long {
+    private suspend fun nouvelIdentifiant(proprietaire: Long): Long {
         var identifiant = System.currentTimeMillis()
-        while (dao.circuit(identifiant) != null) identifiant++
+        while (dao.circuit(identifiant, proprietaire) != null) identifiant++
         return identifiant
     }
 }

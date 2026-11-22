@@ -3,6 +3,7 @@ import { api, autorisation, erreurApi, ErreurApi, Profil, Session } from './api'
 import { PilotagePage } from './PilotagePage';
 import { ReservationsPage, CarnetReservations } from './ReservationsPage';
 import { VolsPage } from './VolsPage';
+import { LivreOrPage } from './LivreOrPage';
 import { ConnexionPage } from './ConnexionPage';
 import { Message } from './ChampsCompte';
 import { EspaceVoyage } from './EspaceVoyage';
@@ -14,7 +15,7 @@ export function App() {
   const [jeton, definirJeton] = useState(() => sessionStorage.getItem(cleSession) ?? '');
   const [profil, definirProfil] = useState<Profil>();
   const [erreur, definirErreur] = useState<ErreurApi>();
-  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin' | 'hotels' | 'vols' | 'reservations'>();
+  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin' | 'hotels' | 'vols' | 'livre' | 'reservations'>();
   const [motifConnexion, definirMotifConnexion] = useState<string>();
   const onglet = section === 'admin' && profil?.role !== 'ADMIN' ? 'explorer' :
     section ?? (profil?.role === 'ADMIN' ? 'admin' : 'explorer');
@@ -93,6 +94,7 @@ export function App() {
           <button type="button" onClick={() => montrerSection('modeles')}>Circuits proposés</button>
           <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('hotels'); }}>Séjours</button>
           <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('vols'); }}>Vols</button>
+          <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('livre'); }}>Livre d’or</button>
         </nav>
         {jeton ? <>
           {profil && <button type="button" className="compte-pilule" onClick={() => definirSection('profil')}
@@ -115,6 +117,7 @@ export function App() {
     {motifConnexion !== undefined && !jeton ? <ConnexionPage connecter={connecter} motif={motifConnexion} annuler={annulerConnexion} /> :
       onglet === 'hotels' ? <ReservationsPage jeton={jeton} demanderConnexion={demanderConnexion} /> :
       onglet === 'vols' ? <VolsPage /> :
+      onglet === 'livre' ? <LivreOrPage jeton={jeton} compteId={profil?.id} demanderConnexion={demanderConnexion} /> :
       !jeton ? (motifConnexion === undefined ?
       <EspaceVoyage jeton={jeton} onglet="explorer" afficherCircuits={() => definirSection('circuits')}
         actualiser={actualiser} demanderConnexion={demanderConnexion} /> :

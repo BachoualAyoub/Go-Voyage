@@ -7,6 +7,7 @@
         <item android:id="@+id/nav_sejours" android:icon="@drawable/ic_menu_explorer" android:title="Séjours" />
         <item android:id="@+id/nav_reservations" android:icon="@drawable/ic_menu_circuits" android:title="Mes réservations" />
         <item android:id="@+id/nav_vols" android:icon="@drawable/ic_menu_explorer" android:title="Comparer les vols" />
+        <item android:id="@+id/nav_communaute" android:icon="@drawable/ic_menu_compte" android:title="Livre d’or" />
         <item android:id="@+id/nav_pilotage" android:icon="@drawable/ic_menu_compte" android:title="Administration" />
         <item
             android:id="@+id/nav_home"

@@ -10,9 +10,11 @@ Le site se parcourt **comme une boutique en ligne** : tout le monde consulte lib
 
 Le voyageur s'inscrit avec ses coordonnées et informations personnelles (prénom, nom, téléphone, e-mail, mot de passe). Connecté, il retrouve son carnet « Mes circuits », modifie son profil et change son mot de passe. L'administrateur, responsable de la plateforme, gère les comptes des utilisateurs : consultation, création, modification, suppression.
 
-L'application Android reprend l'essentiel : inscription, connexion, profil, catalogue et composition de circuits, avec un cache local Room. L'administration reste dans l'interface web.
+L'application Android reprend l'inscription, l'authentification locale de Rayen, le profil, le catalogue et les circuits avec Room. Les parcours de séjours, réservations, vols et livre d'or partagent la même API que le site. Les administrateurs disposent aussi d'un espace natif de pilotage, de gestion du catalogue et de modération.
 
-**Périmètre futur, prévu par le cahier des charges mais pas encore développé** : le comparateur de vols et d'hôtels (billetterie au meilleur tarif) et le livre d'or où les voyageurs partagent leurs expériences, photos et avis.
+**Sprints 3 et 4** : comparaison de vols (aller simple, retour, plusieurs destinations), comparaison et réservation d'hôtels, carnet avec annulation, gestion des destinations et hôtels, graphiques administrateur, partage photo/vidéo, avis, notes, likes, recherche et modération. Les offres sont des données de démonstration. Les réservations sont confirmées dans GO VOYAGE, sans billetterie externe ni paiement en ligne.
+
+Le [guide des Sprints 3 et 4](docs/GUIDE_SPRINTS_3_4.md) contient le lancement pas à pas, les règles métier, les essais réalisés et les limites. Les rapports sont dans [Sprint3_GOVoyage.docx](docs/Sprint3_GOVoyage.docx) et [Sprint4_GOVoyage.docx](docs/Sprint4_GOVoyage.docx).
 
 ## Structure du dépôt
 

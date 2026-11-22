@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api, autorisation, erreurApi, ErreurApi, Profil, Session } from './api';
-import { AdministrationPage } from './AdministrationPage';
+import { PilotagePage } from './PilotagePage';
+import { ReservationsPage, CarnetReservations } from './ReservationsPage';
+import { VolsPage } from './VolsPage';
 import { ConnexionPage } from './ConnexionPage';
 import { Message } from './ChampsCompte';
 import { EspaceVoyage } from './EspaceVoyage';
@@ -12,7 +14,7 @@ export function App() {
   const [jeton, definirJeton] = useState(() => sessionStorage.getItem(cleSession) ?? '');
   const [profil, definirProfil] = useState<Profil>();
   const [erreur, definirErreur] = useState<ErreurApi>();
-  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin'>();
+  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin' | 'hotels' | 'vols' | 'reservations'>();
   const [motifConnexion, definirMotifConnexion] = useState<string>();
   const onglet = section === 'admin' && profil?.role !== 'ADMIN' ? 'explorer' :
     section ?? (profil?.role === 'ADMIN' ? 'admin' : 'explorer');
@@ -89,6 +91,8 @@ export function App() {
         <nav className="nav-catalogue" aria-label="Sections du catalogue">
           <button type="button" onClick={() => montrerSection('destinations')}>Destinations</button>
           <button type="button" onClick={() => montrerSection('modeles')}>Circuits proposés</button>
+          <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('hotels'); }}>Séjours</button>
+          <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('vols'); }}>Vols</button>
         </nav>
         {jeton ? <>
           {profil && <button type="button" className="compte-pilule" onClick={() => definirSection('profil')}
@@ -105,9 +109,13 @@ export function App() {
         onClick={() => definirSection('admin')}>Administration</button>}
       <button aria-current={onglet === 'explorer' ? 'page' : undefined} onClick={() => definirSection('explorer')}>Explorer</button>
       <button aria-current={onglet === 'circuits' ? 'page' : undefined} onClick={() => definirSection('circuits')}>Mes circuits</button>
+      <button aria-current={onglet === 'reservations' ? 'page' : undefined} onClick={() => definirSection('reservations')}>Mes réservations</button>
       <button aria-current={onglet === 'profil' ? 'page' : undefined} onClick={() => definirSection('profil')}>Mon compte</button>
     </nav>}
-    {!jeton ? (motifConnexion === undefined ?
+    {motifConnexion !== undefined && !jeton ? <ConnexionPage connecter={connecter} motif={motifConnexion} annuler={annulerConnexion} /> :
+      onglet === 'hotels' ? <ReservationsPage jeton={jeton} demanderConnexion={demanderConnexion} /> :
+      onglet === 'vols' ? <VolsPage /> :
+      !jeton ? (motifConnexion === undefined ?
       <EspaceVoyage jeton={jeton} onglet="explorer" afficherCircuits={() => definirSection('circuits')}
         actualiser={actualiser} demanderConnexion={demanderConnexion} /> :
       <ConnexionPage connecter={connecter} motif={motifConnexion} annuler={annulerConnexion} />) :
@@ -117,7 +125,8 @@ export function App() {
       </main> :
       !profil ? <main className="espace" id="contenu"><p role="status">Vérification de votre session…</p></main> :
       onglet === 'admin' ?
-        <AdministrationPage jeton={jeton} admin={profil} actualiser={actualiser} /> :
+        <PilotagePage jeton={jeton} admin={profil} actualiser={actualiser} /> :
+      onglet === 'reservations' ? <CarnetReservations jeton={jeton} /> :
       onglet !== 'profil' ?
         <EspaceVoyage jeton={jeton} onglet={onglet} actualiser={actualiser}
           afficherCircuits={() => definirSection('circuits')} demanderConnexion={demanderConnexion} /> :

@@ -93,4 +93,8 @@
         android:label="@string/menu_compte"
         tools:layout="@layout/fragment_compte" />
 
+    <fragment android:id="@+id/nav_sejours" android:name="tn.govoyage.mobile.ui.voyage.SejoursFragment" android:label="Séjours" />
+    <fragment android:id="@+id/nav_reservations" android:name="tn.govoyage.mobile.ui.voyage.ReservationsFragment" android:label="Mes réservations" />
+    <fragment android:id="@+id/nav_vols" android:name="tn.govoyage.mobile.ui.voyage.VolsFragment" android:label="Comparer les vols" />
+    <fragment android:id="@+id/nav_pilotage" android:name="tn.govoyage.mobile.ui.voyage.PilotageFragment" android:label="Administration" />
 </navigation>

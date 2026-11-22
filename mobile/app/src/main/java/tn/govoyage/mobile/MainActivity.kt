@@ -48,12 +48,15 @@ class MainActivity : AppCompatActivity() {
     private fun installerNavigation() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
+        navView.menu.findItem(R.id.nav_pilotage).isVisible =
+            (application as GoVoyageApplication).auth.utilisateurCourant()?.role == "ADMIN"
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         navController = navHostFragment.navController
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.nav_destinations, R.id.nav_circuits, R.id.nav_compte),
+            setOf(R.id.nav_home, R.id.nav_destinations, R.id.nav_circuits, R.id.nav_compte,
+                R.id.nav_sejours, R.id.nav_reservations, R.id.nav_vols, R.id.nav_communaute, R.id.nav_pilotage),
             drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

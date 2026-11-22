@@ -15,6 +15,8 @@ private const val LOCAL_IP = "192.168.1.4"
 
 /** Adresse du backend pour un emulateur ou un telephone physique. */
 fun adresseApi(): String {
+    val configuration = tn.govoyage.mobile.BuildConfig.GO_VOYAGE_API_URL
+    if (configuration.isNotBlank()) return configuration.trimEnd('/') + "/"
     val empreinte = Build.FINGERPRINT ?: ""
     val modele = Build.MODEL ?: ""
     val emulateur = empreinte.contains("generic") || empreinte.contains("emulator") ||

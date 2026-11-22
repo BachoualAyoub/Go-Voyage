@@ -20,6 +20,26 @@ import org.springframework.web.server.ResponseStatusException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /** Conflit d'unicite ou de relation lors de requetes concurrentes. */
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErreurReponse> gererIntegrite() {
+        return ResponseEntity.status(409).body(new ErreurReponse(409,
+            "Cette opération entre en conflit avec les données actuelles. Actualisez puis réessayez.", Map.of()));
+    }
+
+    /** Un fichier trop volumineux ne doit pas provoquer une erreur interne. */
+    @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErreurReponse> gererTaille() {
+        return ResponseEntity.status(413).body(new ErreurReponse(413, "Le média est limité à 10 Mo.", Map.of()));
+    }
+
+    /** Les parametres obligatoires manquants sont une erreur de saisie. */
+    @ExceptionHandler({org.springframework.web.bind.MissingServletRequestParameterException.class,
+        org.springframework.web.multipart.support.MissingServletRequestPartException.class})
+    public ResponseEntity<ErreurReponse> gererParametre() {
+        return ResponseEntity.badRequest().body(new ErreurReponse(400, "Complétez tous les champs demandés.", Map.of()));
+    }
+
     /** Journal de l'application. */
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 

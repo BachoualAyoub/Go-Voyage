@@ -26,7 +26,8 @@ class GoVoyageApplication : Application() {
             .addMigrations(
                 MIGRATION_1_3, MIGRATION_2_3, MIGRATION_3_4,
                 MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7,
-                MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11
+                MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,
+                tn.govoyage.mobile.data.local.database.MIGRATION_11_12
             )
             .build()
     }
@@ -36,4 +37,6 @@ class GoVoyageApplication : Application() {
     val circuits by lazy { CircuitRepository(base.circuitDAO(), RetrofitInstance.circuits, auth) }
 
     val destinations by lazy { DestinationRepository(RetrofitInstance.destinations, base.destinationDAO()) }
+    val voyage by lazy { tn.govoyage.mobile.data.repository.VoyageRepository(
+        RetrofitInstance.voyage, base.cacheVoyageDAO(), auth) }
 }

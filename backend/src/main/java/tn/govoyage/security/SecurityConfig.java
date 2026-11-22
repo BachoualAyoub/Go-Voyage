@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/inscription", "/api/auth/connexion").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/destinations/**", "/api/circuits/modeles").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/hotels", "/api/vols", "/api/publications", "/api/publications/*/avis").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/medias/*").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .exceptionHandling(exceptions -> exceptions

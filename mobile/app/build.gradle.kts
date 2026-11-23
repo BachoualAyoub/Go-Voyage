@@ -13,13 +13,10 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-        val adresse = providers.gradleProperty("GO_VOYAGE_API_URL").orElse("").get()
-        buildConfigField("String", "GO_VOYAGE_API_URL", "\"" + adresse.replace("\\", "\\\\").replace("\"", "\\\"") + "\"")
     }
 
     buildFeatures {
         viewBinding = true
-        buildConfig = true
     }
 
     compileOptions {

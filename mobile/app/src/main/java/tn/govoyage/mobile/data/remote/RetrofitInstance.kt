@@ -44,7 +44,4 @@ object RetrofitInstance {
     val auth: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
     val destinations: DestinationApi by lazy { retrofit.create(DestinationApi::class.java) }
     val circuits: CircuitApi by lazy { retrofit.create(CircuitApi::class.java) }
-    val voyage: tn.govoyage.mobile.data.remote.api.VoyageApi by lazy {
-        retrofit.create(tn.govoyage.mobile.data.remote.api.VoyageApi::class.java)
-    }
 }

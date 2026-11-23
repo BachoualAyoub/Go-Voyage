@@ -15,23 +15,14 @@ import tn.govoyage.mobile.data.local.entity.UtilisateurLocal
 
 /** Base privee du profil, du carnet et du catalogue, sans jeton persistant. */
 @Database(
-    entities = [UtilisateurLocal::class, DestinationLocale::class, CircuitLocal::class, EtapeLocale::class,
-        tn.govoyage.mobile.data.local.entity.CacheVoyage::class],
-    version = 12,
+    entities = [UtilisateurLocal::class, DestinationLocale::class, CircuitLocal::class, EtapeLocale::class],
+    version = 11,
     exportSchema = false
 )
 abstract class VoyageDatabase : RoomDatabase() {
     abstract fun utilisateurDAO(): UtilisateurDAO
     abstract fun circuitDAO(): CircuitDAO
     abstract fun destinationDAO(): DestinationDAO
-    abstract fun cacheVoyageDAO(): tn.govoyage.mobile.data.local.dao.CacheVoyageDAO
-}
-
-/** Ajoute les instantanes sans toucher aux profils et circuits de Rayen. */
-val MIGRATION_11_12 = object : Migration(11, 12) {
-    override fun migrate(db: SupportSQLiteDatabase) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS cache_voyage (compte INTEGER NOT NULL, cle TEXT NOT NULL, contenu TEXT NOT NULL, date INTEGER NOT NULL, PRIMARY KEY(compte,cle))")
-    }
 }
 
 /** V1 : ancienne session Room + circuit lie au compte. On garde circuits, etapes et destinations. */

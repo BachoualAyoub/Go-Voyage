@@ -3,7 +3,7 @@ import './voyage.css';
 
 /** Toutes les destinations du catalogue, en commençant par Sidi Bou Said. */
 const diapositives = [
-  { image: '/destinations/sidi-bou-said.jpg', legende: 'SIDI BOU SAÏD · TUNISIE' },
+  { image: '/voyage-sidi.png', legende: 'SIDI BOU SAÏD · TUNISIE' },
   { image: '/destinations/hammamet.jpg', legende: 'HAMMAMET · TUNISIE' },
   { image: '/destinations/el-jem.jpg', legende: 'EL JEM · TUNISIE' },
   { image: '/destinations/douz.jpg', legende: 'DOUZ · TUNISIE' },

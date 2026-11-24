@@ -67,5 +67,13 @@ public class AuthentificationController {
             @Valid @RequestBody ModificationProfilRequest demande) {
         return utilisateurService.modifierProfil(authentication.getName(), demande);
     }
+
+    /** Deconnexion : le client supprime son jeton, l'API garde les JWT sans session. */
+    @PostMapping("/deconnexion")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "jeton")
+    public void deconnecter() {
+        // Rien a revoquer cote serveur : le jeton est sans etat.
+    }
 }
                 

@@ -1,15 +1,27 @@
 .voyage-main, .nav-voyage { width: min(calc(100% - 48px), 1216px); margin-inline: auto; }
 .voyage-main { margin-block: 24px 55px; }
-.nav-voyage { display: flex; gap: 8px; overflow: auto; padding-block: 12px; border-bottom: 1px solid var(--trait); }
+.nav-voyage { display: flex; gap: 8px; overflow: auto; padding-block: 12px; border-bottom: 1px solid var(--trait); position: sticky; top: 76px; z-index: 20; background: var(--blanc); }
 .nav-voyage button, .filtres-voyage button { border: 1px solid transparent; background: transparent; border-radius: 99px; color: var(--encre); white-space: nowrap; padding: 9px 14px; font-weight: 700; }
 .nav-voyage button[aria-current="page"], .filtres-voyage button[aria-pressed="true"] { background: var(--turquoise-clair); border-color: var(--turquoise); color: var(--turquoise-fonce); }
-.hero-explorer { min-height: 394px; position: relative; display: flex; align-items: center; border-radius: 24px; padding: clamp(28px, 5vw, 64px); color: white; background: linear-gradient(90deg, #132a2bf5 5%, #18383cb8 52%, #132a2b19), url('/voyage-sidi.png') center 48% / cover, #173337; overflow: hidden; }
-.hero-explorer > div { position: relative; max-width: 570px; }
+.hero-explorer { min-height: 394px; position: relative; display: flex; align-items: center; border-radius: 24px; padding: clamp(28px, 5vw, 64px); padding-bottom: clamp(56px, 6vw, 72px); color: white; background: #173337; overflow: hidden; }
+.carrousel { position: absolute; inset: 0; overflow: hidden; }
+.carrousel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #132a2bf5 5%, #18383cb8 52%, #132a2b19); pointer-events: none; }
+.carrousel-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 48%; opacity: 0; transform: scale(1.04); transition: opacity .8s ease, transform 6s linear; }
+.carrousel-photo.actif { opacity: 1; transform: scale(1); }
+.carrousel-fleche { position: absolute; top: 50%; z-index: 3; transform: translateY(-50%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; padding: 0; border: 1px solid #ffffff80; border-radius: 50%; background: #17333799; color: white; cursor: pointer; transition: background .18s; }
+.carrousel-fleche svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.carrousel-fleche:hover { background: #05ad98e6; }
+.carrousel-fleche.precedente { left: 16px; }
+.carrousel-fleche.suivante { right: 16px; }
+.carrousel-points { position: absolute; left: 50%; bottom: 10px; z-index: 3; transform: translateX(-50%); display: flex; gap: 5px; }
+.carrousel-points span { width: 5px; height: 5px; border-radius: 99px; background: #ffffff9c; transition: width .25s, background .25s; }
+.carrousel-points span.actif { width: 14px; background: #05ad98; }
+.hero-contenu { position: relative; z-index: 2; max-width: 570px; }
 .hero-explorer h1 { font-size: clamp(3rem, 7vw, 5.8rem); line-height: .96; margin: 14px 0; }
 .hero-explorer p { max-width: 36ch; font-size: 1.02rem; line-height: 1.5; margin: 14px 0 24px; }
 .hero-explorer a { display: inline-block; text-decoration: none; }
 .hero-explorer .voyage-etiquette { color: #c4ffef; }
-.hero-legende { position: absolute; bottom: 15px; right: 18px; font-size: .67rem; letter-spacing: .14em; background: #173337cf; border-radius: 99px; padding: 7px 10px; }
+.hero-legende { position: absolute; bottom: 15px; right: 18px; z-index: 3; font-size: .67rem; letter-spacing: .14em; background: #173337cf; border-radius: 99px; padding: 7px 10px; }
 .voyage-etiquette { font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; color: var(--turquoise-fonce); }
 .section-voyage { margin-top: 46px; scroll-margin-top: 16px; }
 .titre-section, .titre-circuits { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
@@ -20,8 +32,8 @@
 .filtres-voyage > span { color: var(--secondaire); font-size: .83rem; margin-left: auto; }
 .visuellement-cache { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .recherche-voyage input { min-width: min(270px, 100%); }
-.grille-destinations, .grille-circuits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.carte-destination, .carte-circuit, .etat-voyage { border: 1px solid var(--trait); background: white; border-radius: 18px; overflow: hidden; }
+.grille-destinations, .grille-circuits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-rows: 1fr; align-items: stretch; gap: 16px; }
+.carte-destination, .carte-circuit, .etat-voyage { height: 100%; box-sizing: border-box; border: 1px solid var(--trait); background: white; border-radius: 18px; overflow: hidden; }
 .carte-destination { display: flex; flex-direction: column; }
 .scene-destination { --scene: #19575c; position: relative; min-height: 172px; overflow: hidden; background: var(--scene); }
 .scene-destination img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -63,7 +75,12 @@
 @media (max-width: 900px) { .grille-destinations, .grille-circuits { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 680px) {
   .voyage-main, .nav-voyage { width: calc(100% - 28px); }
-  .hero-explorer { min-height: 350px; background-position: 60% center; }
+  .hero-explorer { min-height: 350px; }
+  .carrousel-photo { object-position: 60% center; }
+  .carrousel-fleche { width: 34px; height: 34px; }
+  .carrousel-fleche svg { width: 16px; height: 16px; }
+  .carrousel-fleche.precedente { left: 8px; }
+  .carrousel-fleche.suivante { right: 8px; }
   .titre-section, .titre-circuits { align-items: start; flex-direction: column; gap: 8px; }
   .recherche-voyage, .recherche-voyage input { width: 100%; }
   .grille-destinations, .grille-circuits { grid-template-columns: 1fr; }
@@ -80,4 +97,7 @@
   color: #fff;
   font-weight: 650;
   text-underline-offset: .25em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .carrousel-photo, .carrousel-points span { transition: none; }
 }

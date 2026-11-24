@@ -1,0 +1,2044 @@
+{
+  "info": {
+    "_postman_id": "7b1e5c9a-3d24-4f8b-9a12-6c0f8e2d4b11",
+    "name": "GO VOYAGE - API complete",
+    "description": "Toutes les requetes API du projet GO VOYAGE. Importer avec l environnement GO VOYAGE - Dev local.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "noauth"
+  },
+  "item": [
+    {
+      "name": "00 - Authentification",
+      "description": "Connexions et compte courant. Executer les deux connexions avant les autres dossiers.",
+      "item": [
+        {
+          "name": "Inscription",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/inscription",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "inscription"
+              ]
+            },
+            "description": "Cree un compte USER. Changer l email si le compte existe deja.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Postman\",\n  \"prenom\": \"Voyageur\",\n  \"email\": \"voyageur.postman@mail.tn\",\n  \"tel\": \"30 123 456\",\n  \"motDePasse\": \"postman123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Connexion USER",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/connexion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "connexion"
+              ]
+            },
+            "description": "Remplit la variable de collection jeton.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ayoub@mail.tn\",\n  \"motDePasse\": \"user12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Connexion utilisateur reussie', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "  const donnees = pm.response.json();",
+                  "  pm.collectionVariables.set('jeton', donnees.jeton);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Connexion ADMIN",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/connexion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "connexion"
+              ]
+            },
+            "description": "Remplit la variable de collection adminJeton.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"motDePasse\": \"admin1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Connexion administrateur reussie', () => pm.response.to.have.status(200));",
+                  "if (pm.response.code === 200) {",
+                  "  const donnees = pm.response.json();",
+                  "  pm.collectionVariables.set('adminJeton', donnees.jeton);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mon compte USER",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/moi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "moi"
+              ]
+            },
+            "description": "Renvoie le compte attache au jeton utilisateur.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mon compte ADMIN",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/moi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "moi"
+              ]
+            },
+            "description": "Renvoie le compte admin attache au jeton administrateur.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Modifier mon profil",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/moi",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "moi"
+              ]
+            },
+            "description": "Modifie nom, prenom et telephone du compte connecte.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Bachoual\",\n  \"prenom\": \"Ayoub\",\n  \"tel\": \"25 456 789\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Deconnexion",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/deconnexion",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "deconnexion"
+              ]
+            },
+            "description": "Appelle la route de deconnexion avec le jeton USER, puis efface les jetons de la collection. Le JWT reste sans session cote serveur.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('jeton', '');",
+                  "pm.collectionVariables.set('adminJeton', '');",
+                  "pm.test('Jetons effaces', () => {",
+                  "  pm.expect(pm.collectionVariables.get('jeton')).to.equal('');",
+                  "  pm.expect(pm.collectionVariables.get('adminJeton')).to.equal('');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 - Catalogue public",
+      "description": "Lectures ouvertes a tous, sans jeton necessaire.",
+      "item": [
+        {
+          "name": "Liste des destinations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/destinations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "destinations"
+              ]
+            },
+            "description": "Renvoie les huit destinations du catalogue."
+          }
+        },
+        {
+          "name": "Fiche d une destination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/destinations/{{destinationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "destinations",
+                "{{destinationId}}"
+              ]
+            },
+            "description": "Destination identifiable par son id."
+          }
+        },
+        {
+          "name": "Circuit modele",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/circuits/modeles",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "circuits",
+                "modeles"
+              ]
+            },
+            "description": "Renvoie les circuits partages du catalogue."
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Circuits du voyageur",
+      "description": "Circuits personnels. La creation fournit circuitCreeId et circuitVersion.",
+      "item": [
+        {
+          "name": "Liste de mes circuits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/circuits",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "circuits"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Creer un circuit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/circuits",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "circuits"
+              ]
+            },
+            "description": "Capture circuitCreeId et circuitVersion pour les requetes suivantes.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Circuit Postman\",\n  \"budgetTnd\": 1500,\n  \"etapes\": [\n    {\n      \"destinationId\": 1,\n      \"jours\": 2\n    },\n    {\n      \"destinationId\": 2,\n      \"jours\": 2\n    }\n  ],\n  \"version\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const donnees = pm.response.json();",
+                  "  if (donnees.id) pm.collectionVariables.set('circuitCreeId', String(donnees.id));",
+                  "  if (donnees.version !== undefined) pm.collectionVariables.set('circuitVersion', String(donnees.version));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Consulter le circuit cree",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/circuits/{{circuitCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "circuits",
+                "{{circuitCreeId}}"
+              ]
+            },
+            "description": "A aussi pour effet de rafraichir circuitVersion.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const donnees = pm.response.json();",
+                  "  if (donnees.id) pm.collectionVariables.set('circuitCreeId', String(donnees.id));",
+                  "  if (donnees.version !== undefined) pm.collectionVariables.set('circuitVersion', String(donnees.version));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier le circuit cree",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/circuits/{{circuitCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "circuits",
+                "{{circuitCreeId}}"
+              ]
+            },
+            "description": "La version doit correspondre a celle renvoyee par la lecture.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Circuit Postman modifie\",\n  \"budgetTnd\": 1800,\n  \"etapes\": [\n    {\n      \"destinationId\": 1,\n      \"jours\": 3\n    },\n    {\n      \"destinationId\": 5,\n      \"jours\": 2\n    }\n  ],\n  \"version\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const donnees = pm.response.json();",
+                  "  if (donnees.id) pm.collectionVariables.set('circuitCreeId', String(donnees.id));",
+                  "  if (donnees.version !== undefined) pm.collectionVariables.set('circuitVersion', String(donnees.version));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Supprimer le circuit cree",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/circuits/{{circuitCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "circuits",
+                "{{circuitCreeId}}"
+              ]
+            },
+            "description": "Supprime uniquement un circuit appartenant au compte connecte.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Medias",
+      "description": "Import de photo puis lecture. Le chemin du fichier se regle dans l environnement.",
+      "item": [
+        {
+          "name": "Importer une photo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/medias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "medias"
+              ]
+            },
+            "description": "Accepte JPG, PNG ou MP4 de moins de 10 Mo. Capture mediaUrl, mediaType et mediaId.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "fichier",
+                  "type": "file",
+                  "src": "{{cheminPhoto}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Media importe', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  const donnees = pm.response.json();",
+                  "  pm.collectionVariables.set('mediaUrl', donnees.url);",
+                  "  pm.collectionVariables.set('mediaType', donnees.type);",
+                  "  pm.collectionVariables.set('mediaId', donnees.url.split('/').pop());",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lire un media",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/medias/{{mediaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "medias",
+                "{{mediaId}}"
+              ]
+            },
+            "description": "Media public si utilise par une publication publiee, sinon reserve a son proprietaire."
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Livre d or",
+      "description": "Recits, likes, avis, signalements et modification par l auteur.",
+      "item": [
+        {
+          "name": "Liste des recits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications?recherche=Tunisie",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications"
+              ],
+              "query": [
+                {
+                  "key": "recherche",
+                  "value": "Tunisie"
+                }
+              ]
+            },
+            "description": "Le jeton permet de voir le champ aime pour le voyageur connecte.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Publier un recit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications"
+              ]
+            },
+            "description": "Capture publicationCreeId. Laischer mediaUrl et mediaType vides pour un recit sans photo.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"Recit Postman\",\n  \"texte\": \"Une matinee dans les ruelles bleues et blanches, puis une pause face a la mer.\",\n  \"pays\": \"Tunisie\",\n  \"ville\": \"Sidi Bou Said\",\n  \"mediaUrl\": \"/api/medias/11111111-1111-4111-8111-111111111111\",\n  \"mediaType\": \"PHOTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Recit publie', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('baseUrl') + '/api/publications',",
+                  "    method: 'GET',",
+                  "    header: { Authorization: 'Bearer ' + pm.collectionVariables.get('jeton') }",
+                  "  }, (erreur, reponse) => {",
+                  "    if (!erreur && reponse.code === 200) {",
+                  "      const recit = reponse.json().find(p => p.titre === \"Recit Postman\");",
+                  "      if (recit) pm.collectionVariables.set('publicationCreeId', String(recit.id_p));",
+                  "    }",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier mon recit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationCreeId}}"
+              ]
+            },
+            "description": "Refuse un recit d un autre auteur avec un statut 404.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"Recit Postman modifie\",\n  \"texte\": \"Une matinee dans les ruelles bleues et blanches, puis un cafe sur la terrasse.\",\n  \"pays\": \"Tunisie\",\n  \"ville\": \"Sidi Bou Said\",\n  \"mediaUrl\": \"/api/medias/11111111-1111-4111-8111-111111111111\",\n  \"mediaType\": \"PHOTO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Avis d un recit",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationId}}/avis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationId}}",
+                "avis"
+              ]
+            },
+            "description": "Renvoie les commentaires et les notes du recit."
+          }
+        },
+        {
+          "name": "Ecrire ou modifier un avis",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationId}}/avis",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationId}}",
+                "avis"
+              ]
+            },
+            "description": "Un seul avis par voyageur et par recit.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"texte\": \"Un tres beau souvenir, merci pour le partage.\",\n  \"note\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Voyageurs ayant aime",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationId}}/likes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationId}}",
+                "likes"
+              ]
+            },
+            "description": "Liste des prenoms et noms des voyageurs qui ont aime."
+          }
+        },
+        {
+          "name": "Poser un like",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationId}}/like",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationId}}",
+                "like"
+              ]
+            },
+            "description": "Etat explicite, rejouable sans effet double.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actif\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Retirer un like",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationId}}/like",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationId}}",
+                "like"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actif\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Signaler un recit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationAutreId}}/signalements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationAutreId}}",
+                "signalements"
+              ]
+            },
+            "description": "Cible un recit d un autre auteur : le proprietaire ne peut pas signaler le sien.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"motif\": \"Contenu publicitaire\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Retirer mon recit",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publications/{{publicationCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "publications",
+                "{{publicationCreeId}}"
+              ]
+            },
+            "description": "Supprime le recit capture lors de la publication.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Hebergements, vols et reservations",
+      "description": "Les dates sont calculees automatiquement par le script de collection.",
+      "item": [
+        {
+          "name": "Disponibilites des hotels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/hotels?arrivee=2026-12-24&depart=2026-12-27&voyageurs=2&chambres=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "hotels"
+              ],
+              "query": [
+                {
+                  "key": "arrivee",
+                  "value": "2026-12-24"
+                },
+                {
+                  "key": "depart",
+                  "value": "2026-12-27"
+                },
+                {
+                  "key": "voyageurs",
+                  "value": "2"
+                },
+                {
+                  "key": "chambres",
+                  "value": "1"
+                }
+              ]
+            },
+            "description": "Renvoie le total et la disponibilite par nuit."
+          }
+        },
+        {
+          "name": "Comparer les vols",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/vols?depart=Paris&arrivee=Tunis&date=2026-12-24",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "vols"
+              ],
+              "query": [
+                {
+                  "key": "depart",
+                  "value": "Paris"
+                },
+                {
+                  "key": "arrivee",
+                  "value": "Tunis"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-12-24"
+                }
+              ]
+            },
+            "description": "Offres de demonstration pour un trajet et une date."
+          }
+        },
+        {
+          "name": "Mes reservations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservations"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reserver un sejour",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservations"
+              ]
+            },
+            "description": "Le tarif est verifie cote serveur. La cle rend l envoi rejouable. Capture reservationId.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hotelId\": 1,\n  \"arrivee\": \"2026-12-24\",\n  \"depart\": \"2026-12-27\",\n  \"voyageurs\": 2,\n  \"chambres\": 1,\n  \"cle\": \"6f1c2f6e-9d5f-4b0a-8f5c-2f2f0f9a7a11\",\n  \"montantAttendu\": 540\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201 || pm.response.code === 200) {",
+                  "  const donnees = pm.response.json();",
+                  "  if (donnees.id_r) pm.collectionVariables.set('reservationId', String(donnees.id_r));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Annuler ma reservation",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reservations/{{reservationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "reservations",
+                "{{reservationId}}"
+              ]
+            },
+            "description": "Annule avant le debut du sejour et libere la chambre.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Administration des comptes",
+      "description": "Reserve au role ADMIN. Utiliser adminJeton.",
+      "item": [
+        {
+          "name": "Liste des comptes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/utilisateurs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "utilisateurs"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Creer un compte",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/utilisateurs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "utilisateurs"
+              ]
+            },
+            "description": "Capture utilisateurCreeId pour la modification et la suppression.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"compte\": {\n    \"nom\": \"Test\",\n    \"prenom\": \"Postman\",\n    \"email\": \"compte.postman@mail.tn\",\n    \"tel\": \"31 234 567\",\n    \"motDePasse\": \"postman123\"\n  },\n  \"role\": \"USER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Compte cree', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  const donnees = pm.response.json();",
+                  "  if (donnees.id) pm.collectionVariables.set('utilisateurCreeId', String(donnees.id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier le compte cree",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/utilisateurs/{{utilisateurCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "utilisateurs",
+                "{{utilisateurCreeId}}"
+              ]
+            },
+            "description": "Lancer la creation du compte avant cette requete.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Test\",\n  \"prenom\": \"Postman modifie\",\n  \"email\": \"compte.postman@mail.tn\",\n  \"tel\": \"31 234 567\",\n  \"role\": \"USER\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Supprimer le compte cree",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/utilisateurs/{{utilisateurCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "utilisateurs",
+                "{{utilisateurCreeId}}"
+              ]
+            },
+            "description": "Lancer la creation du compte avant cette requete.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Administration du catalogue",
+      "description": "Reserve au role ADMIN. Les identifiants crees sont captures automatiquement.",
+      "item": [
+        {
+          "name": "Statistiques du tableau de bord",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/statistiques",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "statistiques"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Liste des hotels admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/hotels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "hotels"
+              ]
+            },
+            "description": "Inclut aussi les hotels archives.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Creer un hotel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/hotels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "hotels"
+              ]
+            },
+            "description": "Capture hotelCreeId en relisant la liste admin.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationId\": 1,\n  \"nom\": \"Hotel Postman\",\n  \"ville\": \"Sidi Bou Said\",\n  \"description\": \"Un hotel de demonstration cree depuis la collection Postman.\",\n  \"etoiles\": 3,\n  \"tarifNuit\": 150,\n  \"chambres\": 4,\n  \"capacite\": 2,\n  \"image\": \"sidi-bou-said\",\n  \"actif\": true,\n  \"version\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Hotel cree', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('baseUrl') + '/api/admin/hotels',",
+                  "    method: 'GET',",
+                  "    header: { Authorization: 'Bearer ' + pm.collectionVariables.get('adminJeton') }",
+                  "  }, (erreur, reponse) => {",
+                  "    if (!erreur && reponse.code === 200) {",
+                  "      const hotel = reponse.json().find(h => h.nom === \"Hotel Postman\");",
+                  "      if (hotel) pm.collectionVariables.set('hotelCreeId', String(hotel.id_h));",
+                  "    }",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier l hotel cree",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/hotels/{{hotelCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "hotels",
+                "{{hotelCreeId}}"
+              ]
+            },
+            "description": "Utilise la version retournee par la liste admin.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationId\": 1,\n  \"nom\": \"Hotel Postman modifie\",\n  \"ville\": \"Sidi Bou Said\",\n  \"description\": \"Un hotel de demonstration cree depuis la collection Postman.\",\n  \"etoiles\": 3,\n  \"tarifNuit\": 165,\n  \"chambres\": 4,\n  \"capacite\": 2,\n  \"image\": \"sidi-bou-said\",\n  \"actif\": true,\n  \"version\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Archiver l hotel cree",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/hotels/{{hotelCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "hotels",
+                "{{hotelCreeId}}"
+              ]
+            },
+            "description": "Desactive l hotel sans le supprimer.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Creer une destination",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/destinations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "destinations"
+              ]
+            },
+            "description": "Capture destinationCreeId en relisant le catalogue public.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"postman-destination\",\n  \"nom\": \"Destination Postman\",\n  \"ville\": \"Tunis\",\n  \"pays\": \"Tunisie\",\n  \"region\": \"Grand Tunis\",\n  \"ambiance\": \"CULTURE\",\n  \"tarifJourTnd\": 90,\n  \"accroche\": \"Une fiche de demonstration pour la collection Postman.\",\n  \"description\": \"Destination ajoutee pour verifier les routes d administration du catalogue.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Destination creee', () => pm.response.to.have.status(201));",
+                  "if (pm.response.code === 201) {",
+                  "  pm.sendRequest({",
+                  "    url: pm.collectionVariables.get('baseUrl') + '/api/destinations',",
+                  "    method: 'GET',",
+                  "  }, (erreur, reponse) => {",
+                  "    if (!erreur && reponse.code === 200) {",
+                  "      const destination = reponse.json().find(d => d.code === \"postman-destination\");",
+                  "      if (destination) pm.collectionVariables.set('destinationCreeId', String(destination.id));",
+                  "    }",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modifier la destination creee",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/destinations/{{destinationCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "destinations",
+                "{{destinationCreeId}}"
+              ]
+            },
+            "description": "Met a jour la fiche creee.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"postman-destination\",\n  \"nom\": \"Destination Postman modifiee\",\n  \"ville\": \"Tunis\",\n  \"pays\": \"Tunisie\",\n  \"region\": \"Grand Tunis\",\n  \"ambiance\": \"CULTURE\",\n  \"tarifJourTnd\": 90,\n  \"accroche\": \"Une fiche de demonstration pour la collection Postman.\",\n  \"description\": \"Destination ajoutee pour verifier les routes d administration du catalogue.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Supprimer la destination creee",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/destinations/{{destinationCreeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "destinations",
+                "{{destinationCreeId}}"
+              ]
+            },
+            "description": "Refuse la suppression si une relation l utilise.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 - Administration de la moderation",
+      "description": "File des signalements du livre d or.",
+      "item": [
+        {
+          "name": "File de moderation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/publications",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "publications"
+              ]
+            },
+            "description": "",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Signalements d un recit",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/publications/{{publicationAutreId}}/signalements",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "publications",
+                "{{publicationAutreId}}",
+                "signalements"
+              ]
+            },
+            "description": "Lancer d abord le signalement d un recit d un autre auteur.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Masquer un recit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/publications/{{publicationAutreId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "publications",
+                "{{publicationAutreId}}"
+              ]
+            },
+            "description": "Passe le recit en MASQUEE et cloture ses signalements.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actif\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Retablir un recit",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/publications/{{publicationAutreId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "admin",
+                "publications",
+                "{{publicationAutreId}}"
+              ]
+            },
+            "description": "Remet le recit en PUBLIEE.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{adminJeton}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"actif\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8081",
+      "description": "Valeur par defaut reprise de la base de developpement."
+    },
+    {
+      "key": "emailUser",
+      "value": "ayoub@mail.tn",
+      "description": "Compte USER de demonstration present en base."
+    },
+    {
+      "key": "motDePasseUser",
+      "value": "user12345",
+      "description": "Mot de passe du compte USER de demonstration."
+    },
+    {
+      "key": "emailAdmin",
+      "value": "admin@gmail.com",
+      "description": "Compte ADMIN de demonstration present en base."
+    },
+    {
+      "key": "motDePasseAdmin",
+      "value": "admin1234",
+      "description": "Mot de passe du compte ADMIN de demonstration."
+    },
+    {
+      "key": "destinationId",
+      "value": "1",
+      "description": "Sidi Bou Said dans la base de developpement."
+    },
+    {
+      "key": "publicationId",
+      "value": "7",
+      "description": "Recit de Ayoub present en base."
+    },
+    {
+      "key": "publicationAutreId",
+      "value": "6",
+      "description": "Recit de Sarra present en base, utilise pour le signalement."
+    },
+    {
+      "key": "hotelId",
+      "value": "1",
+      "description": "Maison des terrasses a Sidi Bou Said, id_h=1 en base."
+    },
+    {
+      "key": "montantAttendu",
+      "value": "540",
+      "description": "180 TND x 1 chambre x 3 nuits pour l hotel id_h=1."
+    },
+    {
+      "key": "cleReservation",
+      "value": "6f1c2f6e-9d5f-4b0a-8f5c-2f2f0f9a7a11",
+      "description": "Cle fixe pour rejouer la reservation sans doublon."
+    },
+    {
+      "key": "recherche",
+      "value": "Tunisie",
+      "description": "Filtre du livre d or."
+    },
+    {
+      "key": "cheminPhoto",
+      "value": "C:/ISETR/L3-DSI/Projet Integration/Code/Go-Voyage/backend/src/main/resources/images/djerba.jpg",
+      "description": "Photo locale utilisee pour l import media."
+    },
+    {
+      "key": "jeton",
+      "value": "",
+      "description": "Jeton USER rempli par Connexion USER."
+    },
+    {
+      "key": "adminJeton",
+      "value": "",
+      "description": "Jeton ADMIN rempli par Connexion ADMIN."
+    },
+    {
+      "key": "arrivee",
+      "value": "",
+      "description": "Date d arrivee calculee a l execution."
+    },
+    {
+      "key": "depart",
+      "value": "",
+      "description": "Date de depart calculee a l execution."
+    },
+    {
+      "key": "dateVol",
+      "value": "",
+      "description": "Date de vol calculee a l execution."
+    },
+    {
+      "key": "circuitCreeId",
+      "value": "",
+      "description": "Identifiant capture apres creation d un circuit."
+    },
+    {
+      "key": "circuitVersion",
+      "value": "0",
+      "description": "Version optimiste du circuit."
+    },
+    {
+      "key": "utilisateurCreeId",
+      "value": "",
+      "description": "Identifiant capture apres creation d un compte."
+    },
+    {
+      "key": "hotelCreeId",
+      "value": "",
+      "description": "Identifiant capture apres creation d un hotel."
+    },
+    {
+      "key": "destinationCreeId",
+      "value": "",
+      "description": "Identifiant capture apres creation d une destination."
+    },
+    {
+      "key": "publicationCreeId",
+      "value": "",
+      "description": "Identifiant capture apres publication d un recit."
+    },
+    {
+      "key": "reservationId",
+      "value": "",
+      "description": "Identifiant capture apres reservation."
+    },
+    {
+      "key": "mediaUrl",
+      "value": "",
+      "description": "URL renvoyee apres import d un media."
+    },
+    {
+      "key": "mediaType",
+      "value": "",
+      "description": "Type PHOTO ou VIDEO renvoye apres import."
+    },
+    {
+      "key": "mediaId",
+      "value": "11111111-1111-4111-8111-111111111111",
+      "description": "Identifiant du media lu."
+    }
+  ]
+}

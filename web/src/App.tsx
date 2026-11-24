@@ -3,10 +3,10 @@ import { api, autorisation, erreurApi, ErreurApi, Profil, Session } from './api'
 import { PilotagePage } from './PilotagePage';
 import { ReservationsPage, CarnetReservations } from './ReservationsPage';
 import { VolsPage } from './VolsPage';
-import { LivreOrPage } from './LivreOrPage';
 import { ConnexionPage } from './ConnexionPage';
 import { Champ, Message, lireCoordonnees } from './ChampsCompte';
 import { EspaceVoyage } from './EspaceVoyage';
+import { LivreOrFeed } from './LivreOrPage';
 
 const cleSession = 'govoyage.jeton';
 
@@ -15,7 +15,7 @@ export function App() {
   const [jeton, definirJeton] = useState(() => sessionStorage.getItem(cleSession) ?? '');
   const [profil, definirProfil] = useState<Profil>();
   const [erreur, definirErreur] = useState<ErreurApi>();
-  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin' | 'hotels' | 'vols' | 'livre' | 'reservations'>();
+  const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin' | 'hotels' | 'vols' | 'reservations' | 'livre'>();
   const [motifConnexion, definirMotifConnexion] = useState<string>();
   const [editionProfil, definirEditionProfil] = useState(false);
   const [erreurProfil, definirErreurProfil] = useState<ErreurApi>();
@@ -112,26 +112,34 @@ export function App() {
     amenerSection(ancre, 10);
   }
 
-  /** Fait defiler jusqu'a la section, en attendant qu'elle soit affichee. */
+  /** Fait defiler jusqu'a la section, sous les barres fixes, en attendant qu'elle soit affichee. */
   function amenerSection(ancre: string, tentatives: number) {
     window.setTimeout(() => {
       const cible = document.getElementById(ancre);
       const animer = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (cible) cible.scrollIntoView({ behavior: animer ? 'smooth' : 'auto' });
-      else if (tentatives > 0) amenerSection(ancre, tentatives - 1);
+      if (!cible) {
+        if (tentatives > 0) amenerSection(ancre, tentatives - 1);
+        return;
+      }
+      const barres = document.querySelector('.barres-fixes');
+      const decalage = barres instanceof HTMLElement ? barres.getBoundingClientRect().height : 0;
+      const haut = cible.getBoundingClientRect().top + window.scrollY - decalage - 12;
+      window.scrollTo({ top: haut, behavior: animer ? 'smooth' : 'auto' });
     }, 120);
   }
 
   return <div className="app">
+    <div className="barres-fixes">
     <header className="barre">
       <a href="#contenu" className="marque"><img src="/logo-go-voyage.png" alt="GO VOYAGE" /></a>
       <div className="barre-droite">
-        <nav className="nav-catalogue" aria-label="Sections du catalogue">
+        <nav className="nav-catalogue" aria-label="Navigation principale">
+          <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('explorer'); amenerSection('contenu', 10); }}>Accueil</button>
           <button type="button" onClick={() => montrerSection('destinations')}>Destinations</button>
-          <button type="button" onClick={() => montrerSection('modeles')}>Circuits proposés</button>
+          <button type="button" onClick={() => montrerSection('modeles')}>Circuits</button>
           <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('hotels'); }}>Séjours</button>
           <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('vols'); }}>Vols</button>
-          <button type="button" onClick={() => { definirMotifConnexion(undefined); definirSection('livre'); }}>Livre d’or</button>
+          <button type="button" onClick={() => montrerSection('livre-or')}>Livre d’or</button>
         </nav>
         {jeton ? <>
           {profil && <button type="button" className="compte-pilule" onClick={() => definirSection('profil')}
@@ -149,15 +157,19 @@ export function App() {
       <button aria-current={onglet === 'explorer' ? 'page' : undefined} onClick={() => definirSection('explorer')}>Explorer</button>
       <button aria-current={onglet === 'circuits' ? 'page' : undefined} onClick={() => definirSection('circuits')}>Mes circuits</button>
       <button aria-current={onglet === 'reservations' ? 'page' : undefined} onClick={() => definirSection('reservations')}>Mes réservations</button>
-      <button aria-current={onglet === 'profil' ? 'page' : undefined} onClick={() => definirSection('profil')}>Mon compte</button>
     </nav>}
+    </div>
     {motifConnexion !== undefined && !jeton ? <ConnexionPage connecter={connecter} motif={motifConnexion} annuler={annulerConnexion} /> :
       onglet === 'hotels' ? <ReservationsPage jeton={jeton} demanderConnexion={demanderConnexion} /> :
       onglet === 'vols' ? <VolsPage /> :
-      onglet === 'livre' ? <LivreOrPage jeton={jeton} compteId={profil?.id} demanderConnexion={demanderConnexion} /> :
+      onglet === 'livre' ? <main className="voyage-main" id="contenu">
+        <button className="bouton secondaire-bouton retour-livre-or" type="button"
+          onClick={() => { definirSection('explorer'); amenerSection('contenu', 10); }}>← Retour à l’accueil</button>
+        <LivreOrFeed jeton={jeton} compteId={profil?.id} demanderConnexion={demanderConnexion} />
+      </main> :
       !jeton ? (motifConnexion === undefined ?
-      <EspaceVoyage jeton={jeton} onglet="explorer" afficherCircuits={() => definirSection('circuits')}
-        actualiser={actualiser} demanderConnexion={demanderConnexion} /> :
+      <EspaceVoyage jeton={jeton} compteId={profil?.id} onglet="explorer" afficherCircuits={() => definirSection('circuits')}
+        actualiser={actualiser} demanderConnexion={demanderConnexion} voirLivreOr={() => definirSection('livre')} /> :
       <ConnexionPage connecter={connecter} motif={motifConnexion} annuler={annulerConnexion} />) :
       erreur ? <main className="espace" id="contenu">
         <Message erreur={erreur} />
@@ -168,8 +180,9 @@ export function App() {
         <PilotagePage jeton={jeton} admin={profil} actualiser={actualiser} /> :
       onglet === 'reservations' ? <CarnetReservations jeton={jeton} /> :
       onglet !== 'profil' ?
-        <EspaceVoyage jeton={jeton} onglet={onglet} actualiser={actualiser}
-          afficherCircuits={() => definirSection('circuits')} demanderConnexion={demanderConnexion} /> :
+        <EspaceVoyage jeton={jeton} compteId={profil?.id} onglet={onglet} actualiser={actualiser}
+          afficherCircuits={() => definirSection('circuits')} demanderConnexion={demanderConnexion}
+          voirLivreOr={() => definirSection('livre')} /> :
         <main className="espace" id="contenu">
           <div className="en-tete-espace"><div>
             <p className="surtitre"><i /> ESPACE VOYAGEUR</p>

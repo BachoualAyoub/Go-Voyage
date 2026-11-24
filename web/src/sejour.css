@@ -1,45 +1,113 @@
 /* Identite des nouveaux parcours : turquoise, blanc et nuances minerales. */
-.atelier-page,.sejour{max-width:1240px;margin:32px auto;padding:0 32px 48px;color:#163c3b}
+.atelier-page,.sejour{width:100%;max-width:1240px;margin:clamp(20px,4vw,36px) auto;padding:0 clamp(18px,3vw,32px) clamp(32px,5vw,56px);color:#163c3b}
 .sejour h1,.atelier-page h1{font-size:clamp(2.2rem,4.7vw,4.4rem);line-height:1.07;letter-spacing:-.055em;margin:16px 0 22px}
 .sejour h1 em,.atelier-page h1 em{font-style:normal;color:#058d7d}
-.sejour-hero{background:linear-gradient(105deg,rgba(12,46,46,.96),rgba(13,56,55,.6)),url('/destinations/tabarka.jpg') center/cover;border-radius:28px;padding:50px;display:flex;justify-content:space-between;gap:28px;color:white;min-height:310px;align-items:center}
+.sejour-hero{background:linear-gradient(105deg,rgba(12,46,46,.96),rgba(13,56,55,.6)),url('/destinations/tabarka.jpg') center/cover;border-radius:clamp(18px,3vw,28px);padding:clamp(28px,5vw,50px);display:flex;justify-content:space-between;gap:clamp(18px,3vw,32px);color:white;min-height:310px;align-items:center}
+.sejour-hero>div:first-child{max-width:62ch}
 .sejour-hero h1 em{color:#53e1cd}.sejour-hero .surtitre{color:#8debdc}
-.hero-prix{display:grid;gap:14px;min-width:200px;padding:28px;background:#ffffff12;backdrop-filter:blur(12px);border:1px solid #ffffff38;border-radius:20px}
+.hero-prix{display:grid;gap:12px;min-width:clamp(180px,22vw,230px);padding:clamp(20px,2.5vw,28px);background:#ffffff12;backdrop-filter:blur(12px);border:1px solid #ffffff38;border-radius:20px}
 .hero-prix strong{font-size:1.8rem}.note-source{font-size:.8rem;color:#667b79;margin:16px 0 24px}
-.recherche-sejour{display:flex;flex-direction:row;flex-wrap:nowrap;gap:16px;align-items:end;background:white;border:1px solid #dbe8e5;border-radius:20px;padding:24px;box-shadow:0 14px 44px #143b3106}
-.recherche-sejour label{flex:1;min-width:120px}.recherche-sejour label,.formulaire-voyage label,.entete-selection label,.recherche-recit{display:grid;gap:9px;font-size:.85rem;font-weight:600;color:#345b57}
-.recherche-sejour input,.recherche-sejour select,.formulaire-voyage input,.formulaire-voyage select,.formulaire-voyage textarea,.entete-selection select,.recherche-recit input{border:1px solid #cbdcda;background:#fbfdfc;min-height:44px;padding:11px 13px;border-radius:10px;color:#183d38;font:inherit;width:100%;box-sizing:border-box}
-.entete-selection{display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:32px 0 22px}.entete-selection h2,.entete-selection>div:first-child,.entete-selection>label:first-child{margin-right:auto}.entete-selection h2{font-size:1.3rem}
-.cartes-hotels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
-.carte-hotel{background:white;border:1px solid #e0e9e6;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px #163d3806;animation:arriver-escale .45s ease both;transition:box-shadow .2s,transform .2s}
+.recherche-sejour{display:flex;flex-direction:row;flex-wrap:nowrap;gap:clamp(12px,1.8vw,20px);align-items:end;background:white;border:1px solid #dbe8e5;border-radius:20px;padding:clamp(18px,2.5vw,26px);box-shadow:0 14px 44px #143b3106}
+.recherche-sejour label{flex:1;min-width:110px}
+.recherche-sejour>button{align-self:end;white-space:nowrap}
+.recherche-sejour label,.formulaire-voyage label,.entete-selection label,.recherche-recit{display:grid;gap:8px;font-size:.85rem;font-weight:600;color:#345b57}
+.recherche-sejour input,.recherche-sejour select,.formulaire-voyage input,.formulaire-voyage select,.formulaire-voyage textarea,.entete-selection select,.recherche-recit input{border:1px solid #cbdcda;background:#fbfdfc;min-height:46px;padding:11px 13px;border-radius:10px;color:#183d38;font:inherit;width:100%;box-sizing:border-box}
+.recherche-sejour input:focus,.recherche-sejour select:focus,.recherche-recit input:focus{border-color:var(--turquoise);outline:3px solid var(--turquoise-clair)}
+.entete-selection{display:flex;align-items:end;gap:14px 20px;flex-wrap:wrap;margin:clamp(24px,3.5vw,36px) 0 20px}
+.entete-selection h2,.entete-selection>div:first-child,.entete-selection>label:first-child{margin-right:auto}
+.entete-selection h2{font-size:clamp(1.15rem,2vw,1.4rem);line-height:1.2}
+.entete-selection label{min-width:150px}
+.entete-reservations{margin:clamp(24px,3.5vw,36px) 0 20px}
+.titre-reservations{display:flex;align-items:center;gap:14px 18px;flex-wrap:wrap}
+.titre-reservations h1{margin:0;font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.1;letter-spacing:-.02em}
+.titre-reservations .bouton{white-space:nowrap}
+.entete-reservations>p{color:#647d74;line-height:1.6;margin:8px 0 0}
+.cartes-hotels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));grid-auto-rows:1fr;align-items:stretch;gap:clamp(16px,2.2vw,24px)}
+.carte-hotel{height:100%;display:flex;flex-direction:column;background:white;border:1px solid #e0e9e6;border-radius:22px;overflow:hidden;box-sizing:border-box;box-shadow:0 8px 30px #163d3806;animation:arriver-escale .45s ease both;transition:box-shadow .2s,transform .2s}
 .carte-hotel:hover{transform:translateY(-4px);box-shadow:0 16px 36px #133d3012}
-.carte-hotel>img{width:100%;height:225px;object-fit:cover}
-.hotel-contenu{padding:24px}.hotel-contenu h3{font-size:1.5rem;margin:12px 0}.hotel-contenu p{line-height:1.6;color:#607570;font-size:.92rem}
+.carte-hotel>img{width:100%;height:clamp(190px,22vw,230px);object-fit:cover;flex:none}
+.hotel-contenu{padding:clamp(18px,2.4vw,26px);display:flex;flex:1;flex-direction:column;gap:6px}
+.hotel-contenu h3{font-size:1.4rem;margin:6px 0}.hotel-contenu p{flex:1;line-height:1.6;color:#607570;font-size:.92rem;margin:0}
 .etoiles,.etiquette{font-size:.72rem;font-weight:700;letter-spacing:.06em;color:#0b8574;text-transform:uppercase}
-.hotel-prix{border-top:1px solid #e6edeb;margin-top:22px;padding-top:20px;display:flex;gap:16px;align-items:center;justify-content:space-between}
-.hotel-prix strong{font-size:1.45rem}.hotel-prix small{display:block;font-size:.74rem;color:#748780;margin-top:7px}.hotel-prix button{white-space:nowrap}
+.hotel-prix{border-top:1px solid #e6edeb;margin-top:auto;padding-top:18px;display:flex;gap:12px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.hotel-prix strong{font-size:1.35rem}.hotel-prix small{display:block;font-size:.74rem;color:#748780;margin-top:6px}.hotel-prix button{white-space:nowrap}
 .voile-dialogue,.voile-voyage{position:fixed;inset:0;background:#071f29a6;backdrop-filter:blur(5px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px}
 .confirmation-sejour,.dialogue-voyage{background:white;border-radius:24px;max-width:620px;width:100%;max-height:88dvh;overflow-y:auto;padding:36px;position:relative;box-shadow:0 30px 100px #0003;box-sizing:border-box;animation:arriver-escale .2s ease}
 .dialogue-voyage h2,.confirmation-sejour h2{font-size:1.8rem;margin:8px 0 18px;padding-right:44px;letter-spacing:-.03em}.dialogue-voyage p,.confirmation-sejour p{line-height:1.7}
 .total-sejour{display:block;font-size:2.5rem;color:#058d7d;margin:24px 0}.actions-dialogue{display:flex;gap:14px;justify-content:flex-end;flex-wrap:wrap;margin:22px 0 0}
 .retour-action{padding:18px 22px;background:#e0f7f0;color:#175b4e;border-radius:14px;border-left:4px solid #05ad98}
 .retour-action[role="alert"]{background:#faebe5;color:#7c2b22;border-left-color:#9c3529}
-.grille-reservations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.billet-sejour{padding:28px;background:white;border:1px solid #dbe8e4;border-radius:20px;position:relative}
+.grille-reservations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;align-items:stretch;gap:24px}.billet-sejour{height:100%;display:flex;flex-direction:column;box-sizing:border-box;padding:28px;background:white;border:1px solid #dbe8e4;border-radius:20px;position:relative}
 .billet-entete{display:flex;justify-content:space-between;gap:15px;border-bottom:1px dashed #b6ceca;padding-bottom:20px;font-size:.75rem}
-.statut-confirmee{color:#03816d}.statut-annulee{color:#8b5858}.billet-sejour>strong{font-size:1.8rem;display:block;margin:20px 0}
+.statut-confirmee{color:#03816d}.statut-annulee{color:#8b5858}.billet-sejour>strong{font-size:1.8rem;display:block;margin:20px 0 auto}.billet-sejour>button{align-self:flex-start;margin-top:16px}
 .titre-voyage{display:flex;align-items:center;justify-content:space-between;gap:30px;margin:44px 0}.titre-voyage>div>p:last-child,.titre-editorial>p:last-child{color:#647d74;line-height:1.7}
 .onglets-pilules,.onglets-pilotage{display:flex;gap:6px;flex-wrap:wrap;padding:6px;background:#edf3f0;border-radius:14px;width:fit-content;margin:24px 0}
 .onglets-pilules button,.onglets-pilotage button{padding:12px 20px;border:0;background:transparent;border-radius:10px;font:inherit;color:#4b6b62;cursor:pointer}
 .onglets-pilules button[aria-pressed=true],.onglets-pilotage button[aria-current=page]{background:#fff;color:#0a7869;box-shadow:0 3px 12px #213b3310}
 .onglets-pilotage b{background:#05ad98;color:white;padding:3px 7px;margin-left:8px;border-radius:30px;font-size:.7rem}
-.plan-vols{display:grid;gap:12px}.billet-vol{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;background:white;border:1px solid #dce8e3;border-radius:16px;padding:26px;margin:14px 0;color:#284b40;font:inherit;text-align:left;cursor:pointer;transition:border .2s,background .2s}
-.billet-vol[aria-pressed=true]{border-color:#05ad98;background:#eafbf5;box-shadow:inset 0 0 0 1px #05ad98}.billet-vol small{display:block;margin-top:10px;color:#72867d}.billet-vol>strong{font-size:1.5rem}.billet-vol>span:last-child{font-size:.8rem;color:#068a74}
-.total-selection strong{font-size:1.4rem;color:#057c69;margin-left:12px}.resultats-vols h2{font-size:1.3rem}.resultats-vols h2 small{font-size:.8rem;font-weight:400;margin-left:18px}
-.recherche-recit{max-width:600px;margin:32px 0}.recherche-recit input{padding:17px 20px;border-radius:14px;min-height:55px}
-.grille-recits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px;align-items:start}.carte-recit{background:white;border-radius:22px;border:1px solid #e1eae5;overflow:hidden;animation:arriver-escale .4s ease}
-.carte-recit>img,.carte-recit>video{width:100%;max-height:340px;object-fit:cover;background:#102d2a}.media-indisponible{min-height:220px;display:grid;place-items:center;background:#e8f0ec;color:#587963;font-size:.85rem;font-weight:700;letter-spacing:.05em}.corps-recit{padding:28px}.corps-recit h2{font-size:1.65rem;letter-spacing:-.03em}.texte-recit{white-space:pre-line;line-height:1.8;color:#5b7468}
-.actions-recit{display:flex;gap:18px;flex-wrap:wrap;border-top:1px solid #e2eae6;padding-top:18px;margin-top:24px}.actions-recit button,.table-voyage button,.moderation-ligne>button:not(.bouton){border:0;background:transparent;font:inherit;font-size:.82rem;color:#18806a;padding:5px 0;cursor:pointer}.actions-recit button[aria-pressed=true]{color:#b23a62}
-.fermer-dialogue{position:absolute;right:20px;top:18px;border:0;background:#eef3f0;border-radius:50%;width:34px;height:34px;font-size:23px;cursor:pointer}.formulaire-voyage{display:grid;gap:18px}.champs-ligne{display:flex;flex-wrap:wrap;gap:16px}.champs-ligne>label{flex:1;min-width:100px}.formulaire-voyage textarea{resize:vertical}.formulaire-voyage .case-voyage{display:flex;align-items:center}.case-voyage input{width:20px;min-height:20px}.avis-voyage{padding:16px;background:#f2f7f3;border-radius:12px;margin-bottom:15px}
+.plan-vols{display:grid;gap:16px}
+.billet-vol{display:grid;grid-template-columns:minmax(130px,1.2fr) minmax(130px,1.2fr) auto auto;align-items:center;gap:clamp(12px,2vw,24px);width:100%;min-height:92px;box-sizing:border-box;background:white;border:1px solid #dce8e3;border-radius:16px;padding:clamp(16px,2vw,24px);margin:0;color:#284b40;font:inherit;text-align:left;cursor:pointer;transition:border .2s,background .2s,transform .2s}
+.billet-vol:hover{transform:translateY(-2px);border-color:#9ccfc4}
+.billet-vol[aria-pressed=true]{border-color:#05ad98;background:#eafbf5;box-shadow:inset 0 0 0 1px #05ad98}
+.billet-vol>span,.billet-vol>strong{min-width:0}
+.billet-vol b{display:block;font-size:1rem}
+.billet-vol small{display:block;margin-top:6px;color:#72867d;line-height:1.4;overflow-wrap:anywhere}
+.billet-vol>strong{font-size:clamp(1.2rem,2vw,1.45rem);white-space:nowrap;justify-self:end}
+.billet-vol>span:last-child{font-size:.8rem;font-weight:700;color:#068a74;white-space:nowrap;justify-self:end}
+.total-selection{margin:0}.total-selection strong{font-size:1.35rem;color:#057c69;margin-left:8px}
+.resultats-vols{display:grid;gap:12px;margin-top:26px}
+.resultats-vols h2{font-size:1.2rem;margin:0;padding:0 0 10px;border-bottom:1px solid #e2eae6;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.resultats-vols h2 small{font-size:.8rem;font-weight:400;color:#6e877c;margin-left:0}
+.recherche-livre-or{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:24px 0 20px}
+.livre-or-titre-acceuil{font-size:clamp(1.5rem,2.5vw,2rem);margin:0}
+.livre-or-titre-acceuil+.recherche-livre-or{margin-top:12px}
+.recherche-recit{flex:1;min-width:min(100%,280px);margin:0}
+.recherche-recit input{padding:14px 18px;border-radius:12px;min-height:50px}
+.livre-or{margin-top:28px;padding:clamp(20px,3vw,30px);background:var(--blanc);border:1px solid var(--trait);border-radius:24px;box-shadow:0 12px 40px #143b3108}
+.livre-or-entete{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+.livre-or-intro{flex:1;min-width:min(100%,320px)}
+.livre-or-entete h2{font-size:clamp(1.7rem,3vw,2.5rem);line-height:1.12;margin:8px 0 10px}
+.livre-or-entete h2 em{font-style:normal;color:#058d7d}
+.livre-or-entete .secondaire{max-width:58ch}
+.livre-or-actions{display:flex;align-self:flex-end;gap:10px;flex-wrap:wrap}.livre-or-actions .bouton{white-space:nowrap}
+.retour-livre-or{margin-bottom:16px}
+.fil-actualite{display:grid;gap:16px}
+.publication{background:#fbfdfc;border:1px solid #e0e9e5;border-radius:18px;padding:clamp(16px,2.4vw,24px);animation:arriver-escale .4s ease both}
+.publication-entete{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.avatar-auteur{flex:none;width:40px;height:40px;border-radius:50%;background:var(--turquoise);color:var(--encre);display:grid;place-items:center;font-weight:800;font-size:1.05rem}
+.auteur-identite{display:grid;gap:2px;min-width:0}
+.auteur-identite strong{font-size:.98rem;line-height:1.2}
+.auteur-identite small{color:#6c857b;font-size:.78rem}
+.publication-titre{font-size:1.2rem;margin:0 0 8px}
+.publication-texte{color:#5b7468;line-height:1.7;white-space:pre-line;margin:0 0 14px}
+.publication>img,.publication>video{width:100%;max-height:360px;object-fit:cover;background:#102d2a;border-radius:14px;display:block;margin-bottom:14px}
+.publication>.media-par-defaut{object-fit:contain;max-height:190px;background:#eef7f3;border:1px solid #dcebe4;border-radius:14px;padding:16px;box-sizing:border-box}
+/* Actions du livre d'or : memes cibles tactiles et etats visibles pour chaque bouton. */
+.publication-actions{display:flex;align-items:center;justify-content:flex-start;gap:10px;flex-wrap:wrap;border-top:1px solid #e2eae6;padding-top:16px}
+.publication-actions button,.table-voyage button,.moderation-ligne>button:not(.bouton){border:0;background:transparent;font:inherit;font-size:.82rem;color:#18806a;padding:5px 0;cursor:pointer}
+.publication-actions>.like-popover>button,.publication-actions>.bouton-avis,.publication-actions>.bouton-modifier,.publication-actions>.bouton-signalement,.publication-actions>.bouton-retirer{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:8px 14px;border:1px solid #d8e7e1;border-radius:99px;background:#fff;color:#0a6558;font-weight:700;font-size:.82rem;white-space:nowrap;transition:background .18s,border-color .18s,color .18s,transform .18s}
+.publication-actions .icone-action{flex:none;width:14px;text-align:center}
+.publication-actions button:hover:not(:disabled){background:#eafbf5;border-color:#7fcbbd;transform:translateY(-1px)}
+.publication-actions>.like-popover>button[aria-pressed=true]{background:#fff0f4;border-color:#f0a9bf;color:#b23a62}
+.publication-actions>.like-popover>button[aria-pressed=true]:hover:not(:disabled){background:#ffe6ee;border-color:#d98aa5}
+.publication-actions>.bouton-signalement{background:#f4f8f6;border-color:transparent;color:#6c857b;font-weight:600}
+.publication-actions>.bouton-signalement:hover:not(:disabled){background:#e9f1ed;border-color:#d8e7e1;color:var(--encre)}
+.publication-actions>.bouton-retirer:hover:not(:disabled){background:#fbeeec;border-color:#e8b4ad;color:var(--rouge)}
+.publication-actions button:disabled{cursor:not-allowed;opacity:.55;transform:none}
+.like-popover{position:relative}
+.liste-likes{position:absolute;left:0;bottom:calc(100% + 10px);z-index:5;width:230px;max-height:270px;overflow:auto;padding:6px;background:var(--blanc);border:1px solid var(--trait);border-radius:14px;box-shadow:0 14px 34px #143b3126;font-size:.82rem;animation:arriver-escale .18s ease both}
+.liste-likes>strong{display:block;padding:9px 10px;border-bottom:1px solid var(--trait);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;color:#0a6558}
+.liste-likes>span{display:block;padding:9px 10px;border-bottom:1px solid #eef3f0;line-height:1.3;color:#23453f}
+.liste-likes>span:last-child{border-bottom:0}
+.liste-likes>small{display:block;padding:11px 10px;color:#6c857b}
+.fermer-dialogue{position:absolute;right:20px;top:18px;border:0;background:#eef3f0;border-radius:50%;width:34px;height:34px;font-size:23px;cursor:pointer}
+.comptage{position:relative;display:inline-flex;align-items:center;width:fit-content}
+.pastille{position:absolute;top:-7px;right:-9px;min-width:17px;height:17px;padding:0 3px;box-sizing:content-box;border:2px solid white;border-radius:99px;background:#c23a56;color:white;font-size:.6rem;font-weight:800;line-height:13px;text-align:center;white-space:nowrap;box-shadow:0 2px 6px #0002;pointer-events:none}
+.entete-dialogue{display:flex;align-items:flex-start;gap:12px;padding-right:38px}.entete-dialogue>div{min-width:0}.entete-dialogue h2{padding-right:0}
+.etoile-avis{flex:none;color:#b8860b;font-weight:800;font-size:1.05rem;white-space:nowrap}
+.moderation-ligne .etiquette{display:inline-flex;align-items:center}
+.formulaire-voyage{display:grid;gap:18px}.champs-ligne{display:flex;flex-wrap:wrap;gap:16px}.champs-ligne>label{flex:1;min-width:100px}.formulaire-voyage textarea{resize:vertical}.formulaire-voyage .case-voyage{display:flex;align-items:center}.case-voyage input{width:20px;min-height:20px}.avis-voyage{padding:14px 16px;background:#f7fbf9;border:1px solid #dcebe4;border-left:4px solid #05ad98;border-radius:12px;margin-bottom:12px}
+.avis-voyage strong{color:#0a6558}.avis-voyage p{margin:6px 0 0;color:#5b7468;line-height:1.6}
 .grille-indicateurs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:28px 0}.indicateur{background:white;border:1px solid #e0e9e3;border-radius:19px;padding:25px 24px;display:grid;gap:15px;animation:arriver-escale .4s ease}.indicateur:nth-child(2){background:#123f38;color:white}.indicateur>span{font-size:.8rem}.indicateur>strong{font-size:clamp(1.6rem,2.8vw,2.6rem);letter-spacing:-.05em}.indicateur>small{font-size:.72rem;opacity:.65}
 .grille-graphes{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}.graphe-panel{background:white;border:1px solid #dfe8e3;border-radius:22px;padding:30px;margin-bottom:24px}.grille-graphes .graphe-panel{margin-bottom:0}.graphe-panel h2{font-size:1.4rem;letter-spacing:-.03em}.graphe-panel .surtitre{font-size:.64rem}
 .barre-ville{margin:24px 0}.barre-ville>span{display:flex;gap:15px;font-size:.85rem;margin:10px 0}.barre-ville b{color:#9caea7;font-weight:400}.barre-ville strong{margin-left:auto}.barre-ville>div{height:9px;border-radius:20px;background:#edf2ef;overflow:hidden}.barre-ville i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#05ad98,#85d7af);transform-origin:left;animation:pousser-barre .7s ease}.barre-ville small{display:block;color:#8d9f96;font-size:.7rem;margin-top:7px}
@@ -51,7 +119,7 @@
 @keyframes pousser-barre{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes pousser-colonne{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @media(max-width:1000px){.barre{flex-wrap:wrap;gap:12px}.barre-droite{flex-wrap:wrap}.nav-catalogue{flex-wrap:wrap}.grille-indicateurs{grid-template-columns:1fr 1fr}.titre-voyage{align-items:start}.hotel-prix{flex-wrap:wrap}}
-@media(max-width:700px){.atelier-page,.sejour{padding:0 18px 32px;margin-top:20px}.sejour-hero{padding:28px;flex-direction:column;align-items:start}.hero-prix{display:none}.cartes-hotels,.grille-reservations,.grille-recits,.grille-graphes{grid-template-columns:1fr}.titre-voyage{flex-direction:column;margin:26px 0}.recherche-sejour{padding:18px;flex-direction:column;align-items:stretch}.carte-hotel>img{height:195px}.billet-vol{gap:15px;flex-wrap:wrap}.graphe-panel{padding:22px}.grille-indicateurs{gap:10px}.indicateur{padding:20px 16px}.dialogue-voyage,.confirmation-sejour{padding:26px}.voile-voyage,.voile-dialogue{padding:12px}}
-@media(max-width:700px){.barre .barre-droite{width:100%;justify-content:space-between}.barre .nav-catalogue{display:flex;flex-wrap:wrap;width:100%;gap:4px}.barre .nav-catalogue button{font-size:.8rem;padding:8px 10px}.barre .marque img{max-width:160px}.titre-editorial{margin-top:28px}}
+@media(max-width:700px){.atelier-page,.sejour{padding:0 18px 32px;margin-top:20px}.sejour-hero{padding:28px;flex-direction:column;align-items:start}.hero-prix{display:none}.cartes-hotels,.grille-reservations,.grille-graphes{grid-template-columns:1fr}.titre-voyage{flex-direction:column;margin:26px 0}.recherche-sejour{padding:18px;flex-direction:column;align-items:stretch}.recherche-sejour>button{width:100%}.carte-hotel>img{height:195px}.billet-vol{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;min-height:0}.billet-vol>span:nth-child(2){justify-self:end;text-align:right}.billet-vol>strong,.billet-vol>span:last-child{white-space:nowrap;justify-self:end}.graphe-panel{padding:22px}.grille-indicateurs{gap:10px}.indicateur{padding:20px 16px}.dialogue-voyage,.confirmation-sejour{padding:26px}.voile-voyage,.voile-dialogue{padding:12px}}
+@media(max-width:700px){.barre .barre-droite{width:100%;justify-content:space-between}.barre .nav-catalogue{display:flex;flex-wrap:wrap;width:100%;gap:4px}.barre .nav-catalogue button{font-size:.8rem;padding:8px 10px}.barre .marque img{max-width:160px}.titre-editorial{margin-top:28px}.livre-or{padding:18px;border-radius:18px}.livre-or-intro{min-width:0}.publication>img,.publication>video{max-height:280px}.publication-actions{gap:8px 10px}.liste-likes{left:auto;right:0;width:min(230px,80vw)}}
 @media(max-width:480px){.grille-indicateurs{grid-template-columns:1fr}.indicateur>strong{font-size:1.35rem}}
 @media(prefers-reduced-motion:reduce){.sejour *,.atelier-page *{animation:none!important;transition:none!important}}

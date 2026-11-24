@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { api, autorisation, erreurApi, ErreurApi } from './api';
 import { Message } from './ChampsCompte';
 import { EditeurCircuit } from './EditeurCircuit';
+import { LivreOrFeed } from './LivreOrPage';
+import { CarrouselAccueil } from './CarrouselAccueil';
 import { Ambiance, ambiances, Circuit, CircuitDemande, Destination, dinars, normaliserRecherche } from './voyage';
 import './voyage.css';
 
 type Dialogue = { type: 'edition'; circuit?: Circuit; destination?: Destination } |
   { type: 'suppression'; circuit: Circuit };
-type Props = { jeton: string; onglet: 'explorer' | 'circuits'; afficherCircuits: () => void; actualiser: () => void; demanderConnexion: (motif: string) => void };
+type Props = { jeton: string; compteId?: number; onglet: 'explorer' | 'circuits'; afficherCircuits: () => void; actualiser: () => void; demanderConnexion: (motif: string) => void; voirLivreOr: () => void };
 
 /** Affiche un circuit du catalogue ou du compte, avec ses actions. */
 function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir: () => void; supprimer?: () => void }) {
@@ -26,7 +28,7 @@ function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir
 }
 
 /** Charge le catalogue public et, si connecte, les inspirations et les circuits personnels. */
-export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, demanderConnexion }: Props) {
+export function EspaceVoyage({ jeton, compteId, onglet, afficherCircuits, actualiser, demanderConnexion, voirLivreOr }: Props) {
   const [destinations, definirDestinations] = useState<Destination[]>([]);
   const [modeles, definirModeles] = useState<Circuit[]>([]);
   const [circuits, definirCircuits] = useState<Circuit[]>([]);
@@ -115,17 +117,18 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, dema
     normaliserRecherche([lieu.nom, lieu.ville, lieu.pays, lieu.region].join(' ')).includes(normaliserRecherche(recherche)));
 
   return <main className="voyage-main" id="contenu">
-    {onglet === 'explorer' ?
-      <section className="hero-explorer">
-        <div><span className="voyage-etiquette">GO VOYAGE · CARNET DE ROUTE</span>
+    {onglet === 'explorer' ? <>
+      <section className="hero-explorer" id="explorer">
+        <CarrouselAccueil />
+        <div className="hero-contenu"><span className="voyage-etiquette">GO VOYAGE · CARNET DE ROUTE</span>
           <h1>La Tunisie,<br />à votre rythme.</h1>
           <p>Une envie de mer, de médina ou de désert ? Choisissez vos étapes et dessinez le voyage qui vous ressemble.</p>
           <div className="hero-actions">
-            <a className="bouton principal" href="#destinations">Explorer les destinations ↓</a>
+            <a className="bouton principal" href="#destinations">Explorer les destinations</a>
             <a className="lien-hero" href="#modeles">Voir les circuits proposés</a>
           </div></div>
-        <span className="hero-legende">SIDI BOU SAÏD · TUNISIE</span>
-      </section> :
+      </section>
+    </> :
       <header className="titre-circuits">
         <div><p className="voyage-etiquette">VOTRE CARNET</p><h1>Mes circuits</h1>
           <p className="secondaire">Vos itinéraires, prêts à être repris et ajustés.</p></div>
@@ -170,6 +173,8 @@ export function EspaceVoyage({ jeton, onglet, afficherCircuits, actualiser, dema
         <div className="grille-circuits">{modeles.map(circuit => <CarteCircuit key={circuit.id} circuit={circuit}
           ouvrir={() => composer(circuit)} />)}</div>
       </section>
+      <LivreOrFeed jeton={jeton} compteId={compteId} demanderConnexion={demanderConnexion}
+        limite={2} voirTous={voirLivreOr} />
     </> : <section aria-label="Circuits personnels">
       {!circuits.length ? <p className="etat-voyage">Votre carnet est vide. Créez un circuit ou personnalisez une inspiration du catalogue.</p> :
         <div className="grille-circuits">{circuits.map(circuit => <CarteCircuit key={circuit.id} circuit={circuit}

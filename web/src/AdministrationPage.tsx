@@ -98,7 +98,7 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
         <h1>Comptes utilisateurs</h1>
         <p className="secondaire">Gérez les accès à GO VOYAGE.</p>
       </div>
-      <button className="bouton principal" type="button" onClick={() => ouvrir({ type: 'ajout' })}>＋ Ajouter un compte</button>
+      <button className="bouton principal" type="button" onClick={() => ouvrir({ type: 'ajout' })}>Ajouter un compte</button>
     </div>
     <Message erreur={erreurListe} enfants={succes} />
     <section className="panneau" aria-label="Liste des comptes">

@@ -116,8 +116,14 @@ export function CarnetReservations({ jeton }: { jeton: string }) {
     try { await api.delete('/api/reservations/' + annulation.id_r, autorisation(jeton)); setAnnulation(undefined); setRevision(n => n + 1); }
     catch (e) { setErreur(erreurApi(e).message); } finally { setAttente(false); }
   }
-  return <main className="atelier-page" id="contenu"><div className="entete-selection"><div><h1>Mes réservations</h1><p>Les détails de vos prochaines escales, sur tous vos appareils.</p></div>
-    <button className="bouton secondaire-bouton" onClick={() => { setErreur(''); setRevision(n => n + 1); }}>Actualiser</button></div>
+  return <main className="atelier-page" id="contenu">
+    <header className="entete-reservations">
+      <div className="titre-reservations">
+        <h1>Mes réservations</h1>
+        <button className="bouton secondaire-bouton" onClick={() => { setErreur(''); setRevision(n => n + 1); }}>Actualiser</button>
+      </div>
+      <p>Les détails de vos prochaines escales, sur tous vos appareils.</p>
+    </header>
     {erreur && <p role="alert" className="retour-action">{erreur}</p>}
     {!liste.length && <p className="vide-parcours">Votre carnet attend son premier séjour. Explorez les hôtels pour choisir votre prochaine escale.</p>}
     <div className="grille-reservations">{liste.map(r => <article className="billet-sejour" key={r.id_r}>

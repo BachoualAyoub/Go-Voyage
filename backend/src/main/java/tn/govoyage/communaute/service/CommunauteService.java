@@ -19,7 +19,7 @@ public class CommunauteService {
         if (recherche.length()>100) erreur("Recherche trop longue.");
         String filtre="%"+recherche.trim().toLowerCase(Locale.ROOT)+"%";
         return dao.lire("""
-            SELECT p.*,u.prenom AS auteur,
+            SELECT p.*,u.prenom AS auteur,u.prenom AS auteur_prenom,u.nom AS auteur_nom,
             (SELECT COUNT(*) FROM appreciation a WHERE a.publication_id=p.id_p) AS likes,
             (SELECT COUNT(*) FROM avis a WHERE a.publication_id=p.id_p) AS avis,
             (SELECT COALESCE(AVG(CAST(a.note AS DECIMAL(4,2))),0) FROM avis a WHERE a.publication_id=p.id_p) AS note,
@@ -36,6 +36,17 @@ public class CommunauteService {
         verifierMedia(compte, mediaUrl, mediaType);
         dao.ecrire("INSERT INTO publication(utilisateur_id,titre,texte,pays,ville,media_url,media_type) VALUES(?,?,?,?,?,?,?)",
             compte,d.titre().trim(),d.texte().trim(),d.pays().trim(),d.ville().trim(),mediaUrl,mediaType);
+    }
+
+    /** Modifie uniquement un recit visible appartenant au voyageur connecte. */
+    @Transactional
+    public void modifier(Long id,Long compte,PublicationRequest.Publication d) {
+        unique(dao.lire("SELECT id_p FROM publication WHERE id_p=? AND utilisateur_id=? AND statut='PUBLIEE' FOR UPDATE",id,compte));
+        String mediaUrl = nettoyer(d.mediaUrl());
+        String mediaType = nettoyer(d.mediaType());
+        verifierMedia(compte, mediaUrl, mediaType);
+        dao.ecrire("UPDATE publication SET titre=?,texte=?,pays=?,ville=?,media_url=?,media_type=? WHERE id_p=?",
+            d.titre().trim(),d.texte().trim(),d.pays().trim(),d.ville().trim(),mediaUrl,mediaType,id);
     }
 
     /** Transforme un champ vide en absence de media. */
@@ -62,6 +73,14 @@ public class CommunauteService {
             JOIN utilisateur u ON u.id_u=a.utilisateur_id WHERE publication_id=? ORDER BY a.cree_le DESC
             """,id);
     }
+    /** Liste les voyageurs qui ont aime une publication visible. */
+    public List<Map<String,Object>> likes(Long id) {
+        unique(dao.lire("SELECT id_p FROM publication WHERE id_p=? AND statut='PUBLIEE'",id));
+        return dao.lire("""
+            SELECT u.prenom,u.nom FROM appreciation a JOIN utilisateur u ON u.id_u=a.utilisateur_id
+            WHERE a.publication_id=? ORDER BY u.nom,u.prenom
+            """,id);
+    }
     /** Remplace son propre avis et garde la note entre un et cinq. */
     @Transactional
     public void donnerAvis(Long id,Long compte,PublicationRequest.Avis d) {
@@ -81,6 +100,8 @@ public class CommunauteService {
     @Transactional
     public void signaler(Long id,Long compte,String motif) {
         visible(id);
+        if (dao.compter("SELECT COUNT(*) FROM publication WHERE id_p=? AND utilisateur_id=?",id,compte)>0)
+            erreur("Vous ne pouvez pas signaler votre propre recit.");
         if (dao.compter("SELECT COUNT(*) FROM signalement WHERE publication_id=? AND utilisateur_id=?",id,compte)==0)
             dao.ecrire("INSERT INTO signalement(publication_id,utilisateur_id,motif) VALUES(?,?,?)",id,compte,motif.trim());
     }
@@ -93,7 +114,7 @@ public class CommunauteService {
     /** Retourne les contenus et les signalements a traiter. */
     public List<Map<String,Object>> moderation() {
         return dao.lire("""
-            SELECT p.*,u.prenom AS auteur,
+            SELECT p.*,u.prenom AS auteur,u.prenom AS auteur_prenom,u.nom AS auteur_nom,
             (SELECT COUNT(*) FROM signalement s WHERE s.publication_id=p.id_p AND s.statut='OUVERT') AS signalements
             FROM publication p JOIN utilisateur u ON u.id_u=p.utilisateur_id ORDER BY p.cree_le DESC
             """);

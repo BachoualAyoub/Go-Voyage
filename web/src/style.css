@@ -31,7 +31,8 @@ p, h1, h2 { margin: 0; }
 h1, h2 { font-family: var(--titre); letter-spacing: -.04em; }
 .app { min-height: 100svh; display: flex; flex-direction: column; }
 .barre, .pied { padding: 16px max(24px, calc((100% - 1216px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.barre { background: var(--blanc); border-bottom: 1px solid var(--trait); min-height: 76px; padding-block: 10px; }
+.barres-fixes { position: sticky; top: 0; z-index: 30; }
+.barre { background: var(--blanc); border-bottom: 1px solid var(--trait); min-height: 76px; padding-block: 10px; box-shadow: 0 6px 18px #143b310d; }
 .marque { flex: none; width: 216px; }
 .marque img { display: block; width: 100%; height: auto; }
 .pied { font-size: .7rem; font-weight: 700; letter-spacing: .13em; }

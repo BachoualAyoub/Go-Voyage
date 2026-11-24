@@ -62,9 +62,11 @@ export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admi
   return <><main className="espace sejour pilotage" id="contenu">
     <div className="titre-voyage"><div><p className="surtitre">LE POULS DE GO VOYAGE</p><h1>Vos données.<br /><em>De nouvelles perspectives.</em></h1>
       <p>Bonjour {admin.prenom}. Voici l’activité réelle de votre plateforme.</p></div>
-      <button className="bouton secondaire-bouton" disabled={attente} onClick={() => { setErreur(''); setRevision(v => v + 1); }}>{attente ? 'Actualisation…' : '↻ Actualiser les données'}</button></div>
+      <button className="bouton secondaire-bouton" disabled={attente} onClick={() => { setErreur(''); setRevision(v => v + 1); }}>{attente ? 'Actualisation…' : 'Actualiser les données'}</button></div>
     <nav className="onglets-pilotage" aria-label="Administration">{[['synthese','Vue d’ensemble'],['hotels','Hôtels'],['destinations','Destinations'],
-      ['moderation','Modération'],['comptes','Comptes']].map(([id, texte]) => <button key={id} aria-current={onglet === id ? 'page' : undefined} onClick={() => setOnglet(id)}>{texte}{id === 'moderation' && !!stats?.signalements && <b>{stats.signalements}</b>}</button>)}</nav>
+      ['moderation','Modération'],['comptes','Comptes']].map(([id, texte]) => <button key={id} aria-current={onglet === id ? 'page' : undefined} onClick={() => setOnglet(id)}>
+        <span className="comptage">{texte}{id === 'moderation' && !!stats?.signalements &&
+          <span className="pastille">{stats.signalements}</span>}</span></button>)}</nav>
     {erreur && <p className="alerte erreur" role="alert">{erreur}</p>}
     {onglet === 'synthese' && stats && <>
       <section className="grille-indicateurs" aria-label="Indicateurs actuels">
@@ -88,17 +90,17 @@ export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admi
         {!stats.recentes.length && <tr><td colSpan={5}>Aucune réservation enregistrée.</td></tr>}</tbody></table></div></section>
     </>}
     {onglet === 'hotels' && <section className="graphe-panel"><div className="entete-selection"><h2>Le catalogue hôtelier</h2>
-      <button className="bouton principal" onClick={() => setHotel({ actif: true, etoiles: 3, tarif_nuit: 100, chambres: 5, capacite: 2 })}>＋ Ajouter un hôtel</button></div>
+      <button className="bouton principal" onClick={() => setHotel({ actif: true, etoiles: 3, tarif_nuit: 100, chambres: 5, capacite: 2 })}>Ajouter un hôtel</button></div>
       <div className="table-voyage"><table><thead><tr><th>Hôtel</th><th>Ville</th><th>Nuit / chambre</th><th>Capacité</th><th>État</th><th>Actions</th></tr></thead><tbody>
         {hotels.map(h => <tr key={h.id_h}><td><strong>{h.nom}</strong></td><td>{h.ville}</td><td>{dinars(h.tarif_nuit)}</td><td>{h.chambres} chambres · {h.capacite} pers.</td><td>{h.actif ? 'En ligne' : 'Archivé'}</td>
           <td><button onClick={() => setHotel(h)}>Modifier</button>{h.actif && <button disabled={attente} onClick={() => { if (window.confirm('Archiver cet hôtel ? Les réservations existantes sont conservées.')) void agir(() => api.delete('/api/admin/hotels/' + h.id_h, autorisation(jeton))); }}>Archiver</button>}</td></tr>)}</tbody></table></div></section>}
-    {onglet === 'destinations' && <section className="graphe-panel"><div className="entete-selection"><h2>Les destinations</h2><button className="bouton principal" onClick={() => setDestination({ pays: 'Tunisie', ambiance: 'MER' })}>＋ Ajouter une destination</button></div>
+    {onglet === 'destinations' && <section className="graphe-panel"><div className="entete-selection"><h2>Les destinations</h2><button className="bouton principal" onClick={() => setDestination({ pays: 'Tunisie', ambiance: 'MER' })}>Ajouter une destination</button></div>
       <div className="table-voyage"><table><thead><tr><th>Destination</th><th>Ville · Pays</th><th>Tarif journalier</th><th>Actions</th></tr></thead><tbody>
         {destinations.map(d => <tr key={d.id}><td><strong>{d.nom}</strong></td><td>{d.ville} · {d.pays}</td><td>{dinars(d.tarifJourTnd)}</td><td>
           <button onClick={() => setDestination(d)}>Modifier</button><button disabled={attente} onClick={() => { if (window.confirm('Supprimer cette destination inutilisée ?')) void agir(() => api.delete('/api/admin/destinations/' + d.id, autorisation(jeton))); }}>Supprimer</button></td></tr>)}</tbody></table></div></section>}
     {onglet === 'moderation' && <section className="graphe-panel"><h2>Un espace de confiance</h2><p>Examinez les motifs puis masquez ou rétablissez le récit. Cette action clôture ses signalements.</p>
       {!publications.length && <p>Aucun récit publié.</p>}
-      {publications.map(p => <article className="moderation-ligne" key={p.id_p}><div><span className="etiquette">{p.statut === 'PUBLIEE' ? 'Visible' : 'Masqué'} · {p.signalements} signalement(s)</span>
+      {publications.map(p => <article className="moderation-ligne" key={p.id_p}><div><span className="etiquette comptage">{p.statut === 'PUBLIEE' ? 'Visible' : 'Masqué'} · signalement(s)<span className="pastille">{p.signalements}</span></span>
         <h3>{p.titre} <small>— {p.auteur}</small></h3><p>{p.texte}</p><small>{p.ville} · {p.pays}</small></div>
         <button onClick={() => void agir(async () => { const r = await api.get('/api/admin/publications/' + p.id_p + '/signalements', autorisation(jeton)); setMotifs(r.data); })}>Voir les motifs</button>
         <button className="bouton secondaire-bouton" disabled={attente} onClick={() => void agir(() => api.put('/api/admin/publications/' + p.id_p, { actif: p.statut !== 'PUBLIEE' }, autorisation(jeton)))}>{p.statut === 'PUBLIEE' ? 'Masquer le récit' : 'Rétablir le récit'}</button></article>)}
@@ -121,7 +123,8 @@ export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admi
         <label>Tarif journalier (TND)<input name="tarifJourTnd" required type="number" min="1" max="100000" defaultValue={destination.tarifJourTnd ?? 100} /></label>
         <label>Description<textarea name="description" required maxLength={750} defaultValue={destination.description} rows={4} /></label>
         <button disabled={attente} className="bouton principal">Enregistrer la destination</button></form></section></div>}
-    {motifs && <div className="voile-voyage"><section className="dialogue-voyage" role="dialog" aria-modal="true" aria-labelledby="titre-motifs"><button className="fermer-dialogue" aria-label="Fermer" onClick={() => setMotifs(undefined)}>×</button><h2 id="titre-motifs">Motifs des signalements</h2>{!motifs.length && <p>Aucun signalement.</p>}{motifs.map((m,i) => <p key={i}>{m.motif} · {m.statut === 'OUVERT' ? 'À traiter' : 'Traité'}</p>)}</section></div>}
+    {motifs && <div className="voile-voyage"><section className="dialogue-voyage" role="dialog" aria-modal="true" aria-labelledby="titre-motifs"><button className="fermer-dialogue" aria-label="Fermer" onClick={() => setMotifs(undefined)}>×</button><div className="entete-dialogue"><span className="comptage" aria-label={motifs.length + ' signalements'}><span aria-hidden="true">◆</span>
+        <span className="pastille">{motifs.length}</span></span><div><h2 id="titre-motifs">Motifs des signalements</h2></div></div>{!motifs.length && <p>Aucun signalement.</p>}{motifs.map((m,i) => <p key={i}>{m.motif} · {m.statut === 'OUVERT' ? 'À traiter' : 'Traité'}</p>)}</section></div>}
   {onglet === 'comptes' && <AdministrationPage jeton={jeton} admin={admin} actualiser={actualiser} />}
   </main></>;
 }

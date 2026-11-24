@@ -24,9 +24,15 @@ public class CommunauteController {
     /** Partage un recit. */
     @PostMapping("/publications") @ResponseStatus(HttpStatus.CREATED)
     public void publier(@AuthenticationPrincipal CompteAuthentifie c,@Valid @RequestBody PublicationRequest.Publication d) { service.publier(c.id(),d); }
+    /** Modifie son propre recit. */
+    @PutMapping("/publications/{id}")
+    public void modifier(@PathVariable Long id,@AuthenticationPrincipal CompteAuthentifie c,@Valid @RequestBody PublicationRequest.Publication d) { service.modifier(id,c.id(),d); }
     /** Lit les commentaires et notes. */
     @GetMapping("/publications/{id}/avis")
     public List<Map<String,Object>> avis(@PathVariable Long id) { return service.avis(id); }
+    /** Voyageurs ayant aime le recit. */
+    @GetMapping("/publications/{id}/likes")
+    public List<Map<String,Object>> likes(@PathVariable Long id) { return service.likes(id); }
     /** Ecrit ou modifie son avis. */
     @PutMapping("/publications/{id}/avis")
     public void avis(@PathVariable Long id,@AuthenticationPrincipal CompteAuthentifie c,@Valid @RequestBody PublicationRequest.Avis d) { service.donnerAvis(id,c.id(),d); }

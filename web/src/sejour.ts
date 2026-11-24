@@ -14,10 +14,12 @@ export type Vol = {
 };
 export type Publication = {
   id_p: number; utilisateur_id: number; titre: string; texte: string; pays: string; ville: string;
-  auteur: string; media_url: string | null; media_type: string | null; cree_le: string;
+  auteur: string; auteur_prenom?: string; auteur_nom?: string;
+  media_url: string | null; media_type: string | null; cree_le: string;
   likes: number; avis: number; note: number; aime: number; statut: string; signalements?: number;
 };
 export type Avis = { id_a: number; auteur: string; note: number; texte: string; utilisateur_id: number };
+export type AimePar = { prenom: string; nom: string };
 export type Statistiques = {
   comptes: number; destinations: number; hotels: number; circuits: number; reservations: number;
   montant: number; annulations: number; publications: number; signalements: number;

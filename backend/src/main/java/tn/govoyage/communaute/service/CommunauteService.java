@@ -31,15 +31,28 @@ public class CommunauteService {
     /** Publie apres validation du media et de son proprietaire. */
     @Transactional
     public void publier(Long compte,PublicationRequest.Publication d) {
-        if (d.mediaUrl()!=null && !d.mediaUrl().isBlank()) {
-            if (d.mediaType()==null || !d.mediaUrl().matches("/api/medias/[a-f0-9-]{36}")) erreur("Importez une photo ou une vidéo depuis votre appareil.");
-            String id=d.mediaUrl().substring("/api/medias/".length());
-            Map<String,Object> media=unique(dao.lire("SELECT * FROM media_voyage WHERE id_m=? AND utilisateur_id=?",id,compte));
-            boolean image=media.get("type_contenu").toString().startsWith("image/");
-            if (image != "PHOTO".equals(d.mediaType())) erreur("Type de média incohérent.");
-        }
+        String mediaUrl = nettoyer(d.mediaUrl());
+        String mediaType = nettoyer(d.mediaType());
+        verifierMedia(compte, mediaUrl, mediaType);
         dao.ecrire("INSERT INTO publication(utilisateur_id,titre,texte,pays,ville,media_url,media_type) VALUES(?,?,?,?,?,?,?)",
-            compte,d.titre().trim(),d.texte().trim(),d.pays().trim(),d.ville().trim(),d.mediaUrl(),d.mediaType());
+            compte,d.titre().trim(),d.texte().trim(),d.pays().trim(),d.ville().trim(),mediaUrl,mediaType);
+    }
+
+    /** Transforme un champ vide en absence de media. */
+    private String nettoyer(String valeur) {
+        if (valeur == null || valeur.isBlank()) return null;
+        return valeur.trim();
+    }
+
+    /** Verifie que le media existe, appartient au compte et correspond a son type. */
+    private void verifierMedia(Long compte, String mediaUrl, String mediaType) {
+        if ((mediaUrl == null) != (mediaType == null)) erreur("La photo et son type doivent etre fournis ensemble.");
+        if (mediaUrl == null) return;
+        if (!mediaUrl.matches("/api/medias/[a-f0-9-]{36}")) erreur("Importez une photo ou une video depuis votre appareil.");
+        String id = mediaUrl.substring("/api/medias/".length());
+        Map<String,Object> media = unique(dao.lire("SELECT * FROM media_voyage WHERE id_m=? AND utilisateur_id=?", id, compte));
+        boolean image = media.get("type_contenu").toString().startsWith("image/");
+        if (image != "PHOTO".equals(mediaType)) erreur("Type de media incoherent.");
     }
     /** Charge les avis d'une publication visible. */
     public List<Map<String,Object>> avis(Long id) {
@@ -54,7 +67,8 @@ public class CommunauteService {
     public void donnerAvis(Long id,Long compte,PublicationRequest.Avis d) {
         visible(id);
         dao.ecrire("DELETE FROM avis WHERE publication_id=? AND utilisateur_id=?",id,compte);
-        dao.ecrire("INSERT INTO avis(publication_id,utilisateur_id,texte,note) VALUES(?,?,?,?)",id,compte,d.texte().trim(),d.note());
+        dao.ecrire("INSERT INTO avis(publication_id,utilisateur_id,texte,note) VALUES(?,?,?,?)",
+            id,compte,d.texte().trim(),d.note());
     }
     /** Pose l'etat du like explicitement, meme lors d'une nouvelle tentative. */
     @Transactional

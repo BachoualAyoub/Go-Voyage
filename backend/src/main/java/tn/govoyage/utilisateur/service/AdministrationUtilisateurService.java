@@ -49,6 +49,9 @@ public class AdministrationUtilisateurService {
     @Transactional
     public UtilisateurResponse modifier(Long id, ModificationCompteRequest demande, Long idAdmin) {
         Utilisateur compte = chargerCompte(id);
+        if (compte.getRole() == Role.ADMIN && !id.equals(idAdmin)) {
+            throw new OperationCompteException("Vous ne pouvez pas modifier un autre administrateur.");
+        }
         if (id.equals(idAdmin) && demande.role() != Role.ADMIN) {
             throw new OperationCompteException("Vous ne pouvez pas retirer votre propre role administrateur.");
         }
@@ -73,6 +76,9 @@ public class AdministrationUtilisateurService {
         Utilisateur compte = chargerCompte(id);
         if (id.equals(idAdmin)) {
             throw new OperationCompteException("Vous ne pouvez pas supprimer votre propre compte.");
+        }
+        if (compte.getRole() == Role.ADMIN) {
+            throw new OperationCompteException("Vous ne pouvez pas supprimer un autre administrateur.");
         }
         utilisateurDAO.delete(compte);
     }

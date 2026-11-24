@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,6 +17,7 @@ import tn.govoyage.authentification.dto.ConnexionRequest;
 import tn.govoyage.authentification.dto.ConnexionResponse;
 import tn.govoyage.authentification.service.AuthentificationService;
 import tn.govoyage.utilisateur.dto.InscriptionRequest;
+import tn.govoyage.utilisateur.dto.ModificationProfilRequest;
 import tn.govoyage.utilisateur.dto.UtilisateurResponse;
 import tn.govoyage.utilisateur.service.UtilisateurService;
 
@@ -56,6 +58,14 @@ public class AuthentificationController {
     @SecurityRequirement(name = "jeton")
     public UtilisateurResponse moi(Authentication authentication) {
         return authentificationService.moi(authentication.getName());
+    }
+
+    /** Modifie les coordonnees du compte connecte, sans changer son role. */
+    @PutMapping("/moi")
+    @SecurityRequirement(name = "jeton")
+    public UtilisateurResponse modifierProfil(Authentication authentication,
+            @Valid @RequestBody ModificationProfilRequest demande) {
+        return utilisateurService.modifierProfil(authentication.getName(), demande);
     }
 }
                 

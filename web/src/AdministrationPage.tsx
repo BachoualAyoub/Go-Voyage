@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { api, autorisation, erreurApi, ErreurApi, Profil, Role } from './api';
+import { api, autorisation, erreurApi, ErreurApi, Profil } from './api';
 import { Champ, lireCoordonnees, Message } from './ChampsCompte';
 
 const route = '/api/admin/utilisateurs';
@@ -64,12 +64,11 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
         await api.delete(route + '/' + action.compte.id, config);
         definirSucces('Compte supprimé.');
       } else if (action.type === 'edition') {
-        await api.put(route + '/' + action.compte.id, { ...lireCoordonnees(champs), role: champs.get('role') }, config);
+        await api.put(route + '/' + action.compte.id, { ...lireCoordonnees(champs), role: compteEdite?.role }, config);
         definirSucces('Compte modifié.');
-        if (action.compte.id === admin.id) actualiser();
       } else {
         const compte = { ...lireCoordonnees(champs), motDePasse: String(champs.get('motDePasse')) };
-        await api.post(route, { compte, role: champs.get('role') }, config);
+        await api.post(route, { compte, role: 'USER' }, config);
         definirSucces('Compte ajouté.');
       }
       dialogue.current?.close();
@@ -91,7 +90,6 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
   const titre = action?.type === 'suppression' ? 'Supprimer le compte ?' :
     action?.type === 'edition' ? 'Modifier le compte' : 'Ajouter un compte';
   const prefixe = action?.type === 'ajout' ? 'compte.' : '';
-  const roleDefaut: Role = compteEdite?.role ?? 'USER';
 
   return <section className="administration" id="comptes-contenu">
     <div className="en-tete-espace">
@@ -113,17 +111,15 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
         erreurListe ? <p className="vide"><button className="bouton secondaire-bouton" onClick={() => charger()}>Réessayer</button></p> :
         comptesVisibles.length === 0 ? <p className="vide">Aucun compte trouvé.</p> :
         <div className="table-scroll"><table>
-          <thead><tr><th>Compte</th><th>Téléphone</th><th>Rôle</th><th>Actions</th></tr></thead>
+          <thead><tr><th>Compte</th><th>Téléphone</th><th>Actions</th></tr></thead>
           <tbody>{comptesVisibles.map((compte) => <tr key={compte.id}>
             <td><strong>{compte.prenom} {compte.nom}</strong><small>{compte.email}</small></td>
             <td>{compte.tel}</td>
-            <td><span className={'badge ' + (compte.role === 'ADMIN' ? 'badge-admin' : '')}>
-              {compte.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur'}</span></td>
-            <td className="actions">
+            <td>{compte.role === 'ADMIN' ? '—' : <span className="actions">
               <button type="button" aria-label={'Modifier ' + compte.email} onClick={() => ouvrir({ type: 'edition', compte })}>Modifier</button>
-              {compte.id !== admin.id && <button type="button" className="danger-texte" aria-label={'Supprimer ' + compte.email}
-                onClick={() => ouvrir({ type: 'suppression', compte })}>Supprimer</button>}
-            </td>
+              <button type="button" className="danger-texte" aria-label={'Supprimer ' + compte.email}
+                onClick={() => ouvrir({ type: 'suppression', compte })}>Supprimer</button>
+            </span>}</td>
           </tr>)}</tbody>
         </table></div>}
     </section>
@@ -145,12 +141,6 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
             <Champ nom="tel" label="Téléphone" type="tel" max={20} valeur={compteEdite?.tel} erreur={erreur?.erreurs?.[prefixe + 'tel']} />
             {action.type === 'ajout' && <Champ nom="motDePasse" label="Mot de passe" type="password" autocomplete="new-password"
               min={8} max={72} erreur={erreur?.erreurs?.['compte.motDePasse']} />}
-            <label className="champ">Rôle
-              <select name="role" defaultValue={roleDefaut}>
-                {compteEdite?.id !== admin.id && <option value="USER">Utilisateur</option>}
-                <option value="ADMIN">Administrateur</option>
-              </select>
-            </label>
           </>}
         <div className="actions-dialogue">
           <button className="bouton secondaire-bouton" type="button" disabled={attente} onClick={() => dialogue.current?.close()}>Annuler</button>

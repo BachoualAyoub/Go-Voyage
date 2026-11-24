@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { api, autorisation, erreurApi, ErreurApi, Profil, Session } from './api';
 import { PilotagePage } from './PilotagePage';
 import { ReservationsPage, CarnetReservations } from './ReservationsPage';
 import { VolsPage } from './VolsPage';
 import { LivreOrPage } from './LivreOrPage';
 import { ConnexionPage } from './ConnexionPage';
-import { Message } from './ChampsCompte';
+import { Champ, Message, lireCoordonnees } from './ChampsCompte';
 import { EspaceVoyage } from './EspaceVoyage';
 
 const cleSession = 'govoyage.jeton';
@@ -17,6 +17,11 @@ export function App() {
   const [erreur, definirErreur] = useState<ErreurApi>();
   const [section, definirSection] = useState<'explorer' | 'circuits' | 'profil' | 'admin' | 'hotels' | 'vols' | 'livre' | 'reservations'>();
   const [motifConnexion, definirMotifConnexion] = useState<string>();
+  const [editionProfil, definirEditionProfil] = useState(false);
+  const [erreurProfil, definirErreurProfil] = useState<ErreurApi>();
+  const [succesProfil, definirSuccesProfil] = useState('');
+  const [attenteProfil, definirAttenteProfil] = useState(false);
+  const dialogueProfil = useRef<HTMLDialogElement>(null);
   const onglet = section === 'admin' && profil?.role !== 'ADMIN' ? 'explorer' :
     section ?? (profil?.role === 'ADMIN' ? 'admin' : 'explorer');
 
@@ -51,6 +56,10 @@ export function App() {
     return () => controle.abort();
   }, [actualiser]);
 
+  useEffect(() => {
+    if (editionProfil && !dialogueProfil.current?.open) dialogueProfil.current?.showModal();
+  }, [editionProfil]);
+
   /** Stocke le jeton le temps de la session de l'onglet. */
   function connecter(session: Session) {
     sessionStorage.setItem(cleSession, session.jeton);
@@ -67,6 +76,33 @@ export function App() {
   /** Retourne au catalogue public sans se connecter. */
   function annulerConnexion() {
     definirMotifConnexion(undefined);
+  }
+
+  /** Ouvre la modification du profil en effacant les messages precedents. */
+  function ouvrirEditionProfil() {
+    definirErreurProfil(undefined);
+    definirSuccesProfil('');
+    definirEditionProfil(true);
+  }
+
+  /** Enregistre les coordonnees du compte connecte, sans changer son role. */
+  async function modifierProfil(evenement: FormEvent<HTMLFormElement>) {
+    evenement.preventDefault();
+    if (!profil) return;
+    const coordonnees = lireCoordonnees(new FormData(evenement.currentTarget));
+    definirAttenteProfil(true);
+    definirErreurProfil(undefined);
+    try {
+      const corps = { nom: coordonnees.nom, prenom: coordonnees.prenom, tel: coordonnees.tel };
+      await api.put('/api/auth/moi', corps, autorisation(jeton));
+      await actualiser();
+      dialogueProfil.current?.close();
+      definirSuccesProfil('Informations mises à jour.');
+    } catch (cause) {
+      definirErreurProfil(erreurApi(cause));
+    } finally {
+      definirAttenteProfil(false);
+    }
   }
 
   /** Affiche le catalogue puis amene la section demandee a l'ecran. */
@@ -146,9 +182,33 @@ export function App() {
               <div><dt>Nom complet</dt><dd>{profil.prenom} {profil.nom}</dd></div>
               <div><dt>Adresse e-mail</dt><dd>{profil.email}</dd></div>
               <div><dt>Téléphone</dt><dd>{profil.tel}</dd></div>
-              <div><dt>Rôle</dt><dd><span className="badge">{profil.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur'}</span></dd></div>
             </dl>
+            <div className="actions-dialogue">
+              <button className="bouton principal" type="button" onClick={ouvrirEditionProfil}>Modifier mes informations</button>
+            </div>
+            <Message enfants={succesProfil} />
           </section>
+          <dialog ref={dialogueProfil} aria-labelledby="titre-edition-profil"
+            onClose={() => definirEditionProfil(false)}
+            onCancel={(evenement) => { if (attenteProfil) evenement.preventDefault(); }}>
+            {editionProfil && <form onSubmit={modifierProfil}>
+              <h2 id="titre-edition-profil">Modifier mes informations</h2>
+              <Message erreur={erreurProfil} />
+              <div className="duo">
+                <Champ nom="prenom" label="Prénom" max={100} valeur={profil.prenom} erreur={erreurProfil?.erreurs?.prenom} />
+                <Champ nom="nom" label="Nom" max={100} valeur={profil.nom} erreur={erreurProfil?.erreurs?.nom} />
+              </div>
+              <Champ nom="email" label="Adresse e-mail" type="email" valeur={profil.email} readOnly />
+              <Champ nom="tel" label="Téléphone" type="tel" max={20} valeur={profil.tel} erreur={erreurProfil?.erreurs?.tel} />
+              <div className="actions-dialogue">
+                <button className="bouton secondaire-bouton" type="button"
+                  onClick={() => dialogueProfil.current?.close()}>Annuler</button>
+                <button className="bouton principal" type="submit" disabled={attenteProfil}>
+                  {attenteProfil ? 'Enregistrement…' : 'Enregistrer'}
+                </button>
+              </div>
+            </form>}
+          </dialog>
         </main>}
     <footer className="pied"><span>GO VOYAGE</span><span>Votre espace voyage · Tunisie</span></footer>
   </div>;

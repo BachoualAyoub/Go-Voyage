@@ -110,8 +110,6 @@ td small { display: block; margin-top: 3px; color: var(--secondaire); }
 .actions button { border: 0; background: transparent; font-size: .85rem; font-weight: 700; padding: 4px 0; color: var(--turquoise-fonce); }
 .actions button:hover { text-decoration: underline; }
 .actions button.danger-texte { color: var(--rouge); }
-.badge { display: inline-block; border-radius: 999px; background: var(--gris-clair); color: var(--encre); padding: 4px 10px; font-size: .77rem; font-weight: 700; }
-.badge-admin { background: var(--turquoise-clair); color: var(--turquoise-fonce); }
 .vide { padding: 26px 22px; }
 dialog { width: min(496px, calc(100% - 32px)); max-height: 90vh; padding: 25px; border: 1px solid var(--trait); border-radius: 17px; background: var(--blanc); color: var(--encre); box-shadow: 0 20px 80px #242b2b40; }
 dialog::backdrop { background: #242b2ba0; }

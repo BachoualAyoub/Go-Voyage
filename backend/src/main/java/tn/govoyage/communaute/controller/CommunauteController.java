@@ -32,7 +32,7 @@ public class CommunauteController {
     public void avis(@PathVariable Long id,@AuthenticationPrincipal CompteAuthentifie c,@Valid @RequestBody PublicationRequest.Avis d) { service.donnerAvis(id,c.id(),d); }
     /** Ajoute ou retire son like. */
     @PutMapping("/publications/{id}/like")
-    public void aimer(@PathVariable Long id,@AuthenticationPrincipal CompteAuthentifie c,@RequestBody PublicationRequest.Etat d) { service.aimer(id,c.id(),d.actif()); }
+    public void aimer(@PathVariable Long id,@AuthenticationPrincipal CompteAuthentifie c,@Valid @RequestBody PublicationRequest.Etat d) { service.aimer(id,c.id(),d.actif()); }
     /** Transmet un signalement. */
     @PostMapping("/publications/{id}/signalements")
     public void signaler(@PathVariable Long id,@AuthenticationPrincipal CompteAuthentifie c,@Valid @RequestBody PublicationRequest.Signalement d) { service.signaler(id,c.id(),d.motif()); }
@@ -47,5 +47,5 @@ public class CommunauteController {
     public List<Map<String,Object>> signalements(@PathVariable Long id) { return service.signalements(id); }
     /** Statue sur un contenu signale. */
     @PutMapping("/admin/publications/{id}")
-    public void moderer(@PathVariable Long id,@RequestBody PublicationRequest.Etat d) { service.moderer(id,d.actif()); }
+    public void moderer(@PathVariable Long id,@Valid @RequestBody PublicationRequest.Etat d) { service.moderer(id,d.actif()); }
 }

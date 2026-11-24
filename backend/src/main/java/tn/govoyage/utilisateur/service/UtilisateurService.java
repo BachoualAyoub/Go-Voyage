@@ -6,10 +6,13 @@ import java.util.Locale;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import tn.govoyage.exception.EmailDejaUtiliseException;
+import tn.govoyage.exception.RessourceIntrouvableException;
 import tn.govoyage.utilisateur.dao.UtilisateurDAO;
 import tn.govoyage.utilisateur.dto.InscriptionRequest;
+import tn.govoyage.utilisateur.dto.ModificationProfilRequest;
 import tn.govoyage.utilisateur.dto.UtilisateurResponse;
 import tn.govoyage.utilisateur.entity.Role;
 import tn.govoyage.utilisateur.entity.Utilisateur;
@@ -62,6 +65,19 @@ public class UtilisateurService {
             }
             throw exception;
         }
+    }
+
+    /** Modifie les coordonnees du compte connecte, sans changer son role ni son e-mail. */
+    @Transactional
+    public UtilisateurResponse modifierProfil(String email, ModificationProfilRequest demande) {
+        Utilisateur utilisateur = utilisateurDAO.chercherParEmail(email).orElse(null);
+        if (utilisateur == null) {
+            throw new RessourceIntrouvableException("Utilisateur introuvable.");
+        }
+        utilisateur.setNom(demande.nom());
+        utilisateur.setPrenom(demande.prenom());
+        utilisateur.setTel(demande.tel());
+        return enregistrer(utilisateur);
     }
 
     /** Convertit une entite utilisateur en reponse, sans le mot de passe. */

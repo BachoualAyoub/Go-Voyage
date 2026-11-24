@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_menu_circuits"
             android:title="@string/menu_circuits" />
         <item
+            android:id="@+id/nav_sejours"
+            android:icon="@drawable/ic_menu_sejours"
+            android:title="@string/menu_sejours" />
+        <item
             android:id="@+id/nav_compte"
             android:icon="@drawable/ic_menu_compte"
             android:title="@string/menu_compte" />

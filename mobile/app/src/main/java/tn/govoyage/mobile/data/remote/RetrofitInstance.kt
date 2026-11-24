@@ -8,6 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import tn.govoyage.mobile.data.remote.api.AuthApi
 import tn.govoyage.mobile.data.remote.api.CircuitApi
 import tn.govoyage.mobile.data.remote.api.DestinationApi
+import tn.govoyage.mobile.data.remote.api.SejourApi
 
 /** Configuration Retrofit unique : URL, client HTTP, intercepteur et convertisseur. */
 object RetrofitInstance {
@@ -44,4 +45,5 @@ object RetrofitInstance {
     val auth: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
     val destinations: DestinationApi by lazy { retrofit.create(DestinationApi::class.java) }
     val circuits: CircuitApi by lazy { retrofit.create(CircuitApi::class.java) }
+    val sejours: SejourApi by lazy { retrofit.create(SejourApi::class.java) }
 }

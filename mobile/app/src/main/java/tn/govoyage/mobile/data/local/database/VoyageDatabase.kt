@@ -5,9 +5,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import tn.govoyage.mobile.data.local.dao.CacheSejourDAO
 import tn.govoyage.mobile.data.local.dao.CircuitDAO
 import tn.govoyage.mobile.data.local.dao.DestinationDAO
 import tn.govoyage.mobile.data.local.dao.UtilisateurDAO
+import tn.govoyage.mobile.data.local.entity.CacheSejour
 import tn.govoyage.mobile.data.local.entity.CircuitLocal
 import tn.govoyage.mobile.data.local.entity.DestinationLocale
 import tn.govoyage.mobile.data.local.entity.EtapeLocale
@@ -15,14 +17,18 @@ import tn.govoyage.mobile.data.local.entity.UtilisateurLocal
 
 /** Base privee du profil, du carnet et du catalogue, sans jeton persistant. */
 @Database(
-    entities = [UtilisateurLocal::class, DestinationLocale::class, CircuitLocal::class, EtapeLocale::class],
-    version = 11,
+    entities = [
+        UtilisateurLocal::class, DestinationLocale::class, CircuitLocal::class,
+        EtapeLocale::class, CacheSejour::class
+    ],
+    version = 12,
     exportSchema = false
 )
 abstract class VoyageDatabase : RoomDatabase() {
     abstract fun utilisateurDAO(): UtilisateurDAO
     abstract fun circuitDAO(): CircuitDAO
     abstract fun destinationDAO(): DestinationDAO
+    abstract fun cacheSejourDAO(): CacheSejourDAO
 }
 
 /** V1 : ancienne session Room + circuit lie au compte. On garde circuits, etapes et destinations. */
@@ -197,6 +203,23 @@ val MIGRATION_10_11 = object : Migration(10, 11) {
                     "COALESCE((SELECT cle FROM utilisateur WHERE actif = 1 LIMIT 1), 0)"
             )
         }
+    }
+}
+
+/** V11 -> V12 : cache des sejours, sous le nom deja utilise par les versions precedentes. */
+val MIGRATION_11_12 = object : Migration(11, 12) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+            CREATE TABLE IF NOT EXISTS cache_voyage (
+                compte INTEGER NOT NULL,
+                cle TEXT NOT NULL,
+                contenu TEXT NOT NULL,
+                date INTEGER NOT NULL,
+                PRIMARY KEY (compte, cle)
+            )
+            """.trimIndent()
+        )
     }
 }
 

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    tools:context=".ui.sejour.SejoursFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/titre_sejours"
+            android:textColor="@color/palette_encre"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sejour_sous_titre"
+            android:textColor="@color/palette_texte_secondaire"
+            android:textSize="14sp" />
+
+        <ProgressBar
+            android:id="@+id/barreChargementSejours"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/carteErreurSejours"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/palette_gris_clair"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/texteErreurSejours"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/palette_erreur" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/texteHorsLigneSejours"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/sejour_hors_ligne"
+            android:textColor="@color/palette_turquoise_fonce"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/editArrivee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/sejour_arrivee"
+            android:inputType="date"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/editDepart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/sejour_depart"
+            android:inputType="date"
+            android:minHeight="48dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editVoyageurs"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/sejour_voyageurs"
+                android:inputType="number"
+                android:minHeight="48dp"
+                android:text="2" />
+
+            <EditText
+                android:id="@+id/editChambres"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/sejour_chambres"
+                android:inputType="number"
+                android:minHeight="48dp"
+                android:text="1" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/boutonRechercher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/palette_turquoise_fonce"
+            android:text="@string/sejour_bouton_rechercher"
+            android:textColor="@color/palette_blanc" />
+
+        <Button
+            android:id="@+id/boutonVoirReservations"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sejour_bouton_reservations"
+            android:textColor="@color/palette_turquoise_fonce" />
+
+        <TextView
+            android:id="@+id/texteAucunHotel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/sejour_aucun_hotel"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listeHotels"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:nestedScrollingEnabled="false" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

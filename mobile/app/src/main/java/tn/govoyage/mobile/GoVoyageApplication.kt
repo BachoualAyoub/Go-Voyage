@@ -12,11 +12,13 @@ import tn.govoyage.mobile.data.local.database.MIGRATION_7_8
 import tn.govoyage.mobile.data.local.database.MIGRATION_8_9
 import tn.govoyage.mobile.data.local.database.MIGRATION_9_10
 import tn.govoyage.mobile.data.local.database.MIGRATION_10_11
+import tn.govoyage.mobile.data.local.database.MIGRATION_11_12
 import tn.govoyage.mobile.data.local.database.VoyageDatabase
 import tn.govoyage.mobile.data.remote.RetrofitInstance
 import tn.govoyage.mobile.data.repository.AuthRepository
 import tn.govoyage.mobile.data.repository.CircuitRepository
 import tn.govoyage.mobile.data.repository.DestinationRepository
+import tn.govoyage.mobile.data.repository.SejourRepository
 
 /** Partage la base locale et les repositories pendant la vie de l'application. */
 class GoVoyageApplication : Application() {
@@ -26,7 +28,8 @@ class GoVoyageApplication : Application() {
             .addMigrations(
                 MIGRATION_1_3, MIGRATION_2_3, MIGRATION_3_4,
                 MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7,
-                MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11
+                MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,
+                MIGRATION_11_12
             )
             .build()
     }
@@ -36,4 +39,6 @@ class GoVoyageApplication : Application() {
     val circuits by lazy { CircuitRepository(base.circuitDAO(), RetrofitInstance.circuits, auth) }
 
     val destinations by lazy { DestinationRepository(RetrofitInstance.destinations, base.destinationDAO()) }
+
+    val sejours by lazy { SejourRepository(RetrofitInstance.sejours, base.cacheSejourDAO(), auth) }
 }

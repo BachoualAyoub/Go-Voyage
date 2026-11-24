@@ -80,7 +80,8 @@ export function App() {
   function amenerSection(ancre: string, tentatives: number) {
     window.setTimeout(() => {
       const cible = document.getElementById(ancre);
-      if (cible) cible.scrollIntoView({ behavior: 'smooth' });
+      const animer = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (cible) cible.scrollIntoView({ behavior: animer ? 'smooth' : 'auto' });
       else if (tentatives > 0) amenerSection(ancre, tentatives - 1);
     }, 120);
   }

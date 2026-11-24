@@ -10,13 +10,14 @@ type ChampProps = {
   min?: number;
   max?: number;
   erreur?: string;
+  readOnly?: boolean;
 };
 
 /** Affiche un champ et le retour de validation de l'API. */
-export function Champ({ nom, label, type = 'text', valeur, autocomplete, min, max, erreur }: ChampProps) {
+export function Champ({ nom, label, type = 'text', valeur, autocomplete, min, max, erreur, readOnly }: ChampProps) {
   return <label className="champ">
     <span>{label}</span>
-    <input name={nom} type={type} required defaultValue={valeur} autoComplete={autocomplete}
+    <input name={nom} type={type} required defaultValue={valeur} autoComplete={autocomplete} readOnly={readOnly}
       minLength={min} maxLength={max} aria-invalid={Boolean(erreur)}
       aria-describedby={erreur ? nom + '-erreur' : undefined} />
     {erreur && <small id={nom + '-erreur'} className="erreur-champ">{erreur}</small>}

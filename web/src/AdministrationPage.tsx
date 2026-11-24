@@ -93,7 +93,7 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
   const prefixe = action?.type === 'ajout' ? 'compte.' : '';
   const roleDefaut: Role = compteEdite?.role ?? 'USER';
 
-  return <main className="espace" id="contenu">
+  return <section className="administration" id="comptes-contenu">
     <div className="en-tete-espace">
       <div>
         <p className="surtitre"><i /> ADMINISTRATION</p>
@@ -139,7 +139,9 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
               <Champ nom="prenom" label="Prénom" max={100} valeur={compteEdite?.prenom} erreur={erreur?.erreurs?.[prefixe + 'prenom']} />
               <Champ nom="nom" label="Nom" max={100} valeur={compteEdite?.nom} erreur={erreur?.erreurs?.[prefixe + 'nom']} />
             </div>
-            <Champ nom="email" label="Adresse e-mail" type="email" max={100} valeur={compteEdite?.email} erreur={erreur?.erreurs?.[prefixe + 'email']} />
+            <Champ nom="email" label="Adresse e-mail" type="email" max={100} valeur={compteEdite?.email}
+              readOnly={compteEdite?.id === admin.id} erreur={erreur?.erreurs?.[prefixe + 'email']} />
+            {compteEdite?.id === admin.id && <small className="secondaire">Votre adresse e-mail reste fixe : elle identifie votre session.</small>}
             <Champ nom="tel" label="Téléphone" type="tel" max={20} valeur={compteEdite?.tel} erreur={erreur?.erreurs?.[prefixe + 'tel']} />
             {action.type === 'ajout' && <Champ nom="motDePasse" label="Mot de passe" type="password" autocomplete="new-password"
               min={8} max={72} erreur={erreur?.erreurs?.['compte.motDePasse']} />}
@@ -158,5 +160,5 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
         </div>
       </form>}
     </dialog>
-  </main>;
+  </section>;
 }

@@ -30,7 +30,7 @@ a { color: inherit; }
 p, h1, h2 { margin: 0; }
 h1, h2 { font-family: var(--titre); letter-spacing: -.04em; }
 .app { min-height: 100svh; display: flex; flex-direction: column; }
-.barre, .pied { padding: 16px max(24px, calc((100vw - 1216px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.barre, .pied { padding: 16px max(24px, calc((100% - 1216px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .barre { background: var(--blanc); border-bottom: 1px solid var(--trait); min-height: 76px; padding-block: 10px; }
 .marque { flex: none; width: 216px; }
 .marque img { display: block; width: 100%; height: auto; }
@@ -43,7 +43,6 @@ h1, h2 { font-family: var(--titre); letter-spacing: -.04em; }
 .compte-pilule:hover { background: var(--gris-clair); }
 .avatar-compte { width: 31px; height: 31px; border-radius: 50%; background: var(--turquoise); color: var(--encre); display: grid; place-items: center; font-weight: 800; }
 .pied { border-top: 1px solid var(--trait); color: var(--secondaire); margin-top: auto; min-height: 56px; }
-@media (max-width: 640px) { .nav-catalogue { display: none; } }
 .accueil { width: min(calc(100% - 48px), 1216px); margin: 48px auto; display: grid; grid-template-columns: 1.12fr 1fr; gap: 20px; align-items: stretch; }
 .voyage { display: flex; flex-direction: column; justify-content: space-between; min-height: 548px; position: relative; overflow: hidden; padding: clamp(28px, 5vw, 64px); border-radius: 26px; background: var(--encre); color: var(--blanc); }
 .voyage-texte { position: relative; z-index: 1; }
@@ -72,6 +71,8 @@ form { display: flex; flex-direction: column; gap: 14px; }
 .champ { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: .9rem; font-weight: 700; }
 input, select { min-width: 0; border: 1px solid var(--gris); color: var(--encre); background: var(--blanc); padding: 11px 13px; border-radius: 9px; min-height: 44px; }
 .champ input[aria-invalid="true"] { border-color: var(--rouge); }
+input[readonly] { background: var(--fond); color: var(--secondaire); cursor: default; }
+.administration form > .secondaire { margin-top: -8px; font-size: .8rem; font-weight: 400; }
 .erreur-champ { color: var(--rouge); font-weight: 600; }
 .duo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .bouton { border: 1px solid transparent; border-radius: 10px; padding: 11px 15px; min-height: 44px; font-weight: 700; transition: background .16s; }
@@ -86,8 +87,13 @@ input, select { min-width: 0; border: 1px solid var(--gris); color: var(--encre)
 .message.erreur { background: #faebe5; color: #7c2b22; }
 .message.succes { background: var(--turquoise-clair); color: var(--turquoise-fonce); }
 .message.info { background: var(--turquoise-clair); color: var(--encre); border-left: 4px solid var(--turquoise); }
+.alerte.erreur { background: #faebe5; color: #7c2b22; padding: 12px 15px; border-radius: 9px; line-height: 1.45; }
+.billet-sejour h2 { margin: 12px 0 6px; font-size: 1.8rem; }
+.billet-sejour p + p { margin-top: 6px; }
+.corps-recit h2 { margin-bottom: 8px; }
 .bloc-auth .lien-retour { margin-top: 14px; }
 .espace { width: min(calc(100% - 48px), 1120px); margin: 52px auto; }
+.administration { margin-top: 24px; }
 .en-tete-espace { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
 .en-tete-espace h1 { font-size: clamp(2.1rem, 5vw, 4.1rem); line-height: 1.02; margin: 12px 0 9px; }
 .panneau { background: var(--blanc); border: 1px solid var(--trait); border-radius: 19px; overflow: hidden; }
@@ -126,7 +132,6 @@ dd { margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 470px) {
   .barre, .pied { padding-inline: 14px; }
   .marque { width: clamp(144px, 43vw, 184px); }
-  .barre-droite > span { display: none; }
   .accueil, .espace { width: calc(100% - 28px); }
   .voyage, .bloc-auth { padding: 22px; border-radius: 18px; }
   .carte-vol { display: none; }

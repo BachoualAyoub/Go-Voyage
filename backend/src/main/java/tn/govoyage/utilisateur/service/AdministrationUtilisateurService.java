@@ -53,6 +53,9 @@ public class AdministrationUtilisateurService {
             throw new OperationCompteException("Vous ne pouvez pas retirer votre propre role administrateur.");
         }
         String email = demande.email().toLowerCase(Locale.ROOT);
+        if (id.equals(idAdmin) && !email.equals(compte.getEmail())) {
+            throw new OperationCompteException("Vous ne pouvez pas modifier l'email de votre propre compte.");
+        }
         if (!email.equals(compte.getEmail()) && utilisateurDAO.emailExiste(email)) {
             throw new EmailDejaUtiliseException();
         }

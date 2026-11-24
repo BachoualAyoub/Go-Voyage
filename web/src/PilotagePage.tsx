@@ -122,5 +122,6 @@ export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admi
         <label>Description<textarea name="description" required maxLength={750} defaultValue={destination.description} rows={4} /></label>
         <button disabled={attente} className="bouton principal">Enregistrer la destination</button></form></section></div>}
     {motifs && <div className="voile-voyage"><section className="dialogue-voyage" role="dialog" aria-modal="true" aria-labelledby="titre-motifs"><button className="fermer-dialogue" aria-label="Fermer" onClick={() => setMotifs(undefined)}>×</button><h2 id="titre-motifs">Motifs des signalements</h2>{!motifs.length && <p>Aucun signalement.</p>}{motifs.map((m,i) => <p key={i}>{m.motif} · {m.statut === 'OUVERT' ? 'À traiter' : 'Traité'}</p>)}</section></div>}
-  </main>{onglet === 'comptes' && <AdministrationPage jeton={jeton} admin={admin} actualiser={actualiser} />}</>;
+  {onglet === 'comptes' && <AdministrationPage jeton={jeton} admin={admin} actualiser={actualiser} />}
+  </main></>;
 }

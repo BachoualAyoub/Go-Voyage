@@ -43,7 +43,7 @@
 .trace-circuit small { color: var(--secondaire); }
 .texte-supprimer { border: 0; background: transparent; color: var(--rouge); font-weight: 700; padding: 8px 0; }
 .etat-voyage { padding: 22px; color: var(--secondaire); margin-block: 14px; }
-.dialogue-voyage h2, .dialogue-circuit h2 { margin: 6px 0 15px; }
+.dialogue-circuit h2 { margin: 6px 0 15px; }
 .dialogue-voyage p { margin-bottom: 12px; }
 .dialogue-circuit { width: min(760px, calc(100% - 24px)); }
 .plan-champs { min-width: 0; display: grid; gap: 12px; align-content: start; }

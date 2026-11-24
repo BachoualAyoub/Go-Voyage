@@ -67,7 +67,11 @@ export function LivreOrPage({ jeton, compteId, demanderConnexion }: {
       setEcriture(false);
     });
   }
-  const origine = api.defaults.baseURL ?? '';
+  /** Prefixe l'adresse API sans doubler le slash devant un media. */
+  function sourceMedia(chemin: string): string {
+    const base = (api.defaults.baseURL ?? '').replace(/\/$/, '');
+    return base + (chemin.startsWith('/') ? chemin : '/' + chemin);
+  }
   return <main className="espace sejour" id="contenu">
     <div className="titre-voyage"><div><p className="surtitre">LE LIVRE D’OR</p><h1>Les voyages passent.<br /><em>Les histoires restent.</em></h1>
       <p>Des lieux, des regards et des souvenirs partagés par notre communauté.</p></div>
@@ -78,8 +82,8 @@ export function LivreOrPage({ jeton, compteId, demanderConnexion }: {
     {chargement && <p role="status">À la rencontre des voyageurs…</p>}
     {!chargement && !recits.length && <div className="vide-voyage"><h2>Une page à écrire.</h2><p>Aucun récit pour cette recherche. Partagez le premier !</p></div>}
     <div className="grille-recits">{recits.map(r => <article className="carte-recit" key={r.id_p}>
-      {r.media_url && (r.media_type === 'VIDEO' ? <video controls preload="metadata" src={origine + r.media_url} /> :
-        <img loading="lazy" src={origine + r.media_url} alt={r.titre} />)}
+      {r.media_url && (r.media_type === 'VIDEO' ? <video controls preload="metadata" src={sourceMedia(r.media_url)} /> :
+        <img loading="lazy" src={sourceMedia(r.media_url)} alt={r.titre} />)}
       <div className="corps-recit"><span className="etiquette">{r.ville} · {r.pays}</span><h2>{r.titre}</h2>
         <p className="texte-recit">{r.texte}</p><p className="secondaire">Par {r.auteur} · {new Date(r.cree_le).toLocaleDateString('fr-FR')}</p>
         <div className="actions-recit">

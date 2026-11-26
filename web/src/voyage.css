@@ -1,6 +1,6 @@
 .voyage-main, .nav-voyage { width: min(calc(100% - 48px), 1216px); margin-inline: auto; }
 .voyage-main { margin-block: 24px 55px; }
-.nav-voyage { display: flex; gap: 8px; overflow: auto; padding-block: 12px; border-bottom: 1px solid var(--trait); position: sticky; top: 76px; z-index: 20; background: var(--blanc); }
+.nav-voyage { display: flex; gap: 8px; overflow: auto; padding-block: 12px; padding-inline: 16px; border-radius: 14px; border: 1px solid var(--trait); position: sticky; top: 76px; z-index: 20; background: var(--blanc); }
 .nav-voyage button, .filtres-voyage button { border: 1px solid transparent; background: transparent; border-radius: 99px; color: var(--encre); white-space: nowrap; padding: 9px 14px; font-weight: 700; }
 .nav-voyage button[aria-current="page"], .filtres-voyage button[aria-pressed="true"] { background: var(--turquoise-clair); border-color: var(--turquoise); color: var(--turquoise-fonce); }
 .hero-explorer { min-height: 394px; position: relative; display: flex; align-items: center; border-radius: 24px; padding: clamp(28px, 5vw, 64px); padding-bottom: clamp(56px, 6vw, 72px); color: white; background: #173337; overflow: hidden; }

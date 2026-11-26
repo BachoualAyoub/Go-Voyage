@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import retrofit2.HttpException
 import tn.govoyage.mobile.data.repository.DestinationRepository
 import tn.govoyage.mobile.model.Destination
 
@@ -53,13 +55,22 @@ class DestinationViewModel(private val destinations: DestinationRepository) : Vi
             try {
                 action()
             } catch (cause: Exception) {
-                majEtat {
-                    it.copy(erreur = cause.message ?: "Impossible de charger le catalogue.")
-                }
+                majEtat { it.copy(erreur = messageErreur(cause)) }
             } finally {
                 majEtat { it.copy(chargement = false) }
             }
         }
+    }
+
+    // Traduit l'erreur technique en message comprehensible pour l'utilisateur
+    private fun messageErreur(cause: Exception): String {
+        if (cause is HttpException && cause.code() == 401) {
+            return "Session expiree. Reconnectez-vous au serveur."
+        }
+        if (cause is IOException) {
+            return "Serveur injoignable. Verifiez le Wi-Fi et le backend."
+        }
+        return cause.message ?: "Impossible de charger le catalogue."
     }
 
     private suspend fun majEtat(bloc: (EtatDestination) -> EtatDestination) {

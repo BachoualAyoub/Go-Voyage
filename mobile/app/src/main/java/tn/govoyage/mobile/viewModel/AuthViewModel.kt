@@ -8,6 +8,7 @@ import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import tn.govoyage.mobile.data.repository.AuthRepository
 import tn.govoyage.mobile.model.ConnexionRequest
 import tn.govoyage.mobile.model.InscriptionRequest
@@ -83,12 +84,26 @@ class AuthViewModel(private val auth: AuthRepository) : ViewModel() {
                 }
             } catch (cause: Exception) {
                 publierEtat {
-                    EtatAuth(erreur = true, message = cause.message ?: "Action impossible.")
+                    EtatAuth(erreur = true, message = messageErreur(cause))
                 }
             } finally {
                 publierEtat { it.copy(chargement = false) }
             }
         }
+    }
+
+    // Traduit l'erreur technique en message comprehensible pour l'utilisateur
+    private fun messageErreur(cause: Exception): String {
+        if (cause is IOException) {
+            return "API ou serveur injoignable. Verifiez la connexion."
+        }
+        if (cause is HttpException && cause.code() == 401) {
+            return "Identifiants invalides."
+        }
+        if (cause is HttpException && cause.code() == 400) {
+            return "Donnees invalides."
+        }
+        return cause.message ?: "Action impossible."
     }
 
     private suspend fun publierEtat(bloc: (EtatAuth) -> EtatAuth) {

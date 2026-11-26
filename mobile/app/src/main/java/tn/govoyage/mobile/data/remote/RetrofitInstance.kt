@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitInstance {
 
     private const val API_PORT = 8081
-    private const val LOCAL_IP = "10.221.50.33"
+    private const val LOCAL_IP = "192.168.1.4"
 
     private fun adresseApi(): String {
         val empreinte = Build.FINGERPRINT ?: ""

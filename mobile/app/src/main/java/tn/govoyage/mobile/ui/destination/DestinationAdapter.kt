@@ -7,7 +7,7 @@ import tn.govoyage.mobile.databinding.ItemDestinationBinding
 import tn.govoyage.mobile.model.Destination
 import tn.govoyage.mobile.ui.afficherImageDestination
 
-/** Traduit les categories du catalogue en libelles de navigation. */
+
 fun libelleAmbiance(ambiance: String) = when (ambiance) {
     "MER" -> "Bord de mer"
     "CULTURE" -> "Culture"
@@ -15,7 +15,7 @@ fun libelleAmbiance(ambiance: String) = when (ambiance) {
     else -> ambiance
 }
 
-/** Liste le catalogue de destinations dans l'ecran Explorer. */
+
 class DestinationAdapter(
     private var destinations: MutableList<Destination>,
     private val onItemClicked: (Destination) -> Unit
@@ -24,7 +24,7 @@ class DestinationAdapter(
     inner class DestinationViewHolder(private val binding: ItemDestinationBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        /** Remplit une carte avec la photo, le lieu et le tarif. */
+
         fun bind(destination: Destination) {
             afficherImageDestination(binding.imageDestination, destination)
             binding.tvAmbiance.text = libelleAmbiance(destination.ambiance)
@@ -49,7 +49,7 @@ class DestinationAdapter(
 
     override fun getItemCount() = destinations.size
 
-    /** Remplace le contenu affiche apres un chargement ou une mise a jour locale. */
+
     fun updateList(newList: List<Destination>) {
         this.destinations.clear()
         this.destinations.addAll(newList)

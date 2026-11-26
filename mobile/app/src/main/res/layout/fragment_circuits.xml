@@ -34,6 +34,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/palette_encre" />
+
+            <Button
+                android:id="@+id/boutonReessayerCircuits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/palette_turquoise_fonce"
+                android:text="@string/bouton_reessayer"
+                android:textColor="@color/palette_blanc" />
         </LinearLayout>
 
         <TextView
@@ -58,15 +67,6 @@
             android:layout_marginTop="12dp"
             android:backgroundTint="@color/palette_turquoise_fonce"
             android:text="@string/bouton_nouveau_circuit"
-            android:textColor="@color/palette_blanc" />
-
-        <Button
-            android:id="@+id/boutonSyncDistance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/palette_turquoise_fonce"
-            android:text="@string/bouton_sync_distance"
             android:textColor="@color/palette_blanc" />
 
         <TextView

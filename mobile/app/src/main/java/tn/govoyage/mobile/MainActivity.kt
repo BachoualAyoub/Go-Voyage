@@ -21,7 +21,7 @@ import tn.govoyage.mobile.databinding.ActivityMainBinding
 import tn.govoyage.mobile.ui.auth.LoginActivity
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Espace connecte : tiroir lateral et hote des fragments de voyage. */
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         observerDeconnexion()
     }
 
-    /** Installe le controleur de navigation et le tiroir lateral. */
+
     private fun installerNavigation() {
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_home, R.id.nav_destinations, R.id.nav_circuits,
-                R.id.nav_sejours, R.id.nav_compte
+                R.id.nav_compte
             ),
             drawerLayout
         )
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** Revient toujours a l'accueil en vidant la pile des fragments. */
+
     private fun revenirAccueil() {
         val options = NavOptions.Builder()
             .setPopUpTo(R.id.nav_home, true)
@@ -92,14 +92,14 @@ class MainActivity : AppCompatActivity() {
         navController.navigate(R.id.nav_home, null, options)
     }
 
-    /** Retourne a la connexion des que le compte en memoire disparait. */
+
     private fun observerDeconnexion() {
         authViewModel.compte.observe(this) { compte ->
             if (compte == null) revenirConnexion()
         }
     }
 
-    /** Demande confirmation avant de fermer la session. */
+
     private fun confirmerDeconnexion() {
         AlertDialog.Builder(this)
             .setTitle(R.string.deconnexion_titre)
@@ -115,7 +115,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    /** Revient au formulaire de connexion et vide la pile d'activites. */
+
     private fun revenirConnexion() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

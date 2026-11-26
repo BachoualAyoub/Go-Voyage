@@ -16,7 +16,7 @@ import tn.govoyage.mobile.databinding.FragmentDestinationDetailBinding
 import tn.govoyage.mobile.ui.afficherImageDestination
 import tn.govoyage.mobile.viewModel.DestinationViewModel
 
-/** Fiche d'une destination du catalogue. */
+
 class DestinationDetailFragment : Fragment() {
 
     private var _binding: FragmentDestinationDetailBinding? = null
@@ -51,7 +51,7 @@ class DestinationDetailFragment : Fragment() {
         if (destinationId != -1L) destinationViewModel.chargerDetail(destinationId)
     }
 
-    /** Remplit la fiche des que la destination est recue du backend. */
+
     private fun observerFiche() {
         destinationViewModel.detail.observe(viewLifecycleOwner) { destination ->
             if (destination == null) return@observe
@@ -75,7 +75,7 @@ class DestinationDetailFragment : Fragment() {
         }
     }
 
-    /** Branche le retour et le depart d'un circuit depuis cette destination. */
+
     private fun installerBoutons() {
         binding.boutonFermerDestination.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()

@@ -9,14 +9,14 @@ import tn.govoyage.mobile.R
 import tn.govoyage.mobile.model.Circuit
 import tn.govoyage.mobile.model.Destination
 
-/** Petit cache memoire : les photos sont decodees une seule fois par taille d'affichage. */
+
 private val cacheImages = object : LruCache<String, Bitmap>(
     (Runtime.getRuntime().maxMemory() / 8).toInt()
 ) {
     override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount / 1024
 }
 
-/** Photo du catalogue associee au code d'une destination. */
+
 fun imageDestination(code: String): Int = when (code) {
     "djerba" -> R.drawable.destination_djerba
     "douz" -> R.drawable.destination_douz
@@ -29,7 +29,6 @@ fun imageDestination(code: String): Int = when (code) {
     else -> R.drawable.voyage_sidi
 }
 
-// Les identifiants suivent le catalogue insere par Flyway.
 private fun codeDestination(id: Long): String = when (id) {
     1L -> "sidi-bou-said"
     2L -> "hammamet"
@@ -42,23 +41,23 @@ private fun codeDestination(id: Long): String = when (id) {
     else -> ""
 }
 
-/** Photo d'un circuit : celle de sa premiere etape. */
+
 fun imageCircuit(circuit: Circuit): Int {
     val premiere = circuit.etapes.firstOrNull() ?: return R.drawable.voyage_sidi
     return imageDestination(codeDestination(premiere.destinationId))
 }
 
-/** Affiche une photo de circuit en sous-echantillonnant selon la vue. */
+
 fun afficherImageCircuit(image: ImageView, circuit: Circuit) {
     afficherPhoto(image, imageCircuit(circuit))
 }
 
-/** Affiche la photo d'une destination du catalogue. */
+
 fun afficherImageDestination(image: ImageView, destination: Destination) {
     afficherPhoto(image, imageDestination(destination.code))
 }
 
-/** Decode la ressource a la taille utile puis la met en cache. */
+
 private fun afficherPhoto(image: ImageView, ressource: Int) {
     val largeur = if (image.width > 0) image.width else image.context.resources.displayMetrics.widthPixels
     val hauteur = if (image.height > 0) image.height else largeur / 2
@@ -72,7 +71,7 @@ private fun afficherPhoto(image: ImageView, ressource: Int) {
     image.setImageBitmap(photo)
 }
 
-/** Lit les dimensions puis ne garde que les octets necessaires a l'affichage. */
+
 private fun decoderPhoto(context: Context, ressource: Int, largeur: Int, hauteur: Int): Bitmap? {
     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
     context.resources.openRawResource(ressource).use {
@@ -85,7 +84,7 @@ private fun decoderPhoto(context: Context, ressource: Int, largeur: Int, hauteur
     }
 }
 
-/** Divise la taille source par deux jusqu'a rester proche de la vue. */
+
 private fun calculerEchantillon(
     largeurSource: Int,
     hauteurSource: Int,

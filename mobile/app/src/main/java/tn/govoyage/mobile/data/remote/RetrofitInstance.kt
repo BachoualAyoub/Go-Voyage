@@ -1,19 +1,25 @@
 package tn.govoyage.mobile.data.remote
 
+import android.os.Build
 import java.util.concurrent.TimeUnit
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import tn.govoyage.mobile.data.remote.api.AuthApi
-import tn.govoyage.mobile.data.remote.api.CircuitApi
-import tn.govoyage.mobile.data.remote.api.DestinationApi
-import tn.govoyage.mobile.data.remote.api.SejourApi
 
-/** Configuration Retrofit unique : URL, client HTTP, intercepteur et convertisseur. */
 object RetrofitInstance {
 
-    /** Ajoute le jeton en memoire aux appels proteges, sans le persister. */
+    private const val API_PORT = 8081
+    private const val LOCAL_IP = "10.221.50.33"
+
+    private fun adresseApi(): String {
+        val empreinte = Build.FINGERPRINT ?: ""
+        val modele = Build.MODEL ?: ""
+        val emulateur = empreinte.contains("generic") || empreinte.contains("emulator") ||
+            modele.contains("sdk") || modele.contains("Emulator")
+        return if (emulateur) "http://10.0.2.2:$API_PORT/" else "http://$LOCAL_IP:$API_PORT/"
+    }
+
     private val intercepteurJeton = Interceptor { chaine ->
         val requete = chaine.request()
         val jeton = JetonMemoire.lire()
@@ -26,15 +32,15 @@ object RetrofitInstance {
         }
     }
 
-    private val client: OkHttpClient by lazy {
+    private val client by lazy {
         OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(intercepteurJeton)
             .build()
     }
 
-    private val retrofit: Retrofit by lazy {
+    private val retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(adresseApi())
             .client(client)
@@ -42,8 +48,15 @@ object RetrofitInstance {
             .build()
     }
 
-    val auth: AuthApi by lazy { retrofit.create(AuthApi::class.java) }
-    val destinations: DestinationApi by lazy { retrofit.create(DestinationApi::class.java) }
-    val circuits: CircuitApi by lazy { retrofit.create(CircuitApi::class.java) }
-    val sejours: SejourApi by lazy { retrofit.create(SejourApi::class.java) }
+    val authApi: AuthApi by lazy {
+        retrofit.create(AuthApi::class.java)
+    }
+
+    val circuitApi: CircuitApi by lazy {
+        retrofit.create(CircuitApi::class.java)
+    }
+
+    val destinationApi: DestinationApi by lazy {
+        retrofit.create(DestinationApi::class.java)
+    }
 }

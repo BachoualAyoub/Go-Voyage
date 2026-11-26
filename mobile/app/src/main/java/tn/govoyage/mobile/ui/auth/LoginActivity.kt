@@ -14,12 +14,10 @@ import tn.govoyage.mobile.databinding.ActivityLoginBinding
 import tn.govoyage.mobile.model.ConnexionRequest
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Ecran de connexion ; ouvre directement l'espace si le profil local existe deja. */
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private var espaceOuvert = false
-    private var entreeAutoFaite = false
 
     private val authViewModel: AuthViewModel by viewModels {
         viewModelFactory {
@@ -34,45 +32,25 @@ class LoginActivity : AppCompatActivity() {
 
         binding.editEmail.setText(intent.getStringExtra(EXTRA_EMAIL).orEmpty())
         observerProfilLocal()
-        observerSessionFermee()
         observerLeCompte()
         observerEtat()
         installerBoutons()
     }
 
-    /** Pre-remplit l'email des que le profil local est disponible. */
     private fun observerProfilLocal() {
         authViewModel.profilLocal.observe(this) { profil ->
             if (profil != null && binding.editEmail.text?.toString().isNullOrEmpty()) {
                 binding.editEmail.setText(profil.email)
             }
-            tenterEntreeAuto()
         }
     }
 
-    /** Attend la lecture de l'indicateur de deconnexion avant d'entrer tout seul. */
-    private fun observerSessionFermee() {
-        authViewModel.sessionFermee.observe(this) { tenterEntreeAuto() }
-    }
-
-    /** Entre directement seulement si le profil existe et que la session n'est pas fermee. */
-    private fun tenterEntreeAuto() {
-        if (entreeAutoFaite) return
-        val profil = authViewModel.profilLocal.value ?: return
-        if (authViewModel.sessionFermee.value != false) return
-        if (!intent.getStringExtra(EXTRA_EMAIL).isNullOrEmpty()) return
-        entreeAutoFaite = true
-        authViewModel.entrerAvecProfilLocal(profil)
-    }
-
-    /** Ouvre l'espace voyage des qu'une connexion reussit. */
     private fun observerLeCompte() {
         authViewModel.compte.observe(this) { compte ->
             if (compte != null) ouvrirEspace()
         }
     }
 
-    /** Affiche les erreurs une seule fois et suit l'etat des boutons. */
     private fun observerEtat() {
         authViewModel.etat.observe(this) { etat ->
             if (etat.message.isNotEmpty()) {
@@ -84,7 +62,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /** Branche les actions de connexion et d'inscription. */
     private fun installerBoutons() {
         binding.boutonVersInscription.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -94,7 +71,6 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    /** Controle la saisie puis demande la connexion au ViewModel. */
     private fun connecter() {
         val email = binding.editEmail.text.toString().trim()
         val motDePasse = binding.editPassword.text.toString()
@@ -105,7 +81,6 @@ class LoginActivity : AppCompatActivity() {
         authViewModel.connecter(ConnexionRequest(email, motDePasse))
     }
 
-    /** Ouvre MainActivity une seule fois en vidant la pile des ecrans. */
     private fun ouvrirEspace() {
         if (espaceOuvert) return
         espaceOuvert = true

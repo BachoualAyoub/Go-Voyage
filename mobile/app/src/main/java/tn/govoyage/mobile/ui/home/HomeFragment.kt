@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentHomeBinding
 
-/** Accueil de bienvenue avec acces rapide a la creation et au carnet de circuits. */
+
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null

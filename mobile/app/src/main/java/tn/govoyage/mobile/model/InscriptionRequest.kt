@@ -1,6 +1,6 @@
 package tn.govoyage.mobile.model
 
-/** Corps envoye au backend pour creer un compte. */
+
 data class InscriptionRequest(
     val nom: String,
     val prenom: String,

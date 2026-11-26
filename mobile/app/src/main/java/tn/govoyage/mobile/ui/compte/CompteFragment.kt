@@ -14,7 +14,7 @@ import tn.govoyage.mobile.R
 import tn.govoyage.mobile.databinding.FragmentCompteBinding
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Coordonnees du compte connecte et bouton de deconnexion. */
+
 class CompteFragment : Fragment() {
 
     private var _binding: FragmentCompteBinding? = null
@@ -41,7 +41,7 @@ class CompteFragment : Fragment() {
         binding.boutonDeconnexion.setOnClickListener { confirmerDeconnexion() }
     }
 
-    /** Affiche les informations du compte present uniquement en memoire. */
+
     private fun observerCompte() {
         authViewModel.compte.observe(viewLifecycleOwner) { compte ->
             val utilisateur = compte ?: return@observe
@@ -53,7 +53,7 @@ class CompteFragment : Fragment() {
         }
     }
 
-    /** Demande confirmation avant de vider le compte et le jeton. */
+
     private fun confirmerDeconnexion() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.deconnexion_titre)

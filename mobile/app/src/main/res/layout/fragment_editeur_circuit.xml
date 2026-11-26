@@ -8,7 +8,7 @@
     android:padding="16dp"
     tools:context=".ui.circuit.EditeurCircuitFragment">
 
-    <!-- En-tete de l'editeur. -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:textColor="@color/palette_turquoise_fonce" />
     </LinearLayout>
 
-    <!-- Bilan instantane de la composition. -->
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                 android:maxLength="90"
                 android:minHeight="48dp" />
 
-            <!-- Titre de la liste avec le compteur d'etapes. -->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

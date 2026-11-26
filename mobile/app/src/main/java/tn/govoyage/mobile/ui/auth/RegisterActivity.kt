@@ -13,7 +13,7 @@ import tn.govoyage.mobile.databinding.ActivityRegisterBinding
 import tn.govoyage.mobile.model.InscriptionRequest
 import tn.govoyage.mobile.viewModel.AuthViewModel
 
-/** Ecran de creation de compte, branche sur le vrai backend. */
+
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
@@ -33,7 +33,7 @@ class RegisterActivity : AppCompatActivity() {
         binding.boutonCreerCompte.setOnClickListener { creerCompte() }
     }
 
-    /** Affiche les erreurs et revient a la connexion apres une inscription reussie. */
+
     private fun observerEtat() {
         authViewModel.etat.observe(this) { etat ->
             if (etat.toast.isNotEmpty()) {
@@ -47,7 +47,7 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    /** Controle la saisie puis demande la creation du compte. */
+
     private fun creerCompte() {
         val prenom = binding.editPrenom.text.toString().trim()
         val nom = binding.editNom.text.toString().trim()
@@ -66,7 +66,7 @@ class RegisterActivity : AppCompatActivity() {
         authViewModel.inscrire(InscriptionRequest(nom, prenom, email, tel, motDePasse))
     }
 
-    /** Renvoie au formulaire de connexion avec l'email deja saisi. */
+
     private fun revenirConnexion() {
         val intent = Intent(this, LoginActivity::class.java)
         intent.putExtra(LoginActivity.EXTRA_EMAIL, binding.editEmail.text.toString().trim())

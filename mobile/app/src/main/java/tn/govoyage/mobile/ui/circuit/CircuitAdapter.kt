@@ -8,7 +8,7 @@ import tn.govoyage.mobile.databinding.ItemCircuitBinding
 import tn.govoyage.mobile.model.Circuit
 import tn.govoyage.mobile.ui.afficherImageCircuit
 
-/** Liste du carnet local avec les actions du voyageur. */
+
 class CircuitAdapter(
     private var circuits: MutableList<Circuit>,
     private val onClique: (Circuit) -> Unit,

@@ -18,7 +18,6 @@ import tn.govoyage.mobile.model.Circuit
 import tn.govoyage.mobile.ui.afficherImageCircuit
 import tn.govoyage.mobile.viewModel.CircuitViewModel
 
-/** Fiche complete d'un circuit : itineraire et totaux. */
 class CircuitDetailFragment : Fragment() {
 
     private var _binding: FragmentCircuitDetailBinding? = null
@@ -28,7 +27,7 @@ class CircuitDetailFragment : Fragment() {
         viewModelFactory {
             initializer {
                 val app = requireActivity().application as GoVoyageApplication
-                CircuitViewModel(app.circuits, app.destinations)
+                CircuitViewModel(app.circuits)
             }
         }
     }
@@ -46,12 +45,17 @@ class CircuitDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        circuitViewModel.demarrer()
-
-        circuitViewModel.circuits.observe(viewLifecycleOwner) { liste ->
-            val circuit = liste.firstOrNull { it.id == circuitId } ?: return@observe
-            afficherCircuit(circuit)
+        circuitViewModel.detail.observe(viewLifecycleOwner) { circuit ->
+            if (circuit != null) afficherCircuit(circuit)
         }
+        circuitViewModel.etat.observe(viewLifecycleOwner) { etat ->
+            binding.barreChargementDetail.visibility =
+                if (etat.chargement) View.VISIBLE else View.GONE
+            binding.texteErreurDetail.visibility =
+                if (etat.erreur.isEmpty()) View.GONE else View.VISIBLE
+            binding.texteErreurDetail.text = etat.erreur
+        }
+        circuitViewModel.chargerDetail(circuitId)
 
         binding.boutonFermerCircuit.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -64,7 +68,6 @@ class CircuitDetailFragment : Fragment() {
         }
     }
 
-    /** Remplit la fiche avec le circuit trouve dans le carnet local. */
     private fun afficherCircuit(circuit: Circuit) {
         afficherImageCircuit(binding.imageCircuitDetail, circuit)
         binding.texteFicheCircuitNom.text = circuit.nom
@@ -73,7 +76,6 @@ class CircuitDetailFragment : Fragment() {
         remplirEtapes(circuit)
     }
 
-    /** Ajoute une ligne par etape, dans l'ordre du circuit. */
     private fun remplirEtapes(circuit: Circuit) {
         binding.listeEtapesFiche.removeAllViews()
         for ((ordre, etape) in circuit.etapes.withIndex()) {

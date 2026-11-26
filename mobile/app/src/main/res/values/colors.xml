@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Palette Vichy et nuances de contraste. -->
+
     <color name="palette_turquoise">#05AD98</color>
     <color name="palette_argent">#BBBFBF</color>
     <color name="palette_blanc">#FFFFFF</color>

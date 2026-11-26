@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,7 +18,6 @@ import tn.govoyage.mobile.databinding.FragmentDestinationsBinding
 import tn.govoyage.mobile.model.Destination
 import tn.govoyage.mobile.viewModel.DestinationViewModel
 
-/** Catalogue des destinations, avec erreur reseau, liste vide et bouton reessayer. */
 class DestinationsFragment : Fragment() {
 
     private var _binding: FragmentDestinationsBinding? = null
@@ -50,15 +50,17 @@ class DestinationsFragment : Fragment() {
         preparerListe()
         observerDonnees()
 
+        binding.boutonSynchroniserDestinations.setOnClickListener {
+            destinationViewModel.synchroniser()
+        }
         binding.boutonReessayerDestinations.setOnClickListener {
-            destinationViewModel.charger(true)
+            destinationViewModel.synchroniser()
         }
         if (destinationViewModel.liste.value.isNullOrEmpty()) {
             destinationViewModel.chargerSiVide()
         }
     }
 
-    /** Prepare la RecyclerView et la navigation vers la fiche. */
     private fun preparerListe() {
         destinationAdapter = DestinationAdapter(
             mutableListOf(),
@@ -68,7 +70,6 @@ class DestinationsFragment : Fragment() {
         binding.listeDestinations.adapter = destinationAdapter
     }
 
-    /** Observe la liste, l'etat de chargement et les erreurs. */
     private fun observerDonnees() {
         destinationViewModel.liste.observe(viewLifecycleOwner) { liste ->
             listeCourante = liste
@@ -83,17 +84,20 @@ class DestinationsFragment : Fragment() {
                 if (etat.erreur.isEmpty()) View.GONE else View.VISIBLE
             binding.texteErreurDestinations.text = etat.erreur
             binding.boutonReessayerDestinations.isEnabled = !etat.chargement
+            binding.boutonSynchroniserDestinations.isEnabled = !etat.chargement
+            if (etat.information.isNotEmpty()) {
+                Toast.makeText(requireContext(), etat.information, Toast.LENGTH_LONG).show()
+                destinationViewModel.effacerMessage()
+            }
             actualiserEtatVide()
         }
     }
 
-    /** Ne montre le message vide que lorsqu'il n'y a ni donnees ni erreur. */
     private fun actualiserEtatVide() {
         val afficher = listeCourante.isEmpty() && erreurCourante.isEmpty()
         binding.texteDestinationsVides.visibility = if (afficher) View.VISIBLE else View.GONE
     }
 
-    /** Transmet seulement l'identifiant pour recharger la fiche sur le backend. */
     private fun ouvrirDetail(destination: Destination) {
         findNavController().navigate(
             R.id.action_nav_destinations_to_nav_destination_detail,

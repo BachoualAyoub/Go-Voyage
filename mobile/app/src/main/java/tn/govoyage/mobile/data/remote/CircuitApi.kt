@@ -1,4 +1,4 @@
-package tn.govoyage.mobile.data.remote.api
+package tn.govoyage.mobile.data.remote
 
 import retrofit2.Response
 import retrofit2.http.Body
@@ -10,14 +10,13 @@ import retrofit2.http.Path
 import tn.govoyage.mobile.model.Circuit
 import tn.govoyage.mobile.model.CircuitRequest
 
-/** Endpoints circuits verifies dans CircuitController ; les routes personnelles sont protegees. */
 interface CircuitApi {
 
     @GET("api/circuits")
     suspend fun lister(): Response<List<Circuit>>
 
     @GET("api/circuits/{id}")
-    suspend fun consulter(@Path("id") id: Long): Response<Circuit>
+    suspend fun detail(@Path("id") id: Long): Response<Circuit>
 
     @POST("api/circuits")
     suspend fun creer(@Body demande: CircuitRequest): Response<Circuit>

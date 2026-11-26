@@ -88,28 +88,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_sejours"
-        android:name="tn.govoyage.mobile.ui.sejour.SejoursFragment"
-        android:label="@string/menu_sejours"
-        tools:layout="@layout/fragment_sejours">
-        <action
-            android:id="@+id/action_nav_sejours_to_nav_reservations"
-            app:destination="@id/nav_reservations" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/nav_reservations"
-        android:name="tn.govoyage.mobile.ui.sejour.ReservationsFragment"
-        android:label="@string/sejour_titre_reservations"
-        tools:layout="@layout/fragment_reservations">
-        <action
-            android:id="@+id/action_nav_reservations_to_nav_sejours"
-            app:destination="@id/nav_sejours"
-            app:popUpTo="@id/nav_sejours"
-            app:popUpToInclusive="true" />
-    </fragment>
-
-    <fragment
         android:id="@+id/nav_compte"
         android:name="tn.govoyage.mobile.ui.compte.CompteFragment"
         android:label="@string/menu_compte"

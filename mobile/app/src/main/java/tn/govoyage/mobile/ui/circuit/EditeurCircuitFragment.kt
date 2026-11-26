@@ -21,17 +21,15 @@ import tn.govoyage.mobile.model.Circuit
 import tn.govoyage.mobile.model.Destination
 import tn.govoyage.mobile.model.EtapeCircuit
 import tn.govoyage.mobile.viewModel.CircuitViewModel
+import tn.govoyage.mobile.viewModel.DestinationViewModel
 
 private const val ARG_CIRCUIT_ID = "circuitId"
 private const val ARG_DESTINATION_ID = "destinationId"
 
-/** Etape editable avec une cle stable lors des deplacements. */
 private data class EtapeBrouillon(val cle: Int, val destinationId: Long, var jours: String)
 
-/** Vue d'une ligne d'etape, gardee en memoire pour conserver la saisie. */
 private class LigneEtapeVue(val cle: Int, val binding: ItemEtapeBinding)
 
-/** Editeur plein ecran avec bilan instantane. */
 class EditeurCircuitFragment : Fragment() {
 
     private var _binding: FragmentEditeurCircuitBinding? = null
@@ -41,7 +39,16 @@ class EditeurCircuitFragment : Fragment() {
         viewModelFactory {
             initializer {
                 val app = requireActivity().application as GoVoyageApplication
-                CircuitViewModel(app.circuits, app.destinations)
+                CircuitViewModel(app.circuits)
+            }
+        }
+    }
+
+    private val destinationViewModel: DestinationViewModel by activityViewModels {
+        viewModelFactory {
+            initializer {
+                val app = requireActivity().application as GoVoyageApplication
+                DestinationViewModel(app.destinations)
             }
         }
     }
@@ -69,26 +76,26 @@ class EditeurCircuitFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        circuitViewModel.demarrer()
-        val circuitInitial = circuitViewModel.circuits.value?.firstOrNull { it.id == circuitId }
-        if (circuitId != -1L && circuitInitial != null) {
+        val circuitInitial = circuitViewModel.detail.value
+        if (circuitInitial?.id != circuitId) circuitViewModel.effacerDetail()
+        if (circuitId != -1L && circuitInitial?.id == circuitId) {
             departCharge = true
             preparerDepart(circuitInitial)
         } else {
             preparerDepart(null)
+            if (circuitId != -1L) circuitViewModel.chargerDetail(circuitId)
         }
         installerChamps()
         installerBoutons()
 
-        circuitViewModel.circuits.observe(viewLifecycleOwner) { liste ->
-            if (circuitId == -1L || departCharge) return@observe
-            val circuit = liste.firstOrNull { it.id == circuitId } ?: return@observe
+        circuitViewModel.detail.observe(viewLifecycleOwner) { circuit ->
+            if (circuit == null || departCharge) return@observe
             departCharge = true
             viderLignes()
             preparerDepart(circuit)
         }
 
-        circuitViewModel.destinations.observe(viewLifecycleOwner) { liste ->
+        destinationViewModel.liste.observe(viewLifecycleOwner) { liste ->
             listeDestinationsCatalogue = liste
             catalogue = liste.associateBy { it.id }
             ajouterDestinationInitiale(liste)
@@ -98,17 +105,16 @@ class EditeurCircuitFragment : Fragment() {
 
         circuitViewModel.etat.observe(viewLifecycleOwner) { etat ->
             binding.boutonEnregistrer.text =
-                if (etat.actionEnCours) getString(R.string.editeur_patientez)
+                if (etat.chargement) getString(R.string.editeur_patientez)
                 else getString(R.string.editeur_enregistrer)
             binding.texteErreurEditeur.text = etat.erreur
         }
 
-        if (circuitViewModel.destinations.value.isNullOrEmpty()) {
-            circuitViewModel.chargerDestinations()
+        if (destinationViewModel.liste.value.isNullOrEmpty()) {
+            destinationViewModel.chargerSiVide()
         }
     }
 
-    /** Pre-remplit l'editeur depuis le circuit transmis ou depuis zero. */
     private fun preparerDepart(circuit: Circuit?) {
         personnel = circuit
         binding.texteTitreEditeur.text = if (circuit == null) {
@@ -128,7 +134,6 @@ class EditeurCircuitFragment : Fragment() {
         for (etape in etapes) ajouterLigne(etape)
     }
 
-    /** Installe l'ecouteur du nom du circuit. */
     private fun installerChamps() {
         binding.editNomCircuit.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(texte: CharSequence, debut: Int, avant: Int, apres: Int) {
@@ -136,16 +141,13 @@ class EditeurCircuitFragment : Fragment() {
             }
 
             override fun beforeTextChanged(texte: CharSequence, debut: Int, compte: Int, apres: Int) {
-                // Aucun traitement avant le changement.
             }
 
             override fun afterTextChanged(texte: Editable) {
-                // Aucun traitement apres le changement.
             }
         })
     }
 
-    /** Installe les boutons de l'editeur. */
     private fun installerBoutons() {
         binding.boutonFermerEditeur.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -154,9 +156,7 @@ class EditeurCircuitFragment : Fragment() {
         binding.boutonEnregistrer.setOnClickListener { enregistrerCircuit() }
     }
 
-    /** Ajoute une ligne d'etape a la fin, avec sa duree par defaut. */
     private fun ajouterLigne(etape: EtapeBrouillon) {
-        // Le parent transmet les marges et la largeur declares dans item_etape.
         val ligneBinding = ItemEtapeBinding.inflate(layoutInflater, binding.listeEtapesEditeur, false)
         val vue = LigneEtapeVue(etape.cle, ligneBinding)
         ligneBinding.editJours.setText(etape.jours)
@@ -167,11 +167,9 @@ class EditeurCircuitFragment : Fragment() {
             }
 
             override fun beforeTextChanged(texte: CharSequence, debut: Int, compte: Int, apres: Int) {
-                // Aucun traitement avant le changement.
             }
 
             override fun afterTextChanged(texte: Editable) {
-                // Aucun traitement apres le changement.
             }
         })
         ligneBinding.boutonMonter.setOnClickListener {
@@ -191,7 +189,6 @@ class EditeurCircuitFragment : Fragment() {
         recalculerBilan()
     }
 
-    /** Deplace une etape en conservant la duree saisie. */
     private fun deplacerEtape(index: Int, delta: Int) {
         val nouvellePosition = index + delta
         if (index < 0 || nouvellePosition < 0 || nouvellePosition >= brouillons.size) return
@@ -203,7 +200,6 @@ class EditeurCircuitFragment : Fragment() {
         renumeroter()
     }
 
-    /** Retire une etape de la composition. */
     private fun retirerEtape(index: Int) {
         if (index < 0 || index >= brouillons.size) return
         brouillons.removeAt(index)
@@ -214,16 +210,13 @@ class EditeurCircuitFragment : Fragment() {
         recalculerBilan()
     }
 
-    /** Replace les vues dans le nouvel ordre des etapes. */
     private fun rattacherLignes() {
         binding.listeEtapesEditeur.removeAllViews()
         for (vue in vues) binding.listeEtapesEditeur.addView(vue.binding.root)
     }
 
-    /** Position d'une ligne dans la liste courante. */
     private fun indiceDe(cle: Int) = vues.indexOfFirst { it.cle == cle }
 
-    /** Met a jour le numero, le tarif, le compteur et les fleches actives. */
     private fun renumeroter() {
         binding.texteCompteurEtapes.text = getString(R.string.editeur_compteur_etapes, brouillons.size)
         for ((index, vue) in vues.withIndex()) {
@@ -242,7 +235,6 @@ class EditeurCircuitFragment : Fragment() {
         }
     }
 
-    /** Demarre un nouveau circuit avec la destination choisie dans sa fiche. */
     private fun ajouterDestinationInitiale(liste: List<Destination>) {
         if (destinationId == -1L || circuitId != -1L || destinationInitialAjoutee) return
         val destination = liste.firstOrNull { it.id == destinationId } ?: return
@@ -250,7 +242,6 @@ class EditeurCircuitFragment : Fragment() {
         ajouterEtape(destination)
     }
 
-    /** Ouvre le catalogue pour ajouter une etape. */
     private fun ouvrirChoixDestination() {
         val destinations = listeDestinationsCatalogue
         if (destinations.isEmpty()) return
@@ -268,13 +259,11 @@ class EditeurCircuitFragment : Fragment() {
         popup.show()
     }
 
-    /** Ajoute une etape depuis le catalogue. */
     private fun ajouterEtape(destination: Destination) {
         if (brouillons.size >= 10) return
         ajouterLigne(EtapeBrouillon(prochaineCle++, destination.id, "1"))
     }
 
-    /** Affiche les deux totaux pendant la saisie. */
     private fun recalculerBilan() {
         val jours = brouillons.sumOf { it.jours.toIntOrNull() ?: 0 }
         val estimation = brouillons.sumOf {
@@ -285,7 +274,6 @@ class EditeurCircuitFragment : Fragment() {
         actualiserBoutonEnregistrer()
     }
 
-    /** Le bouton enregistre quand le formulaire est complet. */
     private fun actualiserBoutonEnregistrer() {
         val jours = brouillons.sumOf { it.jours.toIntOrNull() ?: 0 }
         val etapesValides = brouillons.isNotEmpty() && jours <= 60 && brouillons.all {
@@ -294,7 +282,6 @@ class EditeurCircuitFragment : Fragment() {
         binding.boutonEnregistrer.isEnabled = etapesValides && brouillons.size < 10
     }
 
-    /** Envoie la sauvegarde puis revient au carnet. */
     private fun enregistrerCircuit() {
         if (binding.editNomCircuit.text.isBlank()) {
             Toast.makeText(requireContext(), R.string.editeur_nom_obligatoire, Toast.LENGTH_SHORT).show()
@@ -302,12 +289,11 @@ class EditeurCircuitFragment : Fragment() {
             return
         }
         val nom = binding.editNomCircuit.text.toString().trim()
-        circuitViewModel.sauver(personnel?.id, nom, construireEtapes()) {
+        circuitViewModel.sauver(personnel, nom, construireEtapes()) {
             findNavController().navigate(R.id.action_nav_editeur_circuit_to_nav_circuits)
         }
     }
 
-    /** Construit les etapes locales a partir du catalogue affiche. */
     private fun construireEtapes(): List<EtapeCircuit> {
         val etapes = mutableListOf<EtapeCircuit>()
         for (brouillon in brouillons) {
@@ -328,7 +314,6 @@ class EditeurCircuitFragment : Fragment() {
         return etapes
     }
 
-    /** Vide les brouillons avant de charger un circuit a modifier. */
     private fun viderLignes() {
         brouillons.clear()
         vues.clear()

@@ -16,34 +16,28 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
-/** Intercepte toutes les erreurs de l'API et renvoie le format { statut, message, erreurs }. */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /** Conflit d'unicite ou de relation lors de requetes concurrentes. */
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     public ResponseEntity<ErreurReponse> gererIntegrite() {
         return ResponseEntity.status(409).body(new ErreurReponse(409,
             "Cette opération entre en conflit avec les données actuelles. Actualisez puis réessayez.", Map.of()));
     }
 
-    /** Un fichier trop volumineux ne doit pas provoquer une erreur interne. */
     @ExceptionHandler(org.springframework.web.multipart.MaxUploadSizeExceededException.class)
     public ResponseEntity<ErreurReponse> gererTaille() {
         return ResponseEntity.status(413).body(new ErreurReponse(413, "Le média est limité à 10 Mo.", Map.of()));
     }
 
-    /** Les parametres obligatoires manquants sont une erreur de saisie. */
     @ExceptionHandler({org.springframework.web.bind.MissingServletRequestParameterException.class,
         org.springframework.web.multipart.support.MissingServletRequestPartException.class})
     public ResponseEntity<ErreurReponse> gererParametre() {
         return ResponseEntity.badRequest().body(new ErreurReponse(400, "Complétez tous les champs demandés.", Map.of()));
     }
 
-    /** Journal de l'application. */
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /** Erreurs de validation des champs (erreur 400). */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErreurReponse> gererValidation(MethodArgumentNotValidException exception) {
         Map<String, String> erreurs = new HashMap<String, String>();
@@ -54,56 +48,48 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.BAD_REQUEST);
     }
 
-    /** E-mail deja utilise (erreur 409). */
     @ExceptionHandler(EmailDejaUtiliseException.class)
     public ResponseEntity<ErreurReponse> gererEmailDejaUtilise(EmailDejaUtiliseException exception) {
         ErreurReponse reponse = new ErreurReponse(409, exception.getMessage(), Map.of());
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.CONFLICT);
     }
 
-    /** Identifiants de connexion incorrects (erreur 401). */
     @ExceptionHandler(IdentifiantsInvalidesException.class)
     public ResponseEntity<ErreurReponse> gererIdentifiantsInvalides(IdentifiantsInvalidesException exception) {
         ErreurReponse reponse = new ErreurReponse(401, exception.getMessage(), Map.of());
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.UNAUTHORIZED);
     }
 
-    /** Ressource demandee introuvable (erreur 404). */
     @ExceptionHandler(RessourceIntrouvableException.class)
     public ResponseEntity<ErreurReponse> gererRessourceIntrouvable(RessourceIntrouvableException exception) {
         ErreurReponse reponse = new ErreurReponse(404, exception.getMessage(), Map.of());
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.NOT_FOUND);
     }
 
-    /** Operation interdite sur son propre compte (erreur 409). */
     @ExceptionHandler(OperationCompteException.class)
     public ResponseEntity<ErreurReponse> gererOperationCompte(OperationCompteException exception) {
         ErreurReponse reponse = new ErreurReponse(409, exception.getMessage(), Map.of());
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.CONFLICT);
     }
 
-    /** Corps JSON ou parametre impossible a lire (erreur 400). */
     @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ErreurReponse> gererRequeteIllisible() {
         ErreurReponse reponse = new ErreurReponse(400, "Le format de la requete est invalide.", Map.of());
         return new ResponseEntity<ErreurReponse>(reponse, HttpStatus.BAD_REQUEST);
     }
 
-    /** Erreur metier avec statut HTTP explicite. */
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErreurReponse> gererStatut(ResponseStatusException exception) {
         ErreurReponse reponse = new ErreurReponse(exception.getStatusCode().value(), exception.getReason(), Map.of());
         return ResponseEntity.status(exception.getStatusCode()).body(reponse);
     }
 
-    /** Deux modifications concurrentes exigent un rechargement du circuit. */
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<ErreurReponse> gererConflit() {
         ErreurReponse reponse = new ErreurReponse(409, "Ce circuit a change. Rechargez la liste.", Map.of());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(reponse);
     }
 
-    /** Toute autre erreur non prevue (erreur 500). */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErreurReponse> gererErreurInconnue(Exception exception) {
         LOG.error("Erreur inattendue : ", exception);

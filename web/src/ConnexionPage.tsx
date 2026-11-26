@@ -2,7 +2,6 @@ import { FormEvent, useState } from 'react';
 import { api, erreurApi, ErreurApi, Session } from './api';
 import { Champ, lireCoordonnees, Message } from './ChampsCompte';
 
-/** Affiche l'inscription et la connexion sur une meme page. */
 export function ConnexionPage({ connecter, motif, annuler }: { connecter: (session: Session) => void; motif?: string; annuler?: () => void }) {
   const [inscription, definirInscription] = useState(false);
   const [erreur, definirErreur] = useState<ErreurApi>();
@@ -11,7 +10,6 @@ export function ConnexionPage({ connecter, motif, annuler }: { connecter: (sessi
   const [attente, definirAttente] = useState(false);
   const [astuce, definirAstuce] = useState(motif);
 
-  /** Change de formulaire et reinitialise ses messages. */
   function choisirMode(nouveau: boolean) {
     definirInscription(nouveau);
     definirErreur(undefined);
@@ -19,7 +17,6 @@ export function ConnexionPage({ connecter, motif, annuler }: { connecter: (sessi
     definirAstuce(undefined);
   }
 
-  /** Cree un compte ou ouvre une session via l'API. */
   async function soumettre(evenement: FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
     const champs = new FormData(evenement.currentTarget);

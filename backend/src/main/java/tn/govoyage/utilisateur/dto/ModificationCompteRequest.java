@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import tn.govoyage.utilisateur.entity.Role;
 
-/** Informations modifiables par un administrateur. */
 public record ModificationCompteRequest(
         @NotBlank(message = "Le nom est obligatoire.") @Size(max = 100) String nom,
         @NotBlank(message = "Le prenom est obligatoire.") @Size(max = 100) String prenom,

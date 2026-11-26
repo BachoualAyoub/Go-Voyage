@@ -21,46 +21,38 @@ import tn.govoyage.utilisateur.dto.ModificationProfilRequest;
 import tn.govoyage.utilisateur.dto.UtilisateurResponse;
 import tn.govoyage.utilisateur.service.UtilisateurService;
 
-/** Endpoints d'authentification : inscription, connexion, compte courant. */
 @RestController
 @RequestMapping("/api/auth")
 @Validated
 public class AuthentificationController {
 
-    /** Service des comptes utilisateurs. */
     private final UtilisateurService utilisateurService;
 
-    /** Service d'authentification. */
     private final AuthentificationService authentificationService;
 
-    /** Prend les deux services. */
     public AuthentificationController(UtilisateurService utilisateurService,
                                       AuthentificationService authentificationService) {
         this.utilisateurService = utilisateurService;
         this.authentificationService = authentificationService;
     }
 
-    /** Inscription d'un nouvel utilisateur (le role USER est force par le service). */
     @PostMapping("/inscription")
     @ResponseStatus(HttpStatus.CREATED)
     public UtilisateurResponse inscrire(@Valid @RequestBody InscriptionRequest demande) {
         return utilisateurService.inscrire(demande);
     }
 
-    /** Connexion : renvoie le jeton JWT et le compte connecte. */
     @PostMapping("/connexion")
     public ConnexionResponse connecter(@Valid @RequestBody ConnexionRequest demande) {
         return authentificationService.connecter(demande);
     }
 
-    /** Renvoie le compte de l'utilisateur connecte (e-mail lu dans le jeton). */
     @GetMapping("/moi")
     @SecurityRequirement(name = "jeton")
     public UtilisateurResponse moi(Authentication authentication) {
         return authentificationService.moi(authentication.getName());
     }
 
-    /** Modifie les coordonnees du compte connecte, sans changer son role. */
     @PutMapping("/moi")
     @SecurityRequirement(name = "jeton")
     public UtilisateurResponse modifierProfil(Authentication authentication,
@@ -68,12 +60,10 @@ public class AuthentificationController {
         return utilisateurService.modifierProfil(authentication.getName(), demande);
     }
 
-    /** Deconnexion : le client supprime son jeton, l'API garde les JWT sans session. */
     @PostMapping("/deconnexion")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "jeton")
     public void deconnecter() {
-        // Rien a revoquer cote serveur : le jeton est sans etat.
+
     }
 }
-                

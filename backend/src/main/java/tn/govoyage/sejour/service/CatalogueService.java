@@ -7,16 +7,15 @@ import tn.govoyage.sejour.dao.SejourDAO;
 import tn.govoyage.sejour.dto.SejourRequest;
 import static tn.govoyage.sejour.service.SejourService.*;
 
-/** Gestion administrative du catalogue et indicateurs issus des donnees reelles. */
 @Service
 @Transactional(readOnly=true)
 public class CatalogueService {
     private final SejourDAO dao;
-    /** Recoit les acces aux donnees. */
+
     public CatalogueService(SejourDAO dao) { this.dao = dao; }
-    /** Liste aussi les hotels retires du catalogue public. */
+
     public List<Map<String,Object>> hotels() { return dao.lire("SELECT * FROM hotel ORDER BY id_h"); }
-    /** Cree ou remplace un hotel avec controle de version. */
+
     @Transactional
     public void sauverHotel(Long id, SejourRequest.Hotel d) {
         unique(dao.lire("SELECT id_d FROM destination WHERE id_d=?",d.destinationId()));
@@ -37,13 +36,13 @@ public class CatalogueService {
                 """,d.destinationId(),d.nom().trim(),d.ville().trim(),d.description(),d.etoiles(),d.tarifNuit(),d.chambres(),d.capacite(),d.image(),d.actif(),id);
         }
     }
-    /** Retire un hotel de la vente en gardant l'historique des reservations. */
+
     @Transactional
     public void retirerHotel(Long id) {
         unique(dao.lire("SELECT id_h FROM hotel WHERE id_h=? FOR UPDATE",id));
         dao.ecrire("UPDATE hotel SET actif=FALSE,version=version+1 WHERE id_h=?",id);
     }
-    /** Cree ou modifie une fiche destination du catalogue partage. */
+
     @Transactional
     public void sauverDestination(Long id, SejourRequest.Destination d) {
         List<Map<String,Object>> doublon = dao.lire("SELECT id_d FROM destination WHERE code=?",d.code());
@@ -59,7 +58,7 @@ public class CatalogueService {
                 """,d.code(),d.nom(),d.ville(),d.pays(),d.region(),d.ambiance(),d.tarifJourTnd(),d.accroche(),d.description(),id);
         }
     }
-    /** Supprime une destination si elle n'est utilisee par aucun parcours. */
+
     @Transactional
     public void supprimerDestination(Long id) {
         unique(dao.lire("SELECT id_d FROM destination WHERE id_d=? FOR UPDATE",id));
@@ -67,7 +66,7 @@ public class CatalogueService {
                 dao.compter("SELECT COUNT(*) FROM hotel WHERE destination_id=?",id)>0) conflit("Cette destination est liée à un hôtel ou à un circuit.");
         dao.ecrire("DELETE FROM destination WHERE id_d=?",id);
     }
-    /** Produit les indicateurs et series du tableau de bord. */
+
     public Map<String,Object> statistiques() {
         Map<String,Object> stats = new LinkedHashMap<>();
         stats.put("comptes",dao.compter("SELECT COUNT(*) FROM utilisateur"));

@@ -17,21 +17,17 @@ import org.springframework.test.web.servlet.MvcResult;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-/** Tests d'integration des endpoints d'authentification (base H2 en memoire). */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class AuthentificationControllerTest {
 
-    /** Outil pour envoyer des requetes HTTP au controller. */
     @Autowired
     private MockMvc mockMvc;
 
-    /** Outil pour lire le JSON des reponses. */
     @Autowired
     private ObjectMapper objectMapper;
 
-    /** Test : l'inscription avec des donnees completes cree le compte (201). */
     @Test
     public void inscriptionReussie() throws Exception {
         String corps = """
@@ -51,7 +47,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
 
-    /** Test : refuser a renvoyer un mot de passe meme si le JSON en contient un. */
     @Test
     public void inscriptionIgnoreRoleEtPassword() throws Exception {
         String corps = """
@@ -66,7 +61,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
 
-    /** Test : un e-mail deja utilise est refuse avec l'erreur 409. */
     @Test
     public void inscriptionEmailDejaUtilise() throws Exception {
         String corps = """
@@ -85,7 +79,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.message", org.hamcrest.Matchers.is("Cet e-mail est deja utilise.")));
     }
 
-    /** Test : l'e-mail est insensible a la casse (majuscules acceptees a la connexion). */
     @Test
     public void inscriptionEmailInsensibleALaCasse() throws Exception {
         String corps = """
@@ -105,7 +98,6 @@ public class AuthentificationControllerTest {
                 .andExpect(status().isOk());
     }
 
-    /** Test : des champs invalides sont refuses avec 400 et la liste des erreurs par champ. */
     @Test
     public void inscriptionChampsInvalides() throws Exception {
         String corps = """
@@ -123,7 +115,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.erreurs.motDePasse").exists());
     }
 
-    /** Test : la connexion avec un compte existant renvoie un jeton et l'utilisateur (200). */
     @Test
     public void connexionReussie() throws Exception {
         String corps = """
@@ -146,7 +137,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.utilisateur.password").doesNotExist());
     }
 
-    /** Test : un mauvais mot de passe donne l'erreur 401. */
     @Test
     public void connexionMauvaisMotDePasse() throws Exception {
         String corps = """
@@ -168,7 +158,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.message", org.hamcrest.Matchers.is("E-mail ou mot de passe incorrect.")));
     }
 
-    /** Test : un e-mail inconnu donne egalement l'erreur 401. */
     @Test
     public void connexionEmailInconnu() throws Exception {
         mockMvc.perform(post("/api/auth/connexion")
@@ -180,7 +169,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.statut", org.hamcrest.Matchers.is(401)));
     }
 
-    /** Test : /moi renvoie le compte courant si le jeton envoye est valide (200). */
     @Test
     public void moiAvecJeton() throws Exception {
         String corps = """
@@ -212,7 +200,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.password").doesNotExist());
     }
 
-    /** Test : /moi sans jeton donne l'erreur 401 et un JSON d'erreur. */
     @Test
     public void moiSansJeton() throws Exception {
         mockMvc.perform(get("/api/auth/moi"))
@@ -221,7 +208,6 @@ public class AuthentificationControllerTest {
                 .andExpect(jsonPath("$.message").exists());
     }
 
-    /** Test : un jeton invente (fausse signature) donne l'erreur 401 sur /moi. */
     @Test
     public void moiAvecJetonInvalide() throws Exception {
         mockMvc.perform(get("/api/auth/moi")

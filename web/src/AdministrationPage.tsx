@@ -5,7 +5,6 @@ import { Champ, lireCoordonnees, Message } from './ChampsCompte';
 const route = '/api/admin/utilisateurs';
 type Action = { type: 'ajout' } | { type: 'edition' | 'suppression'; compte: Profil };
 
-/** Permet a un administrateur de gerer les comptes. */
 export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string; admin: Profil; actualiser: () => void }) {
   const [comptes, definirComptes] = useState<Profil[]>([]);
   const [filtre, definirFiltre] = useState('');
@@ -17,7 +16,6 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
   const [attente, definirAttente] = useState(false);
   const dialogue = useRef<HTMLDialogElement>(null);
 
-  /** Charge les comptes a l'ouverture et apres une operation. */
   async function charger(signal?: AbortSignal) {
     definirChargement(true);
     definirErreurListe(undefined);
@@ -44,14 +42,12 @@ export function AdministrationPage({ jeton, admin, actualiser }: { jeton: string
     if (action && !dialogue.current?.open) dialogue.current?.showModal();
   }, [action]);
 
-  /** Ouvre le formulaire ou la confirmation sans conserver les erreurs precedentes. */
   function ouvrir(nouvelleAction: Action) {
     definirErreur(undefined);
     definirSucces('');
     definirAction(nouvelleAction);
   }
 
-  /** Enregistre l'operation choisie puis recharge les comptes. */
   async function soumettre(evenement: FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
     if (!action) return;

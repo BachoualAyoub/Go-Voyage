@@ -17,30 +17,25 @@ import tn.govoyage.destination.dao.DestinationDAO;
 import tn.govoyage.destination.entity.Destination;
 import tn.govoyage.exception.RessourceIntrouvableException;
 
-/** Gere les plans personnels et calcule les estimations du catalogue. */
 @Service
 @Transactional(readOnly = true)
 public class CircuitService {
     private final CircuitDAO circuits;
     private final DestinationDAO destinations;
 
-    /** Recoit les repositories JPA du parcours. */
     public CircuitService(CircuitDAO circuits, DestinationDAO destinations) {
         this.circuits = circuits;
         this.destinations = destinations;
     }
 
-    /** Liste les modeles consultables. */
     public List<CircuitResponse> listerModeles() {
         return versListe(circuits.findByProprietaireIdIsNullOrderByIdAsc());
     }
 
-    /** Liste les circuits du compte courant. */
     public List<CircuitResponse> lister(Long compteId) {
         return versListe(circuits.findByProprietaireIdOrderByIdDesc(compteId));
     }
 
-    /** Consulte un modele ou un circuit appartenant au compte. */
     public CircuitResponse consulter(Long id, Long compteId) {
         Circuit circuit = circuits.findById(id).orElse(null);
         if (circuit == null || (circuit.getProprietaireId() != null
@@ -50,13 +45,11 @@ public class CircuitService {
         return versReponse(circuit);
     }
 
-    /** Enregistre un plan au nom du compte courant. */
     @Transactional
     public CircuitResponse creer(Long compteId, CircuitRequest demande) {
         return enregistrer(new Circuit(compteId), demande);
     }
 
-    /** Actualise la revision d'un circuit personnel. */
     @Transactional
     public CircuitResponse modifier(Long id, Long compteId, CircuitRequest demande) {
         Circuit circuit = trouverPersonnel(id, compteId);
@@ -69,20 +62,17 @@ public class CircuitService {
         return enregistrer(circuit, demande);
     }
 
-    /** Supprime uniquement un circuit du compte courant. */
     @Transactional
     public void supprimer(Long id, Long compteId) {
         circuits.delete(trouverPersonnel(id, compteId));
     }
 
-    /** Evite de reveler les circuits des autres voyageurs. */
     private Circuit trouverPersonnel(Long id, Long compteId) {
         Circuit circuit = circuits.findByIdAndProprietaireId(id, compteId).orElse(null);
         if (circuit == null) throw new RessourceIntrouvableException("Circuit introuvable.");
         return circuit;
     }
 
-    /** Valide les references et enregistre les etapes dans l'ordre. */
     private CircuitResponse enregistrer(Circuit circuit, CircuitRequest demande) {
         int duree = 0;
         List<EtapeCircuit> etapes = new ArrayList<>();
@@ -101,14 +91,12 @@ public class CircuitService {
         return versReponse(circuits.saveAndFlush(circuit));
     }
 
-    /** Convertit les circuits en reponses. */
     private List<CircuitResponse> versListe(List<Circuit> liste) {
         List<CircuitResponse> resultat = new ArrayList<>();
         for (Circuit circuit : liste) resultat.add(versReponse(circuit));
         return resultat;
     }
 
-    /** Calcule les totaux a partir des seuls tarifs du catalogue. */
     private CircuitResponse versReponse(Circuit circuit) {
         List<EtapeCircuitResponse> etapes = new ArrayList<>();
         int duree = 0;

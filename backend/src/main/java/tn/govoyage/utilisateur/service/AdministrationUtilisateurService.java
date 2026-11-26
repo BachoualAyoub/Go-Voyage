@@ -17,20 +17,17 @@ import tn.govoyage.utilisateur.dto.UtilisateurResponse;
 import tn.govoyage.utilisateur.entity.Role;
 import tn.govoyage.utilisateur.entity.Utilisateur;
 
-/** Operations d'administration des comptes de GO Voyage. */
 @Service
 public class AdministrationUtilisateurService {
 
     private final UtilisateurDAO utilisateurDAO;
     private final UtilisateurService utilisateurService;
 
-    /** Recoit le DAO et le service de creation des comptes. */
     public AdministrationUtilisateurService(UtilisateurDAO utilisateurDAO, UtilisateurService utilisateurService) {
         this.utilisateurDAO = utilisateurDAO;
         this.utilisateurService = utilisateurService;
     }
 
-    /** Liste les comptes par identifiant sans exposer les mots de passe. */
     @Transactional(readOnly = true)
     public List<UtilisateurResponse> lister() {
         List<UtilisateurResponse> comptes = new ArrayList<>();
@@ -40,12 +37,10 @@ public class AdministrationUtilisateurService {
         return comptes;
     }
 
-    /** Cree un compte dont le role est choisi par l'administrateur. */
     public UtilisateurResponse ajouter(CompteAdminRequest demande) {
         return utilisateurService.creer(demande.compte(), demande.role());
     }
 
-    /** Modifie un compte tout en conservant son mot de passe. */
     @Transactional
     public UtilisateurResponse modifier(Long id, ModificationCompteRequest demande, Long idAdmin) {
         Utilisateur compte = chargerCompte(id);
@@ -70,7 +65,6 @@ public class AdministrationUtilisateurService {
         return utilisateurService.enregistrer(compte);
     }
 
-    /** Supprime un compte, sauf celui de l'administrateur connecte. */
     @Transactional
     public void supprimer(Long id, Long idAdmin) {
         Utilisateur compte = chargerCompte(id);
@@ -83,7 +77,6 @@ public class AdministrationUtilisateurService {
         utilisateurDAO.delete(compte);
     }
 
-    /** Verrouille le compte pendant sa modification ou sa suppression. */
     private Utilisateur chargerCompte(Long id) {
         Utilisateur compte = utilisateurDAO.verrouillerParId(id).orElse(null);
         if (compte == null) {

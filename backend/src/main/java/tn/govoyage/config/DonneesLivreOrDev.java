@@ -11,21 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import tn.govoyage.sejour.dao.SejourDAO;
 
-/** Cree des recits et des photos de demonstration pour le livre d'or (profil dev). */
 @Component
 @Profile("dev")
 @Order(2)
 public class DonneesLivreOrDev implements CommandLineRunner {
 
-    /** Acces JDBC partage avec les autres services. */
     private final SejourDAO dao;
 
-    /** Recoit l'acces aux donnees. */
     public DonneesLivreOrDev(SejourDAO dao) {
         this.dao = dao;
     }
 
-    /** Remplace les photos rouges existing et remplit le livre d'or vide. */
     @Override
     @Transactional
     public void run(String... args) throws IOException {
@@ -40,9 +36,8 @@ public class DonneesLivreOrDev implements CommandLineRunner {
         System.out.println("Recits du livre d'or crees.");
     }
 
-    /** Ajoute des recits inspired de comptes rendus de voyage trouves sur Internet. */
     private void creerHistoiresReelles() throws IOException {
-        // Sources : harissa.com (Lucy Cohen-Zimmering) et louisedrouin.com (recit Tunisie 2018).
+
         long ayoub = idUtilisateur("ayoub@mail.tn");
         long radhouen = idUtilisateur("radhouen@gmail.com");
         long sarra = idUtilisateur("sarra@mail.tn");
@@ -60,7 +55,6 @@ public class DonneesLivreOrDev implements CommandLineRunner {
             "Sidi Bou Said", "66666666-6666-4666-8666-666666666666");
     }
 
-    /** Inserent trois recits avec trois vraies photos du catalogue. */
     private void creerRecits() throws IOException {
         long ayoub = idUtilisateur("ayoub@mail.tn");
         long radhouen = idUtilisateur("radhouen@gmail.com");
@@ -80,13 +74,11 @@ public class DonneesLivreOrDev implements CommandLineRunner {
             2, sarra, "Le desert reste inoubliable.", 4);
     }
 
-    /** Remplace uniquement les petits medias de demonstration par une vraie photo. */
     private void remplacerPhoto(String id, String chemin) throws IOException {
         dao.ecrire("UPDATE media_voyage SET contenu=?, type_contenu='image/jpeg' WHERE id_m=? AND length(contenu)<1000",
             lireImage(chemin), id);
     }
 
-    /** Corrige les textes de demonstration encodes avec un mauvais accent. */
     private void corrigerTextes() {
         dao.ecrire("UPDATE publication SET texte=? WHERE id_p=1",
             "L ilot d El Ghriba, les plages de Sidi Mahrez et les marches de Houmt Souk : un sejour tout en douceur.");
@@ -96,23 +88,19 @@ public class DonneesLivreOrDev implements CommandLineRunner {
             "Les ruelles bleues et blanches, le cafe des Nattes et le coucher de soleil sur la baie de Carthage.");
     }
 
-    /** Enregistre une photo de demonstration sans ecraser un media deja present. */
     private void enregistrerMedia(String id, long utilisateur, String chemin) throws IOException {
         dao.ecrire("INSERT INTO media_voyage(id_m,utilisateur_id,type_contenu,contenu) VALUES(?,?,?,?) ON CONFLICT(id_m) DO NOTHING",
             id, utilisateur, "image/jpeg", lireImage(chemin));
     }
 
-    /** Lit une image fournie dans les ressources du backend. */
     private byte[] lireImage(String chemin) throws IOException {
         return new ClassPathResource(chemin).getInputStream().readAllBytes();
     }
 
-    /** Retrouve l'identifiant d'un compte de demonstration. */
     private long idUtilisateur(String email) {
         return ((Number) dao.lire("SELECT id_u FROM utilisateur WHERE email=?", email).get(0).get("id_u")).longValue();
     }
 
-    /** Cree un recit publie avec une photo du catalogue. */
     private void creerPublication(long id, long utilisateur, String titre, String texte, String ville, String media) {
         if (dao.compter("SELECT COUNT(*) FROM publication WHERE id_p=?", id) > 0) return;
         dao.ecrire("INSERT INTO publication(id_p,utilisateur_id,titre,texte,pays,ville,media_url,media_type) VALUES(?,?,?,?,?,?,?,'PHOTO')",

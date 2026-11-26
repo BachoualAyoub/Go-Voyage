@@ -6,7 +6,6 @@ import { Hotel, Publication, Statistiques } from './sejour';
 import { Destination, dinars } from './voyage';
 import './sejour.css';
 
-/** Centre de pilotage : indicateurs, catalogue partage et moderation. */
 export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admin: Profil; actualiser: () => Promise<void> }) {
   const [onglet, setOnglet] = useState('synthese');
   const [stats, setStats] = useState<Statistiques>();
@@ -32,14 +31,14 @@ export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admi
       .finally(() => { if (!c.signal.aborted) setAttente(false); });
     return () => c.abort();
   }, [jeton, revision]);
-  /** Garde le message visible si une operation est refusee. */
+
   async function agir(action: () => Promise<unknown>) {
     setErreur(''); setAttente(true);
     try { await action(); setRevision(v => v + 1); }
     catch (e) { setErreur(erreurApi(e).message); }
     finally { setAttente(false); }
   }
-  /** Convertit les champs numeriques avant l'envoi de l'hotel. */
+
   function sauverHotel(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); if (!hotel) return;
     const d = Object.fromEntries(new FormData(e.currentTarget));
@@ -49,7 +48,7 @@ export function PilotagePage({ jeton, admin, actualiser }: { jeton: string; admi
     void agir(async () => { if (hotel.id_h) await api.put('/api/admin/hotels/' + hotel.id_h, corps, autorisation(jeton));
       else await api.post('/api/admin/hotels', corps, autorisation(jeton)); setHotel(undefined); });
   }
-  /** Enregistre une fiche destination compatible avec les circuits precedents. */
+
   function sauverDestination(e: FormEvent<HTMLFormElement>) {
     e.preventDefault(); if (!destination) return;
     const d = Object.fromEntries(new FormData(e.currentTarget));

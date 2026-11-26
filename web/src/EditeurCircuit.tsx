@@ -13,7 +13,6 @@ type Props = {
 type EtapeEdition = EtapeDemande & { cle: number };
 let cleEtape = 0;
 
-/** Compose un circuit ordonne avant sauvegarde. */
 export function EditeurCircuit({ destinations, circuit, destination, attente, annuler, enregistrer }: Props) {
   const [nom, definirNom] = useState(circuit ? (circuit.modele ? circuit.nom + ' · à ma façon' : circuit.nom) : '');
   const [etapes, definirEtapes] = useState<EtapeEdition[]>(() => {
@@ -25,7 +24,6 @@ export function EditeurCircuit({ destinations, circuit, destination, attente, an
   const valide = nom.trim().length > 0 && etapes.length > 0 && duree <= 60 &&
     etapes.every(e => Number.isInteger(e.jours) && e.jours >= 1 && e.jours <= 30);
 
-  /** Deplace une etape sans perdre son contenu. */
   function deplacer(index: number, sens: number) {
     const autre = index + sens;
     if (autre < 0 || autre >= etapes.length) return;
@@ -34,7 +32,6 @@ export function EditeurCircuit({ destinations, circuit, destination, attente, an
     definirEtapes(copie);
   }
 
-  /** Soumet uniquement les choix du voyageur. */
   function soumettre(evenement: FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
     if (!valide || attente) return;

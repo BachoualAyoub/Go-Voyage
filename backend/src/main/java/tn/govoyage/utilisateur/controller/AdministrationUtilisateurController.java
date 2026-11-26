@@ -21,7 +21,6 @@ import tn.govoyage.utilisateur.dto.ModificationCompteRequest;
 import tn.govoyage.utilisateur.dto.UtilisateurResponse;
 import tn.govoyage.utilisateur.service.AdministrationUtilisateurService;
 
-/** Gestion des comptes, reservee au role ADMIN par Spring Security. */
 @RestController
 @RequestMapping("/api/admin/utilisateurs")
 @SecurityRequirement(name = "jeton")
@@ -29,32 +28,27 @@ public class AdministrationUtilisateurController {
 
     private final AdministrationUtilisateurService administration;
 
-    /** Recoit le service d'administration des comptes. */
     public AdministrationUtilisateurController(AdministrationUtilisateurService administration) {
         this.administration = administration;
     }
 
-    /** Liste les comptes. */
     @GetMapping
     public List<UtilisateurResponse> lister() {
         return administration.lister();
     }
 
-    /** Cree un compte avec le role choisi. */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UtilisateurResponse ajouter(@Valid @RequestBody CompteAdminRequest demande) {
         return administration.ajouter(demande);
     }
 
-    /** Met a jour un compte existant. */
     @PutMapping("/{id}")
     public UtilisateurResponse modifier(@PathVariable Long id, @Valid @RequestBody ModificationCompteRequest demande,
                                         @AuthenticationPrincipal CompteAuthentifie admin) {
         return administration.modifier(id, demande, admin.id());
     }
 
-    /** Supprime un compte existant. */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void supprimer(@PathVariable Long id, @AuthenticationPrincipal CompteAuthentifie admin) {

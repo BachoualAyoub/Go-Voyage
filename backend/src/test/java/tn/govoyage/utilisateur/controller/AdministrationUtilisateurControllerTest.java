@@ -22,7 +22,6 @@ import tn.govoyage.utilisateur.dao.UtilisateurDAO;
 import tn.govoyage.utilisateur.entity.Role;
 import tn.govoyage.utilisateur.entity.Utilisateur;
 
-/** Verifie les regles d'acces et le cycle des comptes admin via l'API. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -39,7 +38,6 @@ class AdministrationUtilisateurControllerTest {
     private Long idAdmin;
     private String jetonAdmin;
 
-    /** Prepare un vrai administrateur dans la base de test. */
     @BeforeEach
     void preparer() throws Exception {
         Utilisateur admin = new Utilisateur();
@@ -53,7 +51,6 @@ class AdministrationUtilisateurControllerTest {
         jetonAdmin = connecter(admin.getEmail());
     }
 
-    /** Un visiteur et un utilisateur simple ne peuvent pas gerer les comptes. */
     @Test
     void restreindreAdministration() throws Exception {
         mvc.perform(get(ROUTE)).andExpect(status().isUnauthorized());
@@ -64,7 +61,6 @@ class AdministrationUtilisateurControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    /** Le changement de role et la suppression invalident les autorisations du jeton. */
     @Test
     void gererCompteEtRevoquerAcces() throws Exception {
         String email = "admin-temp@govoyage.test";
@@ -91,14 +87,12 @@ class AdministrationUtilisateurControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    /** Un administrateur ne peut pas supprimer son propre compte. */
     @Test
     void refuserAutoSuppression() throws Exception {
         mvc.perform(delete(ROUTE + "/" + idAdmin).header("Authorization", jetonAdmin))
                 .andExpect(status().isConflict());
     }
 
-    /** Met a jour le compte cible et verifie le role persiste. */
     private void modifierRole(long id, String email) throws Exception {
         String corps = """
                 {"nom":"Modifie","prenom":"Voyage","email":"%s","tel":"22 333 444","role":"USER"}
@@ -110,7 +104,6 @@ class AdministrationUtilisateurControllerTest {
                 .andExpect(jsonPath("$.role").value("USER"));
     }
 
-    /** Ouvre une session par le chemin normal et renvoie l'en-tete Bearer. */
     private String connecter(String email) throws Exception {
         String demande = """
                 {"email":"%s","motDePasse":"%s"}
@@ -120,7 +113,6 @@ class AdministrationUtilisateurControllerTest {
         return "Bearer " + json.readTree(reponse).get("jeton").asText();
     }
 
-    /** Retourne les donnees d'un compte de test. */
     private String compte(String email) {
         return """
                 {"nom":"Test","prenom":"Voyage","email":"%s","tel":"21 123 456","motDePasse":"%s"}

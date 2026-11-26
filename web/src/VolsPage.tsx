@@ -7,7 +7,6 @@ import './sejour.css';
 type EtapeVol = { cle: number; depart: string; arrivee: string; date: string };
 const villes = ['Paris', 'Lyon', 'Tunis', 'Djerba', 'Tozeur'];
 
-/** Compare chaque trajet puis additionne les offres retenues. */
 export function VolsPage() {
   const [mode, setMode] = useState('simple');
   const [etapes, setEtapes] = useState<EtapeVol[]>([{ cle: 0, depart: 'Paris', arrivee: 'Tunis', date: dateSejour(7) }]);
@@ -17,17 +16,16 @@ export function VolsPage() {
   const [attente, setAttente] = useState(false);
   const [categorie, setCategorie] = useState('');
 
-  /** Reconstruit les etapes lors du changement de type de voyage. */
   function changerMode(valeur: string) {
     setMode(valeur); setOffres([]); setChoix({});
     const aller = etapes[0];
     setEtapes(valeur === 'simple' ? [aller] : [aller, { cle: 1, depart: aller.arrivee, arrivee: aller.depart, date: dateSejour(14) }]);
   }
-  /** Invalide une ancienne selection lorsque les criteres changent. */
+
   function changer(index: number, champ: keyof EtapeVol, valeur: string) {
     setEtapes(etapes.map((e, i) => i === index ? { ...e, [champ]: valeur } : e)); setOffres([]); setChoix({});
   }
-  /** Charge toutes les etapes pour une comparaison coherent au meme instant. */
+
   async function rechercher() {
     setAttente(true); setErreur(''); setChoix({}); setOffres([]);
     try {

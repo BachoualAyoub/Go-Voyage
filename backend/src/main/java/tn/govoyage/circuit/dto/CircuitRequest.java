@@ -10,7 +10,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
-/** Formulaire de creation ou de modification d'un circuit. */
 public record CircuitRequest(
         @NotBlank @Size(max = 90) String nom,
         @Min(1) @Max(1000000) Integer budgetTnd,

@@ -7,7 +7,6 @@ import './sejour.css';
 
 type Props = { jeton: string; demanderConnexion: (motif: string) => void };
 
-/** Recherche les sejours et fait confirmer le prix avant la reservation. */
 export function ReservationsPage({ jeton, demanderConnexion }: Props) {
   const [arrivee, setArrivee] = useState(dateSejour());
   const [depart, setDepart] = useState(dateSejour(3));
@@ -34,7 +33,6 @@ export function ReservationsPage({ jeton, demanderConnexion }: Props) {
     return () => controle.abort();
   }, [arrivee, depart, voyageurs, chambres, recherche]);
 
-  /** Envoie la meme cle si une tentative doit etre rejouee. */
   async function reserver() {
     if (!confirmation || envoi) return;
     setEnvoi(true); setMessage('');
@@ -94,7 +92,6 @@ export function ReservationsPage({ jeton, demanderConnexion }: Props) {
   </main>;
 }
 
-/** Carnet serveur partage avec le mobile et annulation confirmee. */
 export function CarnetReservations({ jeton }: { jeton: string }) {
   const [liste, setListe] = useState<Reservation[]>([]);
   const [erreur, setErreur] = useState('');
@@ -109,7 +106,7 @@ export function CarnetReservations({ jeton }: { jeton: string }) {
       .then(r => setListe(r.data)).catch(e => { if (!c.signal.aborted) setErreur(erreurApi(e).message); });
     return () => c.abort();
   }, [jeton, revision]);
-  /** Annule seulement apres la confirmation du voyageur. */
+
   async function annuler() {
     if (!annulation) return;
     setAttente(true);

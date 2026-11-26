@@ -11,7 +11,6 @@ type Dialogue = { type: 'edition'; circuit?: Circuit; destination?: Destination 
   { type: 'suppression'; circuit: Circuit };
 type Props = { jeton: string; compteId?: number; onglet: 'explorer' | 'circuits'; afficherCircuits: () => void; actualiser: () => void; demanderConnexion: (motif: string) => void; voirLivreOr: () => void };
 
-/** Affiche un circuit du catalogue ou du compte, avec ses actions. */
 function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir: () => void; supprimer?: () => void }) {
   return <article className="carte-circuit">
     <div className="circuit-entete"><span className="voyage-etiquette">{circuit.modele ? 'INSPIRATION' : 'MON ITINÉRAIRE'}</span>
@@ -27,7 +26,6 @@ function CarteCircuit({ circuit, ouvrir, supprimer }: { circuit: Circuit; ouvrir
   </article>;
 }
 
-/** Charge le catalogue public et, si connecte, les inspirations et les circuits personnels. */
 export function EspaceVoyage({ jeton, compteId, onglet, afficherCircuits, actualiser, demanderConnexion, voirLivreOr }: Props) {
   const [destinations, definirDestinations] = useState<Destination[]>([]);
   const [modeles, definirModeles] = useState<Circuit[]>([]);
@@ -48,7 +46,7 @@ export function EspaceVoyage({ jeton, compteId, onglet, afficherCircuits, actual
     const config = jeton ? { ...autorisation(jeton), signal: controle.signal } : { signal: controle.signal };
     definirChargement(true);
     definirErreur(undefined);
-    // Un visiteur sans compte consulte le catalogue public : jamais l'appel aux circuits personnels.
+
     const mesCircuits = jeton ? api.get<Circuit[]>('/api/circuits', config) : Promise.resolve(undefined);
     Promise.all([api.get<Destination[]>('/api/destinations', config),
       api.get<Circuit[]>('/api/circuits/modeles', config), mesCircuits])
@@ -68,10 +66,8 @@ export function EspaceVoyage({ jeton, compteId, onglet, afficherCircuits, actual
     if (dialogue && !modale.current?.open) modale.current?.showModal();
   }, [dialogue]);
 
-  /** Ouvre une action avec son propre etat d'erreur. */
   function ouvrir(action: Dialogue) { definirErreurDialogue(undefined); definirDialogue(action); }
 
-  /** Ouvre l'atelier d'itineraire, ou oriente vers la connexion le visiteur sans compte. */
   function composer(circuit?: Circuit, destination?: Destination) {
     if (!jeton) {
       demanderConnexion('Connectez-vous ou créez votre compte pour personnaliser cet itinéraire.');
@@ -80,7 +76,6 @@ export function EspaceVoyage({ jeton, compteId, onglet, afficherCircuits, actual
     ouvrir({ type: 'edition', circuit, destination });
   }
 
-  /** Met a jour la liste locale apres une reponse reussie. */
   async function enregistrer(demande: CircuitDemande) {
     if (dialogue?.type !== 'edition') return;
     const id = dialogue.circuit && !dialogue.circuit.modele ? dialogue.circuit.id : undefined;
@@ -98,7 +93,6 @@ export function EspaceVoyage({ jeton, compteId, onglet, afficherCircuits, actual
     } finally { definirAttente(false); }
   }
 
-  /** Confirme la suppression avant d'enlever le circuit de la liste. */
   async function supprimer() {
     if (dialogue?.type !== 'suppression') return;
     const id = dialogue.circuit.id;

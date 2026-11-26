@@ -1,4 +1,3 @@
--- Tarifs de référence pour la démonstration, exprimés en dinars par jour.
 INSERT INTO destination (code, nom, ville, pays, region, ambiance, tarif_jour_tnd, accroche, description) VALUES
 ('sidi-bou-said', 'Sidi Bou Saïd', 'Sidi Bou Saïd', 'Tunisie', 'Grand Tunis', 'CULTURE', 95,
  'Un balcon bleu et blanc sur la Méditerranée.',

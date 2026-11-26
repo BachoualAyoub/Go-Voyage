@@ -19,7 +19,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-/** Verifie le catalogue, l'ordre des etapes et l'isolation entre comptes. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
@@ -27,7 +26,6 @@ class CircuitControllerTest {
     @Autowired private MockMvc mvc;
     @Autowired private ObjectMapper json;
 
-    /** Verifie les modeles et le rejet des etapes hors du catalogue. */
     @Test
     void consulteLeCatalogueEtValideLesEtapes() throws Exception {
         mvc.perform(get("/api/destinations")).andExpect(status().isOk());
@@ -48,7 +46,6 @@ class CircuitControllerTest {
                 """).andExpect(status().isBadRequest());
     }
 
-    /** Verifie la sauvegarde ordonnee et protege le circuit contre les modifications concurrentes. */
     @Test
     void gereUnCircuitPersonnelVersionne() throws Exception {
         String jeton = connecter("proprietaire.sprint2@mail.tn");
@@ -72,7 +69,6 @@ class CircuitControllerTest {
         mvc.perform(get("/api/circuits/{id}", id).header("Authorization", jeton)).andExpect(status().isNotFound());
     }
 
-    /** Le second compte ne peut ni voir ni changer le circuit. */
     private void verifierIsolation(String jeton, long id, String demande) throws Exception {
         mvc.perform(get("/api/circuits").header("Authorization", jeton)).andExpect(jsonPath("$", hasSize(0)));
         mvc.perform(get("/api/circuits/{id}", id).header("Authorization", jeton)).andExpect(status().isNotFound());
@@ -80,19 +76,16 @@ class CircuitControllerTest {
         mvc.perform(delete("/api/circuits/{id}", id).header("Authorization", jeton)).andExpect(status().isNotFound());
     }
 
-    /** Envoie une creation avec le JWT du voyageur. */
     private ResultActions creer(String jeton, String demande) throws Exception {
         return mvc.perform(post("/api/circuits").header("Authorization", jeton)
                 .contentType(MediaType.APPLICATION_JSON).content(demande));
     }
 
-    /** Envoie une modification avec le JWT du voyageur. */
     private ResultActions modifier(String jeton, long id, String demande) throws Exception {
         return mvc.perform(put("/api/circuits/{id}", id).header("Authorization", jeton)
                 .contentType(MediaType.APPLICATION_JSON).content(demande));
     }
 
-    /** Inscrit un compte de test et obtient son JWT par le flux normal. */
     private String connecter(String email) throws Exception {
         mvc.perform(post("/api/auth/inscription").contentType(MediaType.APPLICATION_JSON).content("""
                 {"nom":"Voyage","prenom":"Test","email":"%s","tel":"21555111","motDePasse":"motdepasse1"}
@@ -104,7 +97,6 @@ class CircuitControllerTest {
         return "Bearer " + connexion.get("jeton").asText();
     }
 
-    /** Lit le JSON produit par le controleur. */
     private JsonNode lire(ResultActions reponse) throws Exception {
         return json.readTree(reponse.andReturn().getResponse().getContentAsByteArray());
     }

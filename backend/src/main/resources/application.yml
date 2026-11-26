@@ -1,5 +1,3 @@
-# GO Voyage API : configuration commune
-
 spring:
   application:
     name: govoyage
@@ -18,7 +16,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-# Configuration propre a l'application (cle de injection @Value)
 go-voyage:
   jeton:
     secret: ${JWT_SECRET}

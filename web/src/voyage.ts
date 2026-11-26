@@ -18,10 +18,8 @@ export type CircuitDemande = { nom: string; budgetTnd: number | null; etapes: Et
 export const ambiances: Record<Ambiance, string> = { MER: 'Bord de mer', CULTURE: 'Culture', NATURE: 'Nature' };
 const nombre = new Intl.NumberFormat('fr-FR');
 
-/** Affiche une estimation en dinars tunisiens. */
 export function dinars(valeur: number) { return nombre.format(valeur) + ' TND'; }
 
-/** Permet de retrouver une destination avec ou sans accents. */
 export function normaliserRecherche(texte: string) {
   return texte.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }

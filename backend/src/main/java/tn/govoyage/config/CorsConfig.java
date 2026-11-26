@@ -9,15 +9,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-/** Configuration CORS : autorise le site web a appeler l'API. */
 @Configuration
 public class CorsConfig {
 
-    /** Origines autorisees (ex : http://localhost:5173), separees par des virgules. */
     @Value("${go-voyage.cors.origines}")
     private String origines;
 
-    /** Prepare la configuration CORS appliquee a toutes les routes. */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

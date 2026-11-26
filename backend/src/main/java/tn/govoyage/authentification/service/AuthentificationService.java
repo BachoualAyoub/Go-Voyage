@@ -15,20 +15,15 @@ import tn.govoyage.utilisateur.dto.UtilisateurResponse;
 import tn.govoyage.utilisateur.entity.Utilisateur;
 import tn.govoyage.utilisateur.service.UtilisateurService;
 
-/** Logique d'authentification : verification des identifiants et jeton. */
 @Service
 public class AuthentificationService {
 
-    /** DAO des utilisateurs. */
     private final UtilisateurDAO utilisateurDAO;
 
-    /** Hacheur de mot de passe (BCrypt). */
     private final PasswordEncoder passwordEncoder;
 
-    /** Service des jetons JWT. */
     private final JetonService jetonService;
 
-    /** Prend le DAO, le hacheur de mot de passe et le service des jetons. */
     public AuthentificationService(UtilisateurDAO utilisateurDAO,
                                    PasswordEncoder passwordEncoder,
                                    JetonService jetonService) {
@@ -37,7 +32,6 @@ public class AuthentificationService {
         this.jetonService = jetonService;
     }
 
-    /** Verifie les identifiants puis renvoie le jeton et le compte connecte. */
     public ConnexionResponse connecter(ConnexionRequest demande) {
         String email = demande.email().toLowerCase(Locale.ROOT);
         Utilisateur utilisateur = utilisateurDAO.chercherParEmail(email).orElse(null);
@@ -50,7 +44,6 @@ public class AuthentificationService {
         return new ConnexionResponse(jeton, UtilisateurService.versReponse(utilisateur));
     }
 
-    /** Renvoie le compte de l'utilisateur connecte (trouve a partir du jeton). */
     public UtilisateurResponse moi(String email) {
         Utilisateur utilisateur = utilisateurDAO.chercherParEmail(email).orElse(null);
         if (utilisateur == null) {

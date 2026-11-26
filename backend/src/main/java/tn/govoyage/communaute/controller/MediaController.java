@@ -10,14 +10,13 @@ import tn.govoyage.security.CompteAuthentifie;
 import tn.govoyage.sejour.dao.SejourDAO;
 import static tn.govoyage.sejour.service.SejourService.*;
 
-/** Importe des medias limites et sert uniquement ceux publies ou appartenant au compte. */
 @RestController
 @RequestMapping("/api/medias")
 public class MediaController {
     private final SejourDAO dao;
-    /** Recoit le stockage des medias. */
+
     public MediaController(SejourDAO dao) { this.dao=dao; }
-    /** Accepte JPEG, PNG et MP4 apres verification de leur signature. */
+
     @PostMapping(consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public Map<String,String> importer(@AuthenticationPrincipal CompteAuthentifie c,@RequestParam MultipartFile fichier) throws IOException {
@@ -28,7 +27,7 @@ public class MediaController {
         dao.ecrire("INSERT INTO media_voyage(id_m,utilisateur_id,type_contenu,contenu) VALUES(?,?,?,?)",id,c.id(),type,octets);
         return Map.of("url","/api/medias/"+id,"type",type.startsWith("image/")?"PHOTO":"VIDEO");
     }
-    /** Verifie les premiers octets avant de publier un type MIME. */
+
     private String type(byte[] b) {
         if (b.length>8 && b[0]==(byte)0x89 && b[1]==0x50 && b[2]==0x4e && b[3]==0x47) return "image/png";
         if (b.length>3 && b[0]==(byte)0xff && b[1]==(byte)0xd8 && b[2]==(byte)0xff) return "image/jpeg";
@@ -36,7 +35,7 @@ public class MediaController {
         erreur("Choisissez une image JPEG/PNG ou une vidéo MP4.");
         return "";
     }
-    /** Sert le fichier sans permettre l'execution de contenu actif. */
+
     @GetMapping("/{id}")
     public ResponseEntity<byte[]> lire(@PathVariable String id,@AuthenticationPrincipal CompteAuthentifie c) {
         Map<String,Object> media=unique(dao.lire("""

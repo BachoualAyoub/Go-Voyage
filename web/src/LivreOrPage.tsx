@@ -6,7 +6,6 @@ import './sejour.css';
 
 type Props = { jeton: string; compteId?: number; demanderConnexion: (motif: string) => void; limite?: number; voirTous?: () => void };
 
-/** Fil d'actualite du livre d'or, affiche dans la page d'accueil. */
 export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTous }: Props) {
   const [recits, setRecits] = useState<Publication[]>([]);
   const [recherche, setRecherche] = useState('');
@@ -25,10 +24,8 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
   const fermer = useCallback(() => { setRecitEnFormulaire(undefined); setOuvert(undefined); setMotif(undefined); }, []);
   useDialogueVoyage(!!recitEnFormulaire || !!ouvert || !!motif, fermer);
 
-  /** Oublie les listes de likes apres chaque interaction pour les relire a jour. */
   useEffect(() => { likesCharges.current = []; setLikesOuvert(undefined); }, [revision]);
 
-  /** Relit les recits publics a chaque recherche ou interaction. */
   useEffect(() => {
     const controle = new AbortController();
     setChargement(true);
@@ -38,7 +35,6 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     return () => controle.abort();
   }, [recherche, jeton, revision]);
 
-  /** Charge les avis du recit ouvert. */
   useEffect(() => {
     setAvis([]);
     if (!ouvert) return;
@@ -48,14 +44,12 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     return () => controle.abort();
   }, [ouvert, revision]);
 
-  /** Reserve une action a une session authentifiee. */
   function connecte() {
     if (jeton) return true;
     demanderConnexion('Connectez-vous pour participer au livre d’or.');
     return false;
   }
 
-  /** Execute une interaction puis relit les compteurs du serveur. */
   async function agir(action: () => Promise<unknown>) {
     setOccupe(true); setMessage('');
     try { await action(); setRevision(v => v + 1); }
@@ -63,7 +57,6 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     finally { setOccupe(false); }
   }
 
-  /** Transfere un nouveau media si besoin, puis cree ou modifie le recit. */
   async function publier(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const recit = recitEnFormulaire;
@@ -94,7 +87,6 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     });
   }
 
-  /** Enregistre un avis apres verification des champs vides. */
   async function envoyerAvis(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!ouvert || !connecte()) return;
@@ -109,7 +101,6 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     });
   }
 
-  /** Transmet un signalement sans accepter un motif vide. */
   async function envoyerSignalement(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!motif) return;
@@ -123,29 +114,24 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     });
   }
 
-  /** Prefixe l'adresse API sans doubler le slash devant un media. */
   function sourceMedia(chemin: string): string {
     const base = (api.defaults.baseURL ?? '').replace(/\/$/, '');
     return base + (chemin.startsWith('/') ? chemin : '/' + chemin);
   }
 
-  /** Remplace un media indisponible par un message lisible. */
   function marquerMediaEnErreur(id: number) {
     if (!mediasEnErreur.includes(id)) setMediasEnErreur(ids => [...ids, id]);
   }
 
-  /** Affiche le nom complet de l'auteur, ou son ancien alias si besoin. */
   function nomAuteur(r: Publication): string {
     const complet = [r.auteur_prenom, r.auteur_nom].filter(Boolean).join(' ').trim();
     return complet || r.auteur;
   }
 
-  /** Initiale du prenom, comme sur la pastille du compte. */
   function initialeAuteur(r: Publication): string {
     return nomAuteur(r).charAt(0).toUpperCase();
   }
 
-  /** Charge la liste des voyageurs ayant aime, une seule fois par recit. */
   async function chargerLikes(id: number) {
     setLikesOuvert(id);
     if (likesCharges.current.includes(id)) return;
@@ -159,7 +145,6 @@ export function LivreOrFeed({ jeton, compteId, demanderConnexion, limite, voirTo
     }
   }
 
-  /** Trie les recits par nombre de likes pour l'accueil. */
   const pubsAffichees = limite ? [...recits].sort((a, b) => b.likes - a.likes).slice(0, limite) : recits;
   const barreRecherche = <div className="recherche-livre-or">
     <label className="recherche-recit">Quel sera votre prochain souvenir ?

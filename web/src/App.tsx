@@ -10,7 +10,6 @@ import { LivreOrFeed } from './LivreOrPage';
 
 const cleSession = 'govoyage.jeton';
 
-/** Affiche le catalogue public, puis l'espace du role confirme par le serveur. */
 export function App() {
   const [jeton, definirJeton] = useState(() => sessionStorage.getItem(cleSession) ?? '');
   const [profil, definirProfil] = useState<Profil>();
@@ -25,7 +24,6 @@ export function App() {
   const onglet = section === 'admin' && profil?.role !== 'ADMIN' ? 'explorer' :
     section ?? (profil?.role === 'ADMIN' ? 'admin' : 'explorer');
 
-  /** Ferme la session dans cet onglet. */
   const deconnecter = useCallback(() => {
     sessionStorage.removeItem(cleSession);
     definirJeton('');
@@ -35,7 +33,6 @@ export function App() {
     definirMotifConnexion(undefined);
   }, []);
 
-  /** Verifie la session et le role actuel. */
   const actualiser = useCallback(async (signal?: AbortSignal) => {
     if (!jeton) return;
     definirErreur(undefined);
@@ -60,7 +57,6 @@ export function App() {
     if (editionProfil && !dialogueProfil.current?.open) dialogueProfil.current?.showModal();
   }, [editionProfil]);
 
-  /** Stocke le jeton le temps de la session de l'onglet. */
   function connecter(session: Session) {
     sessionStorage.setItem(cleSession, session.jeton);
     definirProfil(session.utilisateur);
@@ -68,24 +64,20 @@ export function App() {
     definirMotifConnexion(undefined);
   }
 
-  /** Presente le formulaire de connexion, avec le motif d'une operation demandee. */
   function demanderConnexion(motif: string) {
     definirMotifConnexion(motif);
   }
 
-  /** Retourne au catalogue public sans se connecter. */
   function annulerConnexion() {
     definirMotifConnexion(undefined);
   }
 
-  /** Ouvre la modification du profil en effacant les messages precedents. */
   function ouvrirEditionProfil() {
     definirErreurProfil(undefined);
     definirSuccesProfil('');
     definirEditionProfil(true);
   }
 
-  /** Enregistre les coordonnees du compte connecte, sans changer son role. */
   async function modifierProfil(evenement: FormEvent<HTMLFormElement>) {
     evenement.preventDefault();
     if (!profil) return;
@@ -105,14 +97,12 @@ export function App() {
     }
   }
 
-  /** Affiche le catalogue puis amene la section demandee a l'ecran. */
   function montrerSection(ancre: string) {
     definirMotifConnexion(undefined);
     definirSection('explorer');
     amenerSection(ancre, 10);
   }
 
-  /** Fait defiler jusqu'a la section, sous les barres fixes, en attendant qu'elle soit affichee. */
   function amenerSection(ancre: string, tentatives: number) {
     window.setTimeout(() => {
       const cible = document.getElementById(ancre);

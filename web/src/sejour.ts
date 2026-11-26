@@ -1,4 +1,3 @@
-/** Contrats communs aux parcours des Sprints 3 et 4. */
 export type Hotel = {
   id_h: number; destination_id: number; nom: string; ville: string; description: string;
   etoiles: number; tarif_nuit: number; chambres: number; capacite: number; image: string;
@@ -27,11 +26,11 @@ export type Statistiques = {
   parJour: { jour: string; nombre: number; montant: number }[];
   recentes: { id_r: number; prenom: string; nom: string; hotel_nom: string; montant: number; statut: string }[];
 };
-/** Produit une date locale utilisable par un champ HTML. */
+
 export function dateSejour(decalage = 1) {
   const date = new Date();
   date.setDate(date.getDate() + decalage);
   return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
 }
-/** Retrouve la photographie du catalogue deja presente dans le projet. */
+
 export function imageSejour(code: string) { return '/destinations/' + code + '.jpg'; }

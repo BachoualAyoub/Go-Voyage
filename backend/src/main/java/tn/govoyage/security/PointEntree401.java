@@ -9,10 +9,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/** Repond avec le JSON d'erreur 401 quand aucune authentification n'est fournie. */
 public class PointEntree401 implements AuthenticationEntryPoint {
 
-    /** Ecrit directement la reponse JSON sans dependre d'autres classes. */
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,

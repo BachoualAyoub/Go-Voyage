@@ -1,5 +1,3 @@
-# Profil test : base H2 en memoire compatible PostgreSQL
-
 spring:
   datasource:
     url: jdbc:h2:mem:govoyage_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE

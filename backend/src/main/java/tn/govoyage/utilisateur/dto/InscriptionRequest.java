@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-/** Donnees d'inscription envoyees par le web ou le mobile. */
 public record InscriptionRequest(
         @NotBlank(message = "Le nom est obligatoire.")
         @Size(max = 100, message = "Le nom ne doit pas depasser 100 caracteres.")
@@ -33,7 +32,6 @@ public record InscriptionRequest(
         @Size(min = 8, max = 100, message = "Le mot de passe doit contenir au moins 8 caracteres.")
         String motDePasse) {
 
-    /** Limite en octets du hachage BCrypt. */
     @JsonIgnore
     @AssertTrue(message = "Le mot de passe ne doit pas depasser 72 octets.")
     public boolean isMotDePasseCompatible() {

@@ -16,13 +16,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.*;
 
-/** Verifie les regles metier, les roles et les interactions des Sprints 3 et 4. */
 @SpringBootTest @AutoConfigureMockMvc @ActiveProfiles("test")
 class ParcoursVoyageTest {
     @Autowired MockMvc mvc;
     @Autowired ObjectMapper json;
     @Autowired JdbcTemplate jdbc;
-    /** Cree deux comptes, confirme le montant serveur, rejoue et annule sans fuite entre comptes. */
+
     @Test void reservationIsoleeEtIdempotente() throws Exception {
         String proprietaire=compte(false), autre=compte(false);
         String cle=UUID.randomUUID().toString();
@@ -37,7 +36,7 @@ class ParcoursVoyageTest {
         mvc.perform(delete("/api/reservations/"+id).header("Authorization",proprietaire)).andExpect(status().isNoContent());
         mvc.perform(delete("/api/reservations/"+id).header("Authorization",proprietaire)).andExpect(status().isNoContent());
     }
-    /** Une offre obsolete, une date invalide et un stock epuise sont refuses. */
+
     @Test void protegeDisponibiliteEtTarif() throws Exception {
         String utilisateur=compte(false);
         jdbc.update("INSERT INTO hotel(destination_id,nom,ville,description,etoiles,tarif_nuit,chambres,capacite,image) VALUES(1,'Test stock','Tunis','Test',3,100,1,2,'sidi-bou-said')");
@@ -49,7 +48,7 @@ class ParcoursVoyageTest {
         mvc.perform(get("/api/hotels").param("arrivee","2000-01-01").param("depart","2000-01-03")).andExpect(status().isBadRequest());
         mvc.perform(get("/api/reservations")).andExpect(status().isUnauthorized());
     }
-    /** Un utilisateur ne peut administrer le catalogue ; une ancienne version est rejetee. */
+
     @Test void catalogueEtStatistiquesProteges() throws Exception {
         String utilisateur=compte(false), admin=compte(true);
         mvc.perform(get("/api/admin/statistiques").header("Authorization",utilisateur)).andExpect(status().isForbidden());
@@ -63,7 +62,7 @@ class ParcoursVoyageTest {
         envoyer("PUT","/api/admin/hotels/2",admin,d).andExpect(status().isConflict());
         mvc.perform(delete("/api/admin/destinations/1").header("Authorization",admin)).andExpect(status().isConflict());
     }
-    /** Le livre d'or respecte l'unicite des avis/likes et la moderation. */
+
     @Test void communauteEtModeration() throws Exception {
         String auteur=compte(false), lecteur=compte(false), admin=compte(true);
         String titre="Recit-"+UUID.randomUUID();
@@ -83,7 +82,7 @@ class ParcoursVoyageTest {
         mvc.perform(delete("/api/publications/"+id).header("Authorization",lecteur)).andExpect(status().isNotFound());
         mvc.perform(delete("/api/publications/"+id).header("Authorization",auteur)).andExpect(status().isNoContent());
     }
-    /** Un media prive appartient a son auteur et les fichiers actifs sont refuses. */
+
     @Test void securiseLeMedia() throws Exception {
         String auteur=compte(false), autre=compte(false);
         MockMultipartFile photo=new MockMultipartFile("fichier","image.png","image/png",Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+a6GkAAAAASUVORK5CYII="));
@@ -95,13 +94,13 @@ class ParcoursVoyageTest {
         MockMultipartFile html=new MockMultipartFile("fichier","test.png","image/png","<script>alert(1)</script>".getBytes());
         mvc.perform(multipart("/api/medias").file(html).header("Authorization",auteur)).andExpect(status().isBadRequest());
     }
-    /** Compare une offre de demonstration et valide les bornes temporelles. */
+
     @Test void compareLesVols() throws Exception {
         mvc.perform(get("/api/vols").param("depart","Paris").param("arrivee","Tunis").param("date",LocalDate.now().plusDays(7).toString()))
             .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3));
         mvc.perform(get("/api/vols").param("depart","Paris").param("arrivee","Tunis").param("date","2000-01-01")).andExpect(status().isBadRequest());
     }
-    /** Compte unique cree par l'API, promu uniquement dans la base de test. */
+
     private String compte(boolean admin) throws Exception {
         String email=UUID.randomUUID()+"@test.tn";
         String donnees=json.writeValueAsString(Map.of("nom","Test","prenom","Voyage","email",email,"tel","21555111","motDePasse","motdepasse1"));
@@ -110,14 +109,14 @@ class ParcoursVoyageTest {
         JsonNode session=lire(envoyer("POST","/api/auth/connexion","",json.writeValueAsString(Map.of("email",email,"motDePasse","motdepasse1"))).andExpect(status().isOk()));
         return "Bearer "+session.get("jeton").asText();
     }
-    /** Corps date commun aux tests de stock. */
+
     private String reservation(long hotel,String cle,int chambres) throws Exception {
         return json.writeValueAsString(Map.of("hotelId",hotel,"arrivee",LocalDate.now().plusDays(30).toString(),"depart",LocalDate.now().plusDays(32).toString(),"voyageurs",2,"chambres",chambres,"cle",cle));
     }
-    /** Envoie une requete JSON par le controleur reel. */
+
     private ResultActions envoyer(String methode,String url,String jeton,String corps) throws Exception {
         return mvc.perform(request(org.springframework.http.HttpMethod.valueOf(methode),url).header("Authorization",jeton).contentType(MediaType.APPLICATION_JSON).content(corps));
     }
-    /** Lit le corps JSON du resultat. */
+
     private JsonNode lire(ResultActions resultat) throws Exception { return json.readTree(resultat.andReturn().getResponse().getContentAsByteArray()); }
 }

@@ -18,21 +18,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import tn.govoyage.utilisateur.dao.UtilisateurDAO;
 import tn.govoyage.utilisateur.entity.Utilisateur;
 
-/** Filtre qui lit le jeton JWT de chaque requete et authentifie l'utilisateur. */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    /** Service des jetons JWT. */
     private final JetonService jetonService;
     private final UtilisateurDAO utilisateurDAO;
 
-    /** Prend le service des jetons et le DAO des comptes. */
     public JwtAuthenticationFilter(JetonService jetonService, UtilisateurDAO utilisateurDAO) {
         this.jetonService = jetonService;
         this.utilisateurDAO = utilisateurDAO;
     }
 
-    /** Lit l'en-tete "Authorization: Bearer ..." puis place l'utilisateur dans le contexte. */
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -50,7 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         chaine.doFilter(request, response);
     }
 
-    /** Applique le role actuel du compte, y compris apres une modification par un administrateur. */
     private void placerUtilisateur(HttpServletRequest request, Utilisateur compte) {
         SimpleGrantedAuthority autorite = new SimpleGrantedAuthority("ROLE_" + compte.getRole().name());
         CompteAuthentifie identite = new CompteAuthentifie(compte.getId(), compte.getEmail());

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import './voyage.css';
 
-/** Toutes les destinations du catalogue, en commençant par Sidi Bou Said. */
 const diapositives = [
   { image: '/voyage-sidi.png', legende: 'SIDI BOU SAÏD · TUNISIE' },
   { image: '/destinations/hammamet.jpg', legende: 'HAMMAMET · TUNISIE' },
@@ -13,17 +12,14 @@ const diapositives = [
   { image: '/destinations/djerba.jpg', legende: 'DJERBA · TUNISIE' }
 ];
 
-/** Affiche les photos de l'accueil qui defilent automatiquement. */
 export function CarrouselAccueil() {
   const [index, definirIndex] = useState(0);
   const [enPause, definirEnPause] = useState(false);
 
-  /** Avance d'une photo, en revenant au debut apres la derniere. */
   function suivant() {
     definirIndex(valeur => (valeur + 1) % diapositives.length);
   }
 
-  /** Revient a la photo precedente, en boucle. */
   function precedent() {
     definirIndex(valeur => (valeur - 1 + diapositives.length) % diapositives.length);
   }

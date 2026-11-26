@@ -11,25 +11,20 @@ import tn.govoyage.utilisateur.dao.UtilisateurDAO;
 import tn.govoyage.utilisateur.entity.Role;
 import tn.govoyage.utilisateur.entity.Utilisateur;
 
-/** Crée 4 comptes de démonstration au démarrage (profil dev uniquement). */
 @Component
 @Profile("dev")
 @Order(1)
 public class DonneesDev implements CommandLineRunner {
 
-    /** DAO des utilisateurs. */
     private final UtilisateurDAO utilisateurDAO;
 
-    /** Hacheur de mot de passe (BCrypt). */
     private final PasswordEncoder passwordEncoder;
 
-    /** Prend le DAO et le hacheur de mot de passe. */
     public DonneesDev(UtilisateurDAO utilisateurDAO, PasswordEncoder passwordEncoder) {
         this.utilisateurDAO = utilisateurDAO;
         this.passwordEncoder = passwordEncoder;
     }
 
-    /** Initialise les comptes de demonstration une seule fois sur une base vide. */
     @Override
     @Transactional
     public void run(String... args) {
@@ -43,7 +38,6 @@ public class DonneesDev implements CommandLineRunner {
         System.out.println("4 comptes de demonstration crees.");
     }
 
-    /** Crée et enregistre un compte de démonstration avec mot de passe haché. */
     private void creerCompte(String nom, String prenom, String email, String tel, String motDePasse, Role role) {
         Utilisateur utilisateur = new Utilisateur();
         utilisateur.setNom(nom);

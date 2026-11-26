@@ -13,7 +13,6 @@ type ChampProps = {
   readOnly?: boolean;
 };
 
-/** Affiche un champ et le retour de validation de l'API. */
 export function Champ({ nom, label, type = 'text', valeur, autocomplete, min, max, erreur, readOnly }: ChampProps) {
   return <label className="champ">
     <span>{label}</span>
@@ -24,7 +23,6 @@ export function Champ({ nom, label, type = 'text', valeur, autocomplete, min, ma
   </label>;
 }
 
-/** Affiche les messages de l'API qui ne correspondent pas a un champ. */
 export function Message({ erreur, enfants }: { erreur?: ErreurApi; enfants?: ReactNode }) {
   if (erreur) return <div className="message erreur" role="alert">
     {erreur.message}
@@ -35,7 +33,6 @@ export function Message({ erreur, enfants }: { erreur?: ErreurApi; enfants?: Rea
   return null;
 }
 
-/** Lit et normalise les coordonnees du formulaire. */
 export function lireCoordonnees(champs: FormData) {
   return {
     nom: String(champs.get('nom')).trim(),

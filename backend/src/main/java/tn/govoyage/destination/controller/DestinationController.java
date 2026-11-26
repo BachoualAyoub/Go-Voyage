@@ -8,24 +8,20 @@ import org.springframework.web.bind.annotation.RestController;
 import tn.govoyage.destination.dto.DestinationResponse;
 import tn.govoyage.destination.service.DestinationService;
 
-/** Routes de consultation du catalogue, ouvertes a tous. */
 @RestController
 @RequestMapping("/api/destinations")
 public class DestinationController {
     private final DestinationService destinations;
 
-    /** Recoit le service du catalogue. */
     public DestinationController(DestinationService destinations) {
         this.destinations = destinations;
     }
 
-    /** Liste le catalogue. */
     @GetMapping
     public List<DestinationResponse> lister() {
         return destinations.lister();
     }
 
-    /** Consulte une fiche. */
     @GetMapping("/{id}")
     public DestinationResponse consulter(@PathVariable Long id) {
         return destinations.consulter(id);

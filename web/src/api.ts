@@ -22,12 +22,10 @@ export const api = axios.create({
   timeout: 10000,
 });
 
-/** Construit l'en-tete d'une requete authentifiee. */
 export function autorisation(jeton: string) {
   return { headers: { Authorization: 'Bearer ' + jeton } };
 }
 
-/** Renvoie le message et les erreurs de validation recus du serveur. */
 export function erreurApi(erreur: unknown): ErreurApi {
   if (axios.isAxiosError<ErreurApi>(erreur)) {
     if (erreur.response?.data?.message) return erreur.response.data;

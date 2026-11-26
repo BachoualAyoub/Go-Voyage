@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 
-/** Garde le clavier dans la boite ouverte et rend le focus au bouton de depart. */
 export function useDialogueVoyage(ouvert: boolean, fermer: () => void) {
   useEffect(() => {
     if (!ouvert) return;
